@@ -1,13 +1,16 @@
 package docstore.ianmorgan.github.io
 
+import graphql.GraphQL
 import io.javalin.ApiBuilder
 import io.javalin.Javalin
 
-class Controller constructor() {
+class Controller constructor(dao : DocDao, graphQL : GraphQL){
+    private val theDao = dao
+
 
     fun register(app: Javalin) {
         app.routes {
-            ApiBuilder.get("/docs") { ctx ->
+            ApiBuilder.get("/graphql") { ctx ->
 
                 //                // run the query
 //                val filter = Filter.ModelMapper.fromQueryMap(ctx.queryParamMap())

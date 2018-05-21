@@ -40,10 +40,11 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
         }
 
         // setup the  main controller
-        //val eventDao = EventDao()
+        val dao = DocDao()
+        val graphQL = GraphQLFactory.build()
         //eventDao.load("src/test/resources/examples")
 
-        val controller = Controller()
+        val controller = Controller(dao,graphQL)
         controller.register(app)
 
         //JavalinJacksonPlugin.configure()
