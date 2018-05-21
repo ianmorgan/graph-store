@@ -1,0 +1,14 @@
+
+
+type Query {
+    hello: String
+    character(name: String): SimpsonCharacter
+}
+
+type SimpsonCharacter {
+    name: String
+    mainCharacter: Boolean
+    hairColour : String
+}
+
+schema{query: Query}
