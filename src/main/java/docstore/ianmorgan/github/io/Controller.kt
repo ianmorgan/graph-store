@@ -6,25 +6,26 @@ import io.javalin.Javalin
 
 class Controller constructor(dao : DocDao, graphQL : GraphQL){
     private val theDao = dao
+    private val graphQL = graphQL
 
 
     fun register(app: Javalin) {
         app.routes {
             ApiBuilder.get("/graphql") { ctx ->
 
-                //                // run the query
-//                val filter = Filter.ModelMapper.fromQueryMap(ctx.queryParamMap())
-//                val events = theDao.retrieve(filter)
-//
-//                // build the result
-//                val result = HashMap<String, Any>()
-//                result["events"] = events.map { it -> Event.ModelMapper.asMap(it) }
-//                if (filter.pageSize != null || filter.lastId != null) {
-//                    result["paging"] = buildPaging(events, filter)
-//                }
-//                ctx.json(mapOf("payload" to result))
+                val query = ctx.queryParam("query")
 
-                ctx.json(mapOf("to" to "do"))
+                if (query != null){
+                    val executionResult = graphQL.execute(query)
+                    println(executionResult.getData<Any>().toString())
+
+                    // todo - what about errors
+
+                    val result = mapOf("data" to executionResult.getData<Any>());
+                    ctx.json(result)
+                }
+
+
             }
 
 
