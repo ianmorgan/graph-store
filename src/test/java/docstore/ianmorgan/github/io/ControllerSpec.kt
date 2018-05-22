@@ -19,14 +19,14 @@ import org.junit.runner.RunWith
 object ControllerSpec : Spek({
 
     lateinit var app: Javalin
-    val baseUrl = "http://localhost:8001/"
+    val baseUrl = "http://localhost:8002/"
 
     describe(" controller") {
         beforeGroup {
 
             val parser = DefaultParser()
             val cmd = parser.parse(Options(), arrayOf<String>())
-            app = JavalinApp(8001, cmd).init()
+            app = JavalinApp(8002, cmd).init()
             println("app started...")
         }
 

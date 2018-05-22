@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
     val parser = DefaultParser()
     val cmd = parser.parse(options, args)
 
-    JavalinApp(7001, cmd).init()
+    JavalinApp(7002, cmd).init()
 }
 
 class JavalinApp(private val port: Int, private val cmd : CommandLine) {
