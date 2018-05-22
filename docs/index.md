@@ -15,7 +15,7 @@ The doc-store requires a running [event-store](https://ianmorgan.github.io/event
 The API is document centric, 
 with each document representing a [DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html) . 
 
-The first step is to register a schema associated with a document. This is in the [GraphQL schema](http://graphql.org/learn/schema/)
+The first step is to register a schema associated with one or more documents. This is in the [GraphQL schema](http://graphql.org/learn/schema/)
 format. The examples here are all based on the [Star Wars](https://github.com/apollographql/starwars-server/blob/master/data/swapiSchema.js) 
 schema from the GraphQL demos.
 
@@ -64,7 +64,6 @@ type Droid implements Character {
   name: String!
   friends: [Character]
   appearsIn: [Episode]!
-
   primaryFunction: String
 
 }
@@ -72,6 +71,18 @@ type Droid implements Character {
 
 This must be registered by sending to the 'schema' endpoint. Note that multiple schemas can be registered, so 
 the name must be clearly identified in the URL 
+
+Each 'type' is treated as a distinct document types. An 'interface' is a read only document. So in this case we now have 
+a readonly 'Character' document, and updatable 'Human' and 'Droid' documents. An example 'Droid' 
+document in JSON could be:
+
+```json
+{
+   "id" : "2001",
+   "name" : "R2 D2",
+   "appearsIn" : ["NEWHOPE","EMPIRE","JEDI"]
+}
+```
 
 ```bash
 curl -H "Content-Type: application/graphql" -X PUT  http://localhost:7002/schema/starwars -d @starwars.schema
