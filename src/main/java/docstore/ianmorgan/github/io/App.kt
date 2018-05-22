@@ -40,9 +40,8 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
         }
 
         // setup the  main controller
-        val dao = DocDao()
+        val dao = DocsDao()
         val graphQL = GraphQLFactory.build()
-        //eventDao.load("src/test/resources/examples")
 
         val controller = Controller(dao,graphQL)
         controller.register(app)

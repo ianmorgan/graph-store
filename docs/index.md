@@ -21,14 +21,13 @@ schema from the GraphQL demos.
 
 Below is a cut down example from the full schema.
 
-```yaml
+```
 # The episodes in the Star Wars trilogy
 enum Episode {
   NEWHOPE
   EMPIRE
   JEDI
 }
-
 
 # A character from the Star Wars universe
 interface Character {
@@ -43,23 +42,17 @@ interface Character {
 
 }
 
-
 # A humanoid creature from the Star Wars universe
 type Human implements Character {
-
   id: ID!
   name: String!
   friends: [Character]
   appearsIn: [Episode]!
-  
   homePlanet: String
 }
 
-
-
 # An autonomous mechanical character in the Star Wars universe
 type Droid implements Character {
-
   id: ID!
   name: String!
   friends: [Character]
@@ -72,36 +65,64 @@ type Droid implements Character {
 This must be registered by sending to the 'schema' endpoint. Note that multiple schemas can be registered, so 
 the name must be clearly identified in the URL 
 
-Each 'type' is treated as a distinct document types. An 'interface' is a read only document. So in this case we now have 
+```bash
+curl -H "Content-Type: application/graphql" -X POST  http://localhost:7002/schema/starwars -d @starwars.schema
+``` 
+
+_Note the API doesn't worry about the semantics of HTTP verbs - its simply GET for simple operations 
+or POST for anything that needs a body_
+
+
+In the schema, each 'type' is treated as a distinct document types. An 'interface' is a read only document. So in this case we now have 
 a readonly 'Character' document, and updatable 'Human' and 'Droid' documents. An example 'Droid' 
 document in JSON could be:
 
 ```json
 {
    "id" : "2001",
-   "name" : "R2 D2",
-   "appearsIn" : ["NEWHOPE","EMPIRE","JEDI"]
+   "name" : "R2-D2",
+   "appearsIn" : ["NEWHOPE","EMPIRE","JEDI"],
+   "primaryFunction" : "Astromech"
 }
 ```
 
-```bash
-curl -H "Content-Type: application/graphql" -X PUT  http://localhost:7002/schema/starwars -d @starwars.schema
-``` 
 
 ## Storing data 
 
 Each type in the schema has become a 'document', and can be modified. Think of this as an "out the box" mutation,
 though its not using the formal GraphQL mutation syntax.
 
-So to add a character 
+So to add a new Droid Character. 
 
 ```bash
-curl -H "Content-Type: application/json" -X PUT  http://localhost:7002/docs/driod -d '{ "1d" : "2001",  name": "R2-D2","appearsIn": ["NEWHOPE","EMPIRE","JEDI"] }'
+curl -H "Content-Type: application/json" -X POST  http://localhost:7002/docs/Droid -d '{ "id" : "2001",  "name": "R2-D2","appearsIn": ["NEWHOPE","EMPIRE","JEDI"] }'
 ```
 
-This is also available available to query as a regular JSON doc (so simple REST, but no GraphQL support)
+The service performs a basic schema check of the submitted JSON doc and confirms that structure and 
+data types match the GraphQL schema, but it does not validate mandatory fields nor any relationship between 
+types. 
+
+To update, simply pass a fragment. If a key field should be removed set it to null 
+
+ 
+ ```bash
+ curl -H "Content-Type: application/json" -X POST  http://localhost:7002/docs/Droid -d '{ "id" : "2001", "primaryFunction" : "Astromech" }'
+ ```
+
+This is also available available to query as a regular JSON doc (i.e. simple REST, no GraphQL support)
 
  
 ```bash
-curl -X GET http://localhost:7002/docs/driod/2001
+curl -X GET http://localhost:7002/docs/Driod/2001
+```
+
+returns 
+
+```json
+{
+   "id" : "2001",
+   "name" : "R2-D2",
+   "appearsIn" : ["NEWHOPE","EMPIRE","JEDI"],
+   "primaryFunction" : "Astromech"
+}
 ```

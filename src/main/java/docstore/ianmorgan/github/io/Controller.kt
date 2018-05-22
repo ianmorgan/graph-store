@@ -4,7 +4,7 @@ import graphql.GraphQL
 import io.javalin.ApiBuilder
 import io.javalin.Javalin
 
-class Controller constructor(dao : DocDao, graphQL : GraphQL){
+class Controller constructor(dao : DocsDao, graphQL : GraphQL){
     private val theDao = dao
     private val graphQL = graphQL
 
@@ -24,13 +24,8 @@ class Controller constructor(dao : DocDao, graphQL : GraphQL){
                     val result = mapOf("data" to executionResult.getData<Any>());
                     ctx.json(result)
                 }
-
-
             }
 
-
         }
-
-
     }
 }
