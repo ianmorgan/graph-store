@@ -3,7 +3,7 @@ package docstore.ianmorgan.github.io;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.TypeResolutionEnvironment;
-import graphql.language.InterfaceTypeDefinition;
+import graphql.language.*;
 import graphql.schema.*;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -30,12 +30,21 @@ public class HelloWorld {
         SchemaParser schemaParser = new SchemaParser();
         TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schemaFile);
 
-        for (Map.Entry<String,InterfaceTypeDefinition> o : typeDefinitionRegistry.getTypesMap(InterfaceTypeDefinition.class).entrySet()){
+        for (Map.Entry<String,ObjectTypeDefinition> o : typeDefinitionRegistry.getTypesMap(ObjectTypeDefinition.class).entrySet()){
             System.out.println(o.getKey());
             System.out.println(o.getValue());
 
         }
 
+        ObjectTypeDefinition type = typeDefinitionRegistry.getType("Droid",ObjectTypeDefinition.class).get();
+        for (FieldDefinition fieldDef : type.getFieldDefinitions()){
+            if (fieldDef.getType() instanceof NonNullType){
+                NonNullType t = (NonNullType)fieldDef.getType();
+                TypeName name = (TypeName)t.getType();
+
+
+            }
+        }
 
         //typeDefinitionRegistry.merge(schemaParser.parse(schemaFile));
 

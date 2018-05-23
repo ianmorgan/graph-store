@@ -69,12 +69,12 @@ the name must be clearly identified in the URL
 curl -H "Content-Type: application/graphql" -X POST  http://localhost:7002/schema/starwars -d @starwars.schema
 ``` 
 
-_Note the API doesn't worry about the semantics of HTTP verbs - its simply GET for simple operations 
+_Note the API doesn't worry about the semantics of HTTP verbs - its simply GET for basic operations 
 or POST for anything that needs a body_
 
 
-In the schema, each 'type' is treated as a distinct document types. An 'interface' is a read only document. So in this case we now have 
-a readonly 'Character' document, and updatable 'Human' and 'Droid' documents. An example 'Droid' 
+In the schema, each 'type' is treated as a distinct document type. An 'interface' is a read only document. So in this case we now have 
+a read only 'Character' document, and updatable 'Human' and 'Droid' documents. An example 'Droid' 
 document in JSON could be:
 
 ```json
@@ -102,14 +102,14 @@ The service performs a basic schema check of the submitted JSON doc and confirms
 data types match the GraphQL schema, but it does not validate mandatory fields nor any relationship between 
 types. 
 
-To update, simply pass a fragment. If a key field should be removed set it to null 
+To update, simply pass a fragment. If a field should be removed set its value to null. 
 
  
  ```bash
  curl -H "Content-Type: application/json" -X POST  http://localhost:7002/docs/Droid -d '{ "id" : "2001", "primaryFunction" : "Astromech" }'
  ```
 
-This is also available available to query as a regular JSON doc (i.e. simple REST, no GraphQL support)
+This is also available to query as a regular JSON doc (i.e. simple REST, no GraphQL support).
 
  
 ```bash
