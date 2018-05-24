@@ -4,6 +4,7 @@ import graphql.language.ListType
 import graphql.language.NonNullType
 import graphql.language.ObjectTypeDefinition
 import graphql.language.TypeName
+import ianmorgan.docstore.mapper.GraphQLMapper
 import kotlin.reflect.KClass
 
 /**
@@ -71,12 +72,7 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
             if (rawType is NonNullType) {
                 val type = rawType.type
                 if (type is TypeName) {
-                    if (type.name == "String") {
-                        working[field.name] = String::class as KClass<Any>
-                    }
-                    if (type.name == "ID") {
-                        working[field.name] = String::class as KClass<Any>
-                    }
+                    working[field.name] = GraphQLMapper.qLToJsonType(type.name)
                 }
                 if (type is ListType){
                     // this represents a list of enumeration, which we will represent
@@ -88,12 +84,7 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
                 working[field.name] = List::class as KClass<Any>
             }
             if (rawType is TypeName){
-                if (rawType.name == "String") {
-                    working[field.name] = String::class as KClass<Any>
-                }
-                if (rawType.name == "ID") {
-                    working[field.name] = String::class as KClass<Any>
-                }
+                working[field.name] = GraphQLMapper.qLToJsonType(rawType.name)
             }
         }
         fields = working
