@@ -1,4 +1,4 @@
-package docstore.ianmorgan.github.io
+package ianmorgan.docstore
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
@@ -49,13 +49,17 @@ type Droid  {
             val registry  = SchemaParser().parse("type Droid { name: String!} ")
             val type = registry.getType("Droid", ObjectTypeDefinition::class.java).get()
 
-            assert.that({DocDao(type)}, throws<RuntimeException>())
+            assert.that({ DocDao(type) }, throws<RuntimeException>())
         }
 
         it ("should build the 'fields' collection from the GraphQL schema"){
             val dao = DocDao(type)
-            assert.that(dao.fields().size, equalTo(1))
+            assert.that(dao.fields().size, equalTo(5))
+            assert.that(dao.fields().get("id"), equalTo(String::class as KClass<Any>))
             assert.that(dao.fields().get("name"), equalTo(String::class as KClass<Any>))
+            assert.that(dao.fields().get("friends"), equalTo(List::class as KClass<Any>))
+            assert.that(dao.fields().get("appearsIn"), equalTo(List::class as KClass<Any>))
+            assert.that(dao.fields().get("primaryFunction"), equalTo(String::class as KClass<Any>))
         }
 
     }

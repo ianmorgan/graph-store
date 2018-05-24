@@ -1,5 +1,6 @@
-package docstore.ianmorgan.github.io
+package ianmorgan.docstore
 
+import graphql.language.ListType
 import graphql.language.NonNullType
 import graphql.language.ObjectTypeDefinition
 import graphql.language.TypeName
@@ -72,8 +73,26 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
                 if (type is TypeName) {
                     if (type.name == "String") {
                         working[field.name] = String::class as KClass<Any>
-                        break
                     }
+                    if (type.name == "ID") {
+                        working[field.name] = String::class as KClass<Any>
+                    }
+                }
+                if (type is ListType){
+                    // this represents a list of enumeration, which we will represent
+                    // a list
+                    working[field.name] = List::class as KClass<Any>
+                }
+            }
+            if (rawType is ListType){
+                working[field.name] = List::class as KClass<Any>
+            }
+            if (rawType is TypeName){
+                if (rawType.name == "String") {
+                    working[field.name] = String::class as KClass<Any>
+                }
+                if (rawType.name == "ID") {
+                    working[field.name] = String::class as KClass<Any>
                 }
             }
         }

@@ -1,4 +1,4 @@
-package docstore.ianmorgan.github.io
+package ianmorgan.docstore
 
 import graphql.GraphQL
 import io.javalin.ApiBuilder

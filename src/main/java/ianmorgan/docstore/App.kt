@@ -1,4 +1,4 @@
-package docstore.ianmorgan.github.io
+package ianmorgan.docstore
 
 import io.javalin.Javalin
 import org.apache.commons.cli.Options
@@ -43,7 +43,7 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
         val dao = DocsDao()
         val graphQL = GraphQLFactory.build()
 
-        val controller = Controller(dao,graphQL)
+        val controller = Controller(dao, graphQL)
         controller.register(app)
 
         //JavalinJacksonPlugin.configure()

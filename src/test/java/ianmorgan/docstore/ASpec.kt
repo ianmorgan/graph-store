@@ -1,4 +1,4 @@
-package docstore.ianmorgan.github.io
+package ianmorgan.docstore
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo

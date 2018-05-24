@@ -1,4 +1,4 @@
-package docstore.ianmorgan.github.io
+package ianmorgan.docstore
 
 /**
  * A Dao to query documents. The real implementation uses an event store,

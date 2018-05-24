@@ -1,4 +1,4 @@
-package docstore.ianmorgan.github.io;
+package ianmorgan.docstore;
 
 import graphql.ExecutionResult;
 import graphql.GraphQL;
