@@ -1,7 +1,7 @@
 # About
 
 This is a basic doc store that supports an event sourcing storage model and GraphQL enabled API. 
-Think of a cutdown, single node MongoDB that supports GraphQL and which keeps a full history of every change.
+Think of it as cutdown, single node MongoDB that supports GraphQL and which keeps a full history of every change.
 
 The inbuilt query model is quite limited, as this solution is aimed for applications built 
  using DDD and CQRS principles. The intention is that is as more complex query models are 
@@ -39,7 +39,6 @@ interface Character {
 
   # The movies this character appears in
   appearsIn: [Episode]!
-
 }
 
 # A humanoid creature from the Star Wars universe
@@ -58,7 +57,6 @@ type Droid implements Character {
   friends: [Character]
   appearsIn: [Episode]!
   primaryFunction: String
-
 }
 ```
 
