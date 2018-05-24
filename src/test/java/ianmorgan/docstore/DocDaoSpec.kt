@@ -45,7 +45,7 @@ type Droid  {
             assert.that(dao.aggregateKey(), equalTo("id"))
         }
 
-        it ("should throw exception if there is no 'ID' field"){
+        it ("should throw exception if there is no 'ID' field in schema"){
             val registry  = SchemaParser().parse("type Droid { name: String!} ")
             val type = registry.getType("Droid", ObjectTypeDefinition::class.java).get()
 
@@ -61,6 +61,18 @@ type Droid  {
             assert.that(dao.fields().get("appearsIn"), equalTo(List::class as KClass<Any>))
             assert.that(dao.fields().get("primaryFunction"), equalTo(String::class as KClass<Any>))
         }
+
+        it ("should store a valid doc"){
+            val dao = DocDao(type)
+            dao.store( mapOf ("id" to "123", "name" to "Mouse Droid"))
+            assert.that(1,equalTo(1))
+        }
+
+        it ("should throw exception if there is no 'aggregateId' in the doc"){
+            val dao = DocDao(type)
+            assert.that( {dao.store( mapOf ("name" to "Mouse Droid"))}, throws<RuntimeException>())
+        }
+
 
     }
 

@@ -19,15 +19,23 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
 
     init {
         initAggregateKey(typeDefinition)
-
         initFields(typeDefinition)
 
         if  (aggregateKey == null)  throw RuntimeException("Cannot find an ID field to use as the aggregateId")
     }
 
 
-    fun store(doc : Map<String,Any>) {
-
+    /**
+     * Store a document. The 'doc' is a
+     */
+    fun store(doc: Map<String, Any>) {
+        val id = doc.get(aggregateKey) as String
+        if (id != null) {
+            // todo - should be checking schema
+            repo[id] = doc
+        } else {
+            throw RuntimeException("must have an aggregate id")
+        }
     }
 
     /**
@@ -72,7 +80,7 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
             if (rawType is NonNullType) {
                 val type = rawType.type
                 if (type is TypeName) {
-                    working[field.name] = GraphQLMapper.qLToJsonType(type.name)
+                    working[field.name] = GraphQLMapper.graphQLTypeToJsonType(type.name)
                 }
                 if (type is ListType){
                     // this represents a list of enumeration, which we will represent
@@ -84,7 +92,7 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
                 working[field.name] = List::class as KClass<Any>
             }
             if (rawType is TypeName){
-                working[field.name] = GraphQLMapper.qLToJsonType(rawType.name)
+                working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
             }
         }
         fields = working
