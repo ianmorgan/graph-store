@@ -12,6 +12,10 @@ using the appropriate technology.
 To get working quickly, follow the getting started [Getting Started](#getting-started) guide below. For more 
 detail see [Type Mappings](/typeMappings) and ... (to be completed)  
 
+* [Type Mappings1](/doc-store/typeMappings) 
+* [Type Mappings2](typeMappings) 
+
+
 ## Getting started 
 
 The doc-store requires a running [event-store](https://ianmorgan.github.io/event-store/) and a JVM 
