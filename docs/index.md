@@ -1,16 +1,28 @@
 # About
 
 This is a basic doc store that supports an event sourcing storage model and GraphQL enabled API. 
-Think of it as cutdown, single node MongoDB that supports GraphQL and which keeps a full history of every change.
+Think of it as cutdown, single node MongoDB that supports GraphQL and which keeps a full history 
+of every change.
 
 The inbuilt query model is quite limited, as this solution is aimed for applications built 
- using DDD and CQRS principles. The intention is that is as more complex query models are 
+using DDD and CQRS principles. The intention is that is as more complex query models are 
 required other services will monitor the event stream(s) to build dedicated views 
 using the appropriate technology.
 
+To get working quickly, follow the getting started [Getting Started](#getting-started) guide below. For more 
+detail see [Type Mappings](/typeMappings) and ... (to be completed)  
+
 ## Getting started 
 
-The doc-store requires a running [event-store](https://ianmorgan.github.io/event-store/). 
+The doc-store requires a running [event-store](https://ianmorgan.github.io/event-store/) and a JVM 
+(at least version 8)
+
+To run locally
+
+```bash
+./gradlew run
+```
+
 
 The API is document centric, 
 with each document representing a [DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html) . 
