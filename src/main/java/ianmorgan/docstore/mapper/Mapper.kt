@@ -16,6 +16,30 @@ import kotlin.reflect.KClass
  *
  * The full implementation should also allow addition of custom mappings
  */
+
+/**
+ * The interface that default mapper + any custom mapper need to implement
+ *
+ *
+ */
+interface Mapper {
+
+    /**
+     * Map the graphQL type to its equivalent 'JavaJson' (i.e. one of
+     * the subset of Java types allowed for direct use with a JSON
+     * serialization library)
+     *
+     */
+    fun graphQLTypeToJavaJsonType(graphQLType : String) : KClass<Any>
+
+    /**
+     * Can the javaJsonObject be converted to the
+     */
+    fun isJavaJsonObjectGraphQLType(javaJsonObject : Any, graphQLType : String) : Boolean
+
+
+
+}
 object GraphQLMapper {
     val JSON_TYPES = listOf<KClass<Any>>(
         String::class as KClass<Any>,
