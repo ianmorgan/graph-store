@@ -4,7 +4,7 @@ import io.javalin.Javalin
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
-
+import java.io.FileInputStream
 
 
 fun main(args: Array<String>) {
@@ -40,7 +40,8 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
         }
 
         // setup the  main controller
-        val dao = DocsDao()
+        val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
+        val dao = DocsDao(starWarSchema)
         val graphQL = GraphQLFactory.build()
 
         val controller = Controller(dao, graphQL)

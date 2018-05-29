@@ -118,7 +118,9 @@ object GraphQLMapper {
             "Float" -> Double::class as KClass<Any>
             "Boolean" -> Boolean::class as KClass<Any>
             else -> {
-                throw RuntimeException("Don't know about $typeName")
+                //throw RuntimeException("Don't know about $typeName")
+                println ("WARNING - Don't know about $typeName");
+                String::class as KClass<Any>
             }
         }
     }
