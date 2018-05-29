@@ -2,6 +2,8 @@ package ianmorgan.docstore
 
 import graphql.language.ObjectTypeDefinition
 import graphql.schema.idl.SchemaParser
+import java.io.File
+import java.io.FileInputStream
 
 /**
  * A Dao to query documents. The real implementation uses an event store,
@@ -37,12 +39,12 @@ class DocsDao constructor(graphQLSchema: String) {
         )
     )
 
-    fun availableDocs () : Set<String>  {
+    fun availableDocs(): Set<String> {
         return daos.keys
     }
 
-    fun daoForDoc(docName : String) : DocDao{
-        return  daos[docName]!!
+    fun daoForDoc(docName: String): DocDao {
+        return daos[docName]!!
     }
 
     fun retrieve(aggregateId: String): Map<String, Any> {
@@ -65,6 +67,17 @@ class DocsDao constructor(graphQLSchema: String) {
                 val docName = definition.name
                 daos.put(docName, DocDao(definition))
             }
+        }
+    }
+
+    companion object {
+        fun fromSchema(schema: String): DocsDao {
+            return DocsDao(schema)
+        }
+
+        fun fromSchema(schemaFile: File): DocsDao {
+            val schemaString = FileInputStream(schemaFile).bufferedReader().use { it.readText() }  // defaults to UTF-8
+            return DocsDao(schemaString)
         }
     }
 }

@@ -7,24 +7,22 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
-import java.io.FileInputStream
+import java.io.File
 
 @RunWith(JUnitPlatform::class)
 object DocsDaoSpec : Spek({
 
-    val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
-
-
+    val starWarSchema = File("src/schema/starwars.graphqls")
 
     describe ("A simple DAO ") {
 
         it ("should have a doc for each type in schema") {
-            val dao = DocsDao(starWarSchema)
+            val dao = DocsDao.fromSchema(starWarSchema)
             assert.that(dao.availableDocs(), equalTo(setOf("Droid","Human")))
         }
 
         it ("should return be aggregate id "){
-            val dao = DocsDao(starWarSchema)
+            val dao = DocsDao.fromSchema(starWarSchema)
             val r2 = dao.retrieve("2001")
             assert.that("R2-D2", equalTo(r2["name"]))
         }
