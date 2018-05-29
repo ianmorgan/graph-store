@@ -31,11 +31,25 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
     fun store(doc: Map<String, Any>) {
         val id = doc.get(aggregateKey) as String
         if (id != null) {
+            checkAgainstSchema(doc)
+
             // todo - should be checking schema
             repo[id] = doc
         } else {
             throw RuntimeException("must have an aggregate id")
         }
+    }
+
+    private fun checkAgainstSchema(doc: Map<String, Any>) {
+        // simple implementation for now
+
+        for (key in doc.keys){
+            if (!fields.containsKey(key)){
+                throw RuntimeException("Unexpected field ${key} in document ")
+            }
+        }
+
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     /**

@@ -1,16 +1,16 @@
 # The type conversion chain 
 
-## Storing docs (POSTing JSON
+## Storing docs (POSTing JSON)
 
 The following processing stack applies:
 
-1. JSON converted to Map/List of standard 'JavaJson' types. (ideally numeric precision is retained by use of BigDecimal)
+1. JSON is converted to Map/List of standard 'JavaJson' types. (ideally numeric precision is retained by use of BigDecimal)
 2. Schema checker confirms that:
     * the structure matches (i.e. no unexpected keys)
     * the 'JavaJson' type can be coerced into GraphQL type (see below)
 3. Map/List structure converted back to JSON for storage as an event    
 
-## Reading as simple JSON doc
+## Reading as simple JSON doc (classic REST)
 
 The following processing stack applies:
 
@@ -34,8 +34,4 @@ The following processing stack applies
     * paging etc 
 4. Serialize to JSON 
 
-        
-    
-### Reading as GraphQL 
-
-- raw docs will be in simple Jaba 
+_this needs quite a lot more detail_         

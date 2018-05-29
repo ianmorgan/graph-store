@@ -1,5 +1,6 @@
 package ianmorgan.docstore
 
+import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.throws
@@ -33,26 +34,26 @@ type Droid  {
 
     lateinit var type: ObjectTypeDefinition
 
-    describe ("A DAO for a document") {
+    describe("A DAO for a document") {
         beforeGroup {
             val schemaParser = SchemaParser()
             val typeDefinitionRegistry = schemaParser.parse(schema)
             type = typeDefinitionRegistry.getType("Droid", ObjectTypeDefinition::class.java).get()
         }
 
-        it ("should use the 'ID' field as the aggregate id"){
+        it("should use the 'ID' field as the aggregate id") {
             val dao = DocDao(type)
             assert.that(dao.aggregateKey(), equalTo("id"))
         }
 
-        it ("should throw exception if there is no 'ID' field in schema"){
-            val registry  = SchemaParser().parse("type Droid { name: String!} ")
+        it("should throw exception if there is no 'ID' field in schema") {
+            val registry = SchemaParser().parse("type Droid { name: String!} ")
             val type = registry.getType("Droid", ObjectTypeDefinition::class.java).get()
 
             assert.that({ DocDao(type) }, throws<RuntimeException>())
         }
 
-        it ("should build the 'fields' collection from the GraphQL schema"){
+        it("should build the 'fields' collection from the GraphQL schema") {
             val dao = DocDao(type)
             assert.that(dao.fields().size, equalTo(5))
             assert.that(dao.fields().get("id"), equalTo(String::class as KClass<Any>))
@@ -62,18 +63,29 @@ type Droid  {
             assert.that(dao.fields().get("primaryFunction"), equalTo(String::class as KClass<Any>))
         }
 
-        it ("should store a valid doc"){
+        it("should store a valid doc") {
             val dao = DocDao(type)
-            dao.store( mapOf ("id" to "123", "name" to "Mouse Droid"))
-            assert.that(1,equalTo(1))
+            dao.store(mapOf("id" to "123", "name" to "Mouse Droid"))
+            assert.that(1, equalTo(1))
         }
 
-        it ("should throw exception if there is no 'aggregateId' in the doc"){
+        it("should throw exception if there is no 'aggregateId' in the doc") {
             val dao = DocDao(type)
-            assert.that( {dao.store( mapOf ("name" to "Mouse Droid"))}, throws<RuntimeException>())
+            assert.that({ dao.store(mapOf("name" to "Mouse Droid")) }, throws<RuntimeException>())
+        }
+
+        it("should throw exception if there is an unexpected field  in the doc") {
+            val dao = DocDao(type)
+            val doc = mapOf("id" to "123", "badlyNamedField" to "foo")
+
+
+            fun messageMatcher(ex: RuntimeException) = ex.message.orEmpty().contains("Unexpected field badlyNamedField")
+            assert.that({ dao.store(doc) }, throws(Matcher.invoke(::messageMatcher)));
         }
 
 
     }
 
 })
+
+

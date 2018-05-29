@@ -27,7 +27,7 @@ interface Mapper {
     /**
      * Map the graphQL type to its equivalent 'JavaJson' (i.e. one of
      * the subset of Java types allowed for direct use with a JSON
-     * serialization library)
+     * serialization library).
      *
      */
     fun graphQLTypeToJavaJsonType(graphQLType : String) : KClass<Any>
@@ -37,9 +37,41 @@ interface Mapper {
      */
     fun isJavaJsonObjectGraphQLType(javaJsonObject : Any, graphQLType : String) : Boolean
 
+}
 
+
+
+/**
+ * Defines the rules for handling an individual type. These assume
+ * relative strict type conversion rules but will have enough
+ * flexibility to deal with reasonable variations in types (e..g Long and
+ * Integer)
+ */
+interface GraphQLScalarType {
+    /**
+     * The name in GraphQL
+     */
+    fun typeName() : String
+
+    /**
+     * Can this value be converted to the GraphQL type. The
+     * basics of dealing with
+     *
+     * String('abc') be converted to String
+     *
+     *
+     */
+    fun isAssignableFrom(value : Any) : Boolean
+
+    /**
+     * The default Java type to be used
+     */
+    fun defaultJavaType() : KClass<Any>
 
 }
+
+
+
 object GraphQLMapper {
     val JSON_TYPES = listOf<KClass<Any>>(
         String::class as KClass<Any>,
