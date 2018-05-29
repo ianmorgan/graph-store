@@ -56,11 +56,11 @@ type Droid  {
         it("should build the 'fields' collection from the GraphQL schema") {
             val dao = DocDao(type)
             assert.that(dao.fields().size, equalTo(5))
-            assert.that(dao.fields().get("id"), equalTo(String::class as KClass<Any>))
-            assert.that(dao.fields().get("name"), equalTo(String::class as KClass<Any>))
-            assert.that(dao.fields().get("friends"), equalTo(List::class as KClass<Any>))
-            assert.that(dao.fields().get("appearsIn"), equalTo(List::class as KClass<Any>))
-            assert.that(dao.fields().get("primaryFunction"), equalTo(String::class as KClass<Any>))
+            assert.that(dao.fields().get("id"), equalTo(String::class as KClass<*>))
+            assert.that(dao.fields().get("name"), equalTo(String::class as KClass<*>))
+            assert.that(dao.fields().get("friends"), equalTo(List::class as KClass<*>))
+            assert.that(dao.fields().get("appearsIn"), equalTo(List::class as KClass<*>))
+            assert.that(dao.fields().get("primaryFunction"), equalTo(String::class as KClass<*>))
         }
 
         it("should store a valid doc") {
@@ -78,9 +78,16 @@ type Droid  {
             val dao = DocDao(type)
             val doc = mapOf("id" to "123", "badlyNamedField" to "foo")
 
-
             fun messageMatcher(ex: RuntimeException) = ex.message.orEmpty().contains("Unexpected field badlyNamedField")
             assert.that({ dao.store(doc) }, throws(Matcher.invoke(::messageMatcher)));
+        }
+
+        it("should throw exception if field type doesn't match the schema") {
+            val dao = DocDao(type)
+            val doc = mapOf("id" to "123", "name" to 123)
+
+            fun messageMatcher(ex: RuntimeException) = ex.message.orEmpty().contains("Types don't match for field name")
+            assert.that({ dao.store(doc) }, throws(Matcher.invoke(::messageMatcher)))
         }
 
 

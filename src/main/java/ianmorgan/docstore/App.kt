@@ -29,7 +29,7 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
 
         val app = Javalin.create().apply {
             port(port)
-            exception(Exception::class.java) { e, ctx -> e.printStackTrace() }
+            exception(Exception::class.java) { e, _ -> e.printStackTrace() }
             error(404) { ctx -> ctx.json("not found") }
         }.start()
 
