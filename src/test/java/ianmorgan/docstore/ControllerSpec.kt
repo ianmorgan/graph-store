@@ -61,18 +61,19 @@ object ControllerSpec : Spek({
             it("should store a valid doc") {
                 val url = baseUrl + "docs/Droid"
                 val payload = """
-               { "id" : "2001",  "name": "R2-D2","appearsIn": ["NEWHOPE","EMPIRE","JEDI"] }
+               { "id" : "2001",  "name": "R2-D2" }
 """
                 // save event
                 val response = khttp.post(url, data = JSONObject(payload))
                 assert.that(response.statusCode, equalTo(200))
 
-                // check it can be read back
-                //val readResponse = khttp.get(url = baseUrl + "events?type=NewEvent")
-                //val readCount = readResponse.jsonObject.getJSONObject("payload")
-                //    .getJSONArray("events").length()
 
-                //assert.that(readCount, equalTo(1))
+
+                // check it can be read back
+                val readResponse = khttp.get(url = url  + "/2001")
+                val result = readResponse.jsonObject.getJSONObject("data")
+
+                assert.that(result.getString("name"), equalTo("R2-D2"))
             }
         }
 

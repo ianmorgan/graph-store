@@ -50,6 +50,20 @@ class Controller constructor(dao : DocsDao, graphQL : GraphQL){
                         dao.store(json.toMap())
 
                     }
+
+                    path (":aggregateId"){
+
+                        ApiBuilder.get() {ctx ->
+                            val docType = ctx.param("type")!!
+                            val aggregateId = ctx.param("aggregateId")!!
+                            val dao = theDao.daoForDoc(docType)
+                            val doc = dao.retrieve(aggregateId)
+                            ctx.json(mapOf("data" to doc))
+                        }
+
+                    }
+
+
                     //patch(???({ UserController.updateUser() }))
                     //delete(???({ UserController.deleteUser() }))
                 }

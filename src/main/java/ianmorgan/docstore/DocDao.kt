@@ -41,6 +41,10 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
         }
     }
 
+    fun retrieve(aggregateId : String) : Map<String,Any> {
+        return  repo[aggregateId]!!
+    }
+
     /**
      * Expose the field name to be used as the aggregate key. This is
      * the "ID" field in GraphQL.

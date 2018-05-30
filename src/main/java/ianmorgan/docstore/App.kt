@@ -19,6 +19,7 @@ fun main(args: Array<String>) {
 }
 
 class JavalinApp(private val port: Int, private val cmd : CommandLine) {
+    lateinit var theDao : DocsDao
 
     fun init(): Javalin {
 
@@ -32,7 +33,6 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
             exception(Exception::class.java) { e, _ -> e.printStackTrace() }
             error(404) { ctx -> ctx.json("not found") }
         }.start()
-
         app.routes {
 
 
@@ -42,6 +42,7 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
         // setup the  main controller
         val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
         val dao = DocsDao(starWarSchema)
+        theDao = dao
         val graphQL = GraphQLFactory.build()
 
         val controller = Controller(dao, graphQL)
@@ -51,5 +52,9 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
 
         return app
 
+    }
+
+    fun theDao() : DocsDao {
+        return theDao
     }
 }
