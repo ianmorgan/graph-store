@@ -1,5 +1,6 @@
 package ianmorgan.docstore.mapper
 
+import java.math.BigDecimal
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -114,7 +115,7 @@ object GraphQLMapper {
         return when (typeName) {
             "String" -> String::class as KClass<Any>
             "ID" -> String::class as KClass<Any>
-            "Int" -> Int::class as KClass<Any>
+            "Int" -> Long::class as KClass<Any>
             "Float" -> Double::class as KClass<Any>
             "Boolean" -> Boolean::class as KClass<Any>
             else -> {
@@ -123,6 +124,35 @@ object GraphQLMapper {
                 String::class as KClass<Any>
             }
         }
+    }
+
+    /**
+     * Takes the type of class and converts to one of the standarised
+     * subset. Mainly this allows for interop with other code and libraries
+     * that will chosen different representations of similar concepts, e..g
+     * an Array as opposed to a list
+     */
+    fun standardiseType(value : Any) : KClass<Any> {
+        when (value) {
+            is List<*> -> { return List::class as KClass<Any> }
+            is Array<*> -> { return List::class as KClass<Any> }
+            is Collection<*> -> { return List::class as KClass<Any> }
+            is Int -> { return Long::class as KClass<Any>}
+            is Float -> { return Double::class as KClass<Any>}
+            is BigDecimal -> {
+                if (value.scale() == 0)  {
+                    return Long::class as KClass<Any>
+                }
+                else {
+                    return Double::class as KClass<Any>
+                }
+            }
+            else -> {
+                println ("no standard for ${value::class}")
+                return value::class as KClass<Any>
+            }
+        }
+
     }
 
 }

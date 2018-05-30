@@ -2,12 +2,12 @@ package ianmorgan.docstore
 
 import graphql.GraphQL
 import io.javalin.ApiBuilder
-import io.javalin.Javalin
 import io.javalin.ApiBuilder.path
+import io.javalin.Javalin
 import org.json.JSONObject
 
 
-class Controller constructor(dao : DocsDao, graphQL : GraphQL){
+class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
     private val theDao = dao
     private val graphQL = graphQL
 
@@ -18,7 +18,7 @@ class Controller constructor(dao : DocsDao, graphQL : GraphQL){
 
                 val query = ctx.queryParam("query")
 
-                if (query != null){
+                if (query != null) {
                     val executionResult = graphQL.execute(query)
                     println(executionResult.getData<Any>().toString())
 
@@ -35,25 +35,31 @@ class Controller constructor(dao : DocsDao, graphQL : GraphQL){
 
 
             path("docs") {
-                //get(???({ UserController.getAllUsers() }))
-                //post(???({ UserController.createUser() }))
                 path(":type") {
-                    ApiBuilder.post()  {ctx ->
+                    // pure document form - all data including aggregateId in doc
+                    ApiBuilder.post() { ctx ->
+                        val docType = ctx.param("type")!!
                         val json = JSONObject(ctx.body())
-
-                        println(ctx.param("type"))
-
-                        println ("saving the doc")
-                        println (ctx.body())
-
-                        val dao = theDao.daoForDoc(ctx.param("type")!!)
+                        val dao = theDao.daoForDoc(docType)
                         dao.store(json.toMap())
-
                     }
 
-                    path (":aggregateId"){
+                    // rest style - aggregateId in URL
+                    path(":aggregateId") {
 
-                        ApiBuilder.get() {ctx ->
+                        ApiBuilder.post() { ctx ->
+                            val docType = ctx.param("type")!!
+                            val json = JSONObject(ctx.body())
+                            val dao = theDao.daoForDoc(docType)
+
+                            // aggregateId from URL
+                            val aggregateId = ctx.param("aggregateId")!!
+                            json.put(dao.aggregateKey(), aggregateId)
+
+                            dao.store(json.toMap())
+                        }
+
+                        ApiBuilder.get() { ctx ->
                             val docType = ctx.param("type")!!
                             val aggregateId = ctx.param("aggregateId")!!
                             val dao = theDao.daoForDoc(docType)
@@ -61,11 +67,14 @@ class Controller constructor(dao : DocsDao, graphQL : GraphQL){
                             ctx.json(mapOf("data" to doc))
                         }
 
+                        ApiBuilder.delete() { ctx ->
+                            val docType = ctx.param("type")!!
+                            val aggregateId = ctx.param("aggregateId")!!
+                            val dao = theDao.daoForDoc(docType)
+                            val doc = dao.delete(aggregateId)
+                        }
+
                     }
-
-
-                    //patch(???({ UserController.updateUser() }))
-                    //delete(???({ UserController.deleteUser() }))
                 }
             }
 

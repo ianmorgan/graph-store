@@ -61,13 +61,11 @@ object ControllerSpec : Spek({
             it("should store a valid doc") {
                 val url = baseUrl + "docs/Droid"
                 val payload = """
-               { "id" : "2001",  "name": "R2-D2" }
+               { "id" : "2001",  "name": "R2-D2","appearsIn": ["NEWHOPE","EMPIRE","JEDI"] }
 """
-                // save event
+                // save document
                 val response = khttp.post(url, data = JSONObject(payload))
                 assert.that(response.statusCode, equalTo(200))
-
-
 
                 // check it can be read back
                 val readResponse = khttp.get(url = url  + "/2001")

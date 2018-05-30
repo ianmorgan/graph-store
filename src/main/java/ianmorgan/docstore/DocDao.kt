@@ -45,6 +45,10 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
         return  repo[aggregateId]!!
     }
 
+    fun delete(aggregateId : String) {
+        repo.remove(aggregateId)
+    }
+
     /**
      * Expose the field name to be used as the aggregate key. This is
      * the "ID" field in GraphQL.
@@ -58,11 +62,13 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
 
         for (key in doc.keys){
             if (!fields.containsKey(key)){
-                throw RuntimeException("Unexpected field ${key} in document ")
+                throw RuntimeException("Unexpected field $key in document ")
             }
             // TODO - over simplistic type check
-            if (!(fields.get(key) == doc.get(key = key)!!::class)) {
-                throw RuntimeException("Types don't match for field ${key} in document ")
+            val expectedType = fields.get(key)!!
+            val actual = doc.get(key)!!
+            if (!(expectedType == GraphQLMapper.standardiseType(actual))) {
+                throw RuntimeException("Types don't match for field $key in document")
             }
         }
     }
