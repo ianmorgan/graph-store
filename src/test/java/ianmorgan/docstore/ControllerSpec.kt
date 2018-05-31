@@ -38,11 +38,11 @@ object ControllerSpec : Spek({
 
             it("should return all events if no filters") {
                 val query = URIUtil.encodePath("query={character(name: \"homer\") {hairColour}}")
-                println (query)
-                val response = khttp.get(url = baseUrl + "graphql?"+query )
+                println(query)
+                val response = khttp.get(url = baseUrl + "graphql?" + query)
                 assert.that(response.statusCode, equalTo(200))
 
-                println (response.text)
+                println(response.text)
 
 
                 val expectedJson = """
@@ -61,15 +61,32 @@ object ControllerSpec : Spek({
                 val payload = """
                { "id" : "2001",  "name": "R2-D2","appearsIn": ["NEWHOPE","EMPIRE","JEDI"] }
 """
+
                 // save document
                 val response = khttp.post(url, data = JSONObject(payload))
                 assert.that(response.statusCode, equalTo(200))
+                assert.that(response.jsonObject.toMap().isEmpty(), equalTo(true))
 
                 // check it can be read back
-                val readResponse = khttp.get(url = url  + "/2001")
+                val readResponse = khttp.get(url = url + "/2001")
                 val result = readResponse.jsonObject.getJSONObject("data")
 
                 assert.that(result.getString("name"), equalTo("R2-D2"))
+            }
+
+            it("should return an error if the submitted doc is invalid") {
+                val url = baseUrl + "docs/Droid"
+                val payload = """
+                { "id" : "2001",  "rubbish": "data" }
+"""
+                // try and save the document
+                val response = khttp.post(url, data = JSONObject(payload))
+                val errors = response.jsonObject.getJSONArray("errors")
+
+                // there should be an error
+                assert.that(response.statusCode, equalTo(500))
+                assert.that(errors.length(), equalTo(1))
+                assert.that(errors.getJSONObject(0).getString("message"), equalTo("Unexpected field rubbish in document "))
             }
         }
 

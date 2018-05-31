@@ -13,6 +13,14 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
 
 
     fun register(app: Javalin) {
+        app.exception(Exception::class.java) { e, ctx ->
+            // build the standard error response
+            ctx.status(500)
+            val payload = mapOf("message" to e.message,
+                "stackTrace" to e.stackTrace.joinToString("\n"))
+            ctx.json(mapOf("errors" to listOf(payload)))
+        }
+
         app.routes {
             ApiBuilder.get("/graphql") { ctx ->
 
@@ -42,6 +50,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                         val json = JSONObject(ctx.body())
                         val dao = theDao.daoForDoc(docType)
                         dao.store(json.toMap())
+                        ctx.result("{}")
                     }
 
                     // rest style - aggregateId in URL
@@ -57,6 +66,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                             json.put(dao.aggregateKey(), aggregateId)
 
                             dao.store(json.toMap())
+                            ctx.result("{}")
                         }
 
                         ApiBuilder.get() { ctx ->

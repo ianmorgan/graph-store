@@ -14,11 +14,11 @@ Services should restrict status codes to just 200 (Success) and 500 (Error/Excep
  or a problem with the server) and not genuine application errors, for example trying to create an
  account that already exists, which should be returned as part of the data (see below). In programming 
   terms this can be thought of as an API where any method may through exceptions but any substantial 
-  business rule that might require decisions by a client layer, as opposed to dropping into a generic "something is wrong, please try again" 
-  style message), should be coded to as part of the return data. 
+  business rule that might require decisions by a client layer, as opposed to dropping into a generic "_something is wrong, 
+  please try again_" style message), should be coded to as part of the return data. 
   
  Servers may still of course return other status codes before they even reaching the application logic, 
- e.g. 404, 401, 503.
+ e.g. 401, 404, 503.
  
 ## Use of HTTP verbs 
 
@@ -52,7 +52,7 @@ If present and has the value true the error is considered fatal and there is no 
 
 This is the convention for including an agreed error code with the message.
 
-* "stackTrace" : "<<dump of internal call stack as multiline string>>"
+* "stackTrace" : "<<dump of internal call stack as a single multi-line string>>"
 
 Convention for returning the internal stack trace if useful. 
 
@@ -146,7 +146,7 @@ or
 }
 ```
  
-### Operations returning business rule errors
+### Operations returning business rule problems
 
 A typical evolution especially in agile development is to start with the simple business rules and then add complexity. 
 As business rules expand, the use of the <code>errors</code> collection to hold detailed information is likely to get 
@@ -164,19 +164,20 @@ As a rule of thumb, this approach should be considered when:
 * the backend business rules require custom values returned from calls rather than relying upon exceptions. 
 
 As not all clients will necessarily have the logic to examining custom fields in the return data its recommend that an 
-<code>errors</code> entry is also added with the code of 'problems'. Clients that wish to examine the more detailed 
-information simply need to ignore this particular error. 
+<code>"errors"</code> entry is also added with the code of <code>"problems"</code>. Clients that wish to examine the 
+more detailed information simply need to ignore this particular error. 
 
 An example response is:
 
 ```json
 { 
     "data" : { 
-        "problems" : ["episode 'Star Trek: The Next Generation' is not a Star Wars film"]
+        "problems" : ["episode 'Star Trek: The Next Generation' is not a Star Wars film",
+                      "character 'Spock' is not 100% human"]
     },
     "errors" :[
-        { "message" : "Validation problems - see 'problems' key under data for details",
-           "code" : "problems"}
+        { "message" : "Validation problems - see 'problems' key under 'data' for details",
+          "code" : "problems"}
      ]
 }
 ```
