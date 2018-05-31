@@ -42,12 +42,17 @@ Some APIs may chose to return partial responses (this is typically for APIs that
 ### 500 response 
 
 This should return a JSON object with one or more errors under the <code>"errors"</code> key. Use the conventions documented in the 
-[GraphQL](http://facebook.github.io/graphql/October2016/#sec-Response-Format) spec, with the following additions 
+[GraphQL](http://facebook.github.io/graphql/October2016/#sec-Response-Format) spec, with the following optional additions 
 
 * "fatal" : true 
 
 If this key is set and has the value true the error is considered fatal and there is no point in retrying. If not present 
 we assume a value if false. 
+
+* "code" : "ERR123"
+
+This is the convention for including an agreed error code with the message
+
 
 ## Client processing 
 
@@ -86,9 +91,26 @@ to true (there is no point in retrying with the same request)
 * success returns with results under the <code>"data"</code> key and no <code>"errors"</code> collection 
 ```json
 { 
-  "data": { "searchResults": ["R2-D2", "C-3PIO"] }
+  "data": { "searchResults": ["R2-D2", "C-3PIO", "Luke Sykewalker"] }
 }
 ```
+* if the service returns a partial result, it would also include the errors
+```json
+{ 
+  "data": { "searchResults": ["R2-D2", "C-3PIO"] },
+  "errors": [ { "message" : "Failed to include search of 'Humans' in the results"}]
+}
+```
+* if the service returns a partial result and clients may want to make decision over which 
+errors are acceptable include a <code>code</code> with the error
+```json
+{ 
+  "data": { "searchResults": ["R2-D2", "C-3PIO"] },
+  "errors": [ { "message" : "Failed to include search of 'Humans' in the results",
+                "code" : "ERR123"}]
+}
+```
+
 
 ### Modification operations 
 
@@ -96,9 +118,30 @@ POST or DELETE
 
 * bad url returns 404 (normally handled by web server / framework)
 * any problem with formatting of parameters or JSON returns a 500 with a message indicating the problem and <code>"fatal"</code> set 
+```json
+{
+    "errors" : [{"message":"name is missing", "fatal" : true}]
+}
+```   
 to true (there is no point in retrying with the same request)
 * any internal problems (such as a database error) return a 500 with a message indicating the problem.
-* success returns with an empty ("{}") json object  
+```json
+{
+    "errors" : [{"message":"Couldn't connect to database",
+                 "stackTrace" : "<<dump of internal stack trace>>"}]
+}
+```  
+* success returns an empty json object by default unless there is a need to return information such as an id (_though 
+generally we aim to minimise this style as it makes idempotent behaviour harder_)
+```json
+{}
+```
+or 
+```json
+{
+    "data": { "id" : "123456"}
+}
+```
  
  
  
