@@ -1,0 +1,46 @@
+# The query type, represents all of the entry points into our object graph
+
+type Query {
+
+  droid(id: ID!): Droid
+
+  human(id: ID!): Human
+
+}
+
+
+# The episodes in the Star Wars trilogy
+enum Episode {
+  NEWHOPE
+  EMPIRE
+  JEDI
+}
+
+
+
+# A humanoid creature from the Star Wars universe
+type Human  {
+
+  id: ID!
+  name: String!
+  friends: [String]
+  appearsIn: [Episode]!
+
+  homePlanet: String
+}
+
+
+
+# An autonomous mechanical character in the Star Wars universe
+type Droid  {
+
+  id: ID!
+  name: String!
+  friends: [String]
+  appearsIn: [Episode]!
+
+  primaryFunction: String
+
+}
+
+schema{query: Query}

@@ -18,7 +18,7 @@ object GraphQLFactory {
         val schema = "type Query{hello: String} schema{query: Query}"
 
 
-        val schemaFile = File("src/schema/simpsons.graphqls")
+        val schemaFile = File("src/schema/starwars.graphqls")
 
 
         val schemaParser = SchemaParser()

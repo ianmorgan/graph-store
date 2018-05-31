@@ -33,11 +33,11 @@ object ControllerSpec : Spek({
             // todo
         }
 
-        context("'GET /graphql' specs") {
+        context("'GET /graphql' behaviour") {
             beforeEachTest {}
 
             it("should return all events if no filters") {
-                val query = URIUtil.encodePath("query={character(name: \"homer\") {hairColour}}")
+                val query = URIUtil.encodePath("query={droid(id: \"2001\") {name}}")
                 println(query)
                 val response = khttp.get(url = baseUrl + "graphql?" + query)
                 assert.that(response.statusCode, equalTo(200))
@@ -46,7 +46,7 @@ object ControllerSpec : Spek({
 
 
                 val expectedJson = """
-                    {"data":{"character":{"hairColour":"bald!"}}}
+                    {"data":{"droid": {"name":"R2D2"}}}
 """
                 val actualAsMap = JsonHelper.jsonToMap(response.jsonObject)
                 val expectedAsMap = JsonHelper.jsonToMap(JSONObject(expectedJson))
@@ -86,7 +86,8 @@ object ControllerSpec : Spek({
                 // there should be an error
                 assert.that(response.statusCode, equalTo(500))
                 assert.that(errors.length(), equalTo(1))
-                assert.that(errors.getJSONObject(0).getString("message"), equalTo("Unexpected field rubbish in document "))
+                assert.that(errors.getJSONObject(0).getString("message"),
+                    equalTo("Unexpected field rubbish in document "))
             }
         }
 
