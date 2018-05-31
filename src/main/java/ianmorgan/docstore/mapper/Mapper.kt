@@ -130,7 +130,7 @@ object GraphQLMapper {
      * Takes the type of class and converts to one of the standarised
      * subset. Mainly this allows for interop with other code and libraries
      * that will chosen different representations of similar concepts, e..g
-     * an Array as opposed to a list
+     * an Array as opposed to a List or an Int as opposed to a Long.
      */
     fun standardiseType(value : Any) : KClass<Any> {
         when (value) {
@@ -140,6 +140,7 @@ object GraphQLMapper {
             is Int -> { return Long::class as KClass<Any>}
             is Float -> { return Double::class as KClass<Any>}
             is BigDecimal -> {
+                // make a decision based on the number of decimal places (the scale)
                 if (value.scale() == 0)  {
                     return Long::class as KClass<Any>
                 }
@@ -148,9 +149,10 @@ object GraphQLMapper {
                 }
             }
             else -> {
-                println ("no standard for ${value::class}")
                 return value::class as KClass<Any>
             }
+
+            // what about Set? - can they be treated as List ? - probably reasonable in this use case
         }
 
     }

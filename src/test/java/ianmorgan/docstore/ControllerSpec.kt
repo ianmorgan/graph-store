@@ -23,7 +23,6 @@ object ControllerSpec : Spek({
 
     describe(" controller") {
         beforeGroup {
-
             val parser = DefaultParser()
             val cmd = parser.parse(Options(), arrayOf<String>())
             app = JavalinApp(8002, cmd).init()
@@ -55,8 +54,7 @@ object ControllerSpec : Spek({
             }
         }
 
-        context("'POST /docs' specs") {
-            beforeEachTest {}
+        context("'POST /docs' behaviour") {
 
             it("should store a valid doc") {
                 val url = baseUrl + "docs/Droid"

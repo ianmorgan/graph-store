@@ -10,7 +10,7 @@ required other services will monitor the event stream(s) to build dedicated view
 using the appropriate technology.
 
 To get working quickly, follow the getting started [Getting Started](#getting-started) guide below. For more 
-detail see [Type Mappings](typeMappings) and ... (to be completed)  
+detail see [Type Mappings](typeMappings) and [Standards](standards).
 
 
 
