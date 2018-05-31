@@ -14,8 +14,8 @@ Services should restrict status codes to just 200 (Success) and 500 (Error/Excep
  or a problem with the server) and not genuine application errors, for example trying to create an
  account that already exists, which should be returned as part of the data (see below). In programming 
   terms this can be thought of as an API where any method may through exceptions but any substantial 
-  business rule that might require decisions by a client layer (as opposed to dropping into a generic 'something is wrong, please try again' style message)
-  should be coded to as part of the return data. 
+  business rule that might require decisions by a client layer, as opposed to dropping into a generic "something is wrong, please try again" 
+  style message), should be coded to as part of the return data. 
   
  Servers may still of course return other status codes before they even reaching the application logic, 
  e.g. 404, 401, 503.
@@ -41,7 +41,7 @@ Some APIs may chose to return partial responses (this is typically for APIs that
  
 ### 500 response 
 
-This should return a JSON object with one or more errors under the "errors" key. Use the conventions documented in the 
+This should return a JSON object with one or more errors under the <code>"errors"</code> key. Use the conventions documented in the 
 [GraphQL](http://facebook.github.io/graphql/October2016/#sec-Response-Format) spec, with the following additions 
 
 * "fatal" : true 
@@ -69,20 +69,36 @@ The following are recommended as default rules
 Whether coded as simple GET or POST with JSON body 
 
 * bad url returns 404 (normally handled by web server / framework)
-* any problem with formatting of parameters or JSON returns a 500 with a message indicating the problem and "fatal" set 
+* any problem with formatting of parameters or JSON returns a 500 with a message indicating the problem and <code>"fatal"</code> set 
 to true (there is no point in retrying with the same request)
-* any internal problems (such as a database error) return a 500 with a message indicating the problem.
-* success returns with results under the "data" key and no "errors" collection 
+```json
+{
+    "errors" : [{"message":"Missing name search param", "fatal" : true}]
+}
+```   
+* any internal problems (such as a database error) return a 500 with a message indicating the problem. Including the stack trace if possible is recommended
+```json
+{
+    "errors" : [{"message":"Couldn't connect to database",
+                 "stackTrace" : "<<dump of internal stack trace>>"}]
+}
+```  
+* success returns with results under the <code>"data"</code> key and no <code>"errors"</code> collection 
+```json
+{ 
+  "data": { "searchResults": ["R2-D2", "C-3PIO"] }
+}
+```
 
 ### Modification operations 
 
 POST or DELETE
 
 * bad url returns 404 (normally handled by web server / framework)
-* any problem with formatting of parameters or JSON returns a 500 with a message indicating the problem and "fatal" set 
+* any problem with formatting of parameters or JSON returns a 500 with a message indicating the problem and <code>"fatal"</code> set 
 to true (there is no point in retrying with the same request)
 * any internal problems (such as a database error) return a 500 with a message indicating the problem.
-* success returns with an empty "{}" json object  
+* success returns with an empty ("{}") json object  
  
  
  
