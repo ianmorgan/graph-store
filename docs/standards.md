@@ -46,12 +46,11 @@ This should return a JSON object with one or more errors under the <code>"errors
 
 * "fatal" : true 
 
-If this key is set and has the value true the error is considered fatal and there is no point in retrying. If not present 
-we assume a value if false. 
+If present and has the value true the error is considered fatal and there is no point in retrying. If not present assume a value of false. 
 
 * "code" : "ERR123"
 
-This is the convention for including an agreed error code with the message
+This is the convention for including an agreed error code with the message.
 
 * "stackTrace" : "<<dump of internal call stack as multiline string>>"
 
@@ -62,7 +61,7 @@ Convention for returning the internal stack trace if useful.
 
 The following are recommended as default rules:
 
-* if code indicates an authorisation problem process as appropriate (for example redirect to login page)
+* if the status code indicates an authorisation problem process as appropriate (for example redirect to login page)
 * if not 500 or 200 fail with any appropriate logging 
 * if 500 fail, logging errors collections 
 * if 200 with errors fail, logging errors collections (so default is to aggressively reject any partial response)
@@ -147,7 +146,40 @@ or
 }
 ```
  
- 
- 
- 
+### Operations returning business rule errors
 
+A typical evolution especially in agile development is to start with the simple business rules and then add complexity. 
+As business rules expand, the use of the <code>errors</code> collection to hold detailed information is likely to get 
+complex and its not really the design intention to use it for this purpose. Instead the information should be returned 
+as part of the <code>data</code> and by convention under <code>problems</code> key if possible (_there may be other API standards 
+imposed by tools and frameworks that make this impractical_).
+
+Situations that might require this include:
+* collecting multiple problems and returning them all to the client rather than simply failing on the first (a common 
+pattern when validating form data for example).
+* providing more detailed information for decision making or constructing user friendly messages.
+
+As a rule of thumb, this approach should be considered when:
+* custom error handling flows are needed in the client layer.
+* the backend business rules require custom values returned from calls rather than relying upon exceptions. 
+
+As not all clients will necessarily have the logic to examining custom fields in the return data its recommend that an 
+<code>errors</code> entry is also added with the code of 'problems'. Clients that wish to examine the more detailed 
+information simply need to ignore this particular error. 
+
+An example response is:
+
+```json
+{ 
+    "data" : { 
+        "problems" : ["episode 'Star Trek: The Next Generation' is not a Star Wars film"]
+    },
+    "errors" :[
+        { "message" : "Validation problems - see 'problems' key under data for details",
+           "code" : "problems"}
+     ]
+}
+```
+  
+
+ 
