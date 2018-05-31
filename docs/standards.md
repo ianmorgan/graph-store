@@ -53,6 +53,10 @@ we assume a value if false.
 
 This is the convention for including an agreed error code with the message
 
+* "stackTrace" : "<<dump of internal call stack as multiline string>>"
+
+Convention for returning the internal stack trace if useful. 
+
 
 ## Client processing 
 
