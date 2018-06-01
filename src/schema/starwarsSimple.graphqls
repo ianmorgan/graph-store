@@ -8,6 +8,7 @@
 type Query {
   droid(id: ID!): Droid
   human(id: ID!): Human
+  character(id: ID!) :Character
 }
 
 
@@ -19,11 +20,25 @@ enum Episode {
 }
 
 
-# A humanoid creature from the Star Wars universe
-type Human  {
+
+# A character from the Star Wars universe
+interface Character {
   id: ID!
   name: String!
-  friends: [String]
+
+  # The friends of the character, or an empty list if they have none
+  friends: [Character]
+
+  # The movies this character appears in
+  appearsIn: [Episode]!
+
+}
+
+# A humanoid creature from the Star Wars universe
+type Human implements Character  {
+  id: ID!
+  name: String!
+  friends: [Character]
   appearsIn: [Episode]!
   homePlanet: String
 }

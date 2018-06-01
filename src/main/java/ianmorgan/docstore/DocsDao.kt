@@ -48,7 +48,7 @@ class DocsDao constructor(graphQLSchema: String) {
     }
 
     fun retrieve(aggregateId: String): Map<String, Any> {
-        // todo - write some more elagant Kotlin code
+        // todo - write some more elegant Kotlin code!
         var ret = humans.find { it -> it["id"] == aggregateId }
         if (ret == null) {
             ret = droids.find { it -> it["id"] == aggregateId }
