@@ -94,13 +94,13 @@ to true (there is no point in retrying with the same request)
 * success returns with results under the <code>"data"</code> key and no <code>"errors"</code> collection 
 ```json
 { 
-  "data": { "searchResults": ["R2-D2", "C-3PIO", "Luke Sykewalker"] }
+  "data": { "searchResults": ["R2-D2", "C-3PO", "Luke Sykewalker"] }
 }
 ```
 * if the service returns a partial result, it would also include the errors
 ```json
 { 
-  "data": { "searchResults": ["R2-D2", "C-3PIO"] },
+  "data": { "searchResults": ["R2-D2", "C-3PO"] },
   "errors": [ { "message" : "Failed to include search of 'Humans' in the results"}]
 }
 ```
@@ -108,7 +108,7 @@ to true (there is no point in retrying with the same request)
 errors are acceptable include a <code>code</code> with the error
 ```json
 { 
-  "data": { "searchResults": ["R2-D2", "C-3PIO"] },
+  "data": { "searchResults": ["R2-D2", "C-3PO"] },
   "errors": [ { "message" : "Failed to include search of 'Humans' in the results",
                 "code" : "ERR123"}]
 }

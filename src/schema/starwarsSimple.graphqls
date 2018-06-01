@@ -1,11 +1,13 @@
+#
+# A simplified starwars schema for simple tests of basic queries over
+# scalar values
+#
+
 # The query type, represents all of the entry points into our object graph
 
 type Query {
-
   droid(id: ID!): Droid
-
   human(id: ID!): Human
-
 }
 
 
@@ -17,28 +19,22 @@ enum Episode {
 }
 
 
-
 # A humanoid creature from the Star Wars universe
 type Human  {
-
   id: ID!
   name: String!
   friends: [String]
   appearsIn: [Episode]!
-
   homePlanet: String
 }
 
 
-
 # An autonomous mechanical character in the Star Wars universe
 type Droid  {
-
   id: ID!
   name: String!
   friends: [String]
   appearsIn: [Episode]!
-
   primaryFunction: String
 
 }

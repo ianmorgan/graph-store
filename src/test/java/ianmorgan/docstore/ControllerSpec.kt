@@ -44,7 +44,6 @@ object ControllerSpec : Spek({
 
                 println(response.text)
 
-
                 val expectedJson = """
                     {"data":{"droid": {"name":"R2D2"}}}
 """
