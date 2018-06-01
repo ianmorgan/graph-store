@@ -41,8 +41,8 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition){
         }
     }
 
-    fun retrieve(aggregateId : String) : Map<String,Any> {
-        return  repo[aggregateId]!!
+    fun retrieve(aggregateId : String) : Map<String,Any>? {
+        return repo[aggregateId]
     }
 
     fun delete(aggregateId : String) {

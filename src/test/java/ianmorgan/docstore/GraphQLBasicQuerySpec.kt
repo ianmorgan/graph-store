@@ -17,7 +17,6 @@ object GraphQLBasicQuerySpec : Spek({
     lateinit var docsDao: DocsDao
     lateinit var graphQL : GraphQL
 
-
     describe ("Some simple scalar queries") {
 
         beforeGroup {
@@ -32,23 +31,56 @@ object GraphQLBasicQuerySpec : Spek({
                 "name" to "C-3PO",
                 "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI"),
                 "primaryFunction" to "Protocol Droid"))
+            val humanDao = docsDao.daoForDoc("Human")
+            humanDao.store( mapOf(  "id" to "1000",
+                "name" to "Luke Skywalker",
+                "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI")))
+
+
             graphQL = GraphQLFactory2.build(starWarSchema,docsDao)
 
         }
 
-        it ("query for a Droid by id") {
+        it ("should query for a Droid by id") {
 
             val query = """{
                     droid(id: "2001") {
-                       name,appearsIn
+                       name,appearsIn,primaryFunction
                     }}
 """
             val result = graphQL.execute(query)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
             assert.that(result.getData<Any>().toString(),
-                equalTo("{droid={name=R2-D2, appearsIn=[NEWHOPE, EMPIRE, JEDI]}}"))
+                equalTo("{droid={name=R2-D2, appearsIn=[NEWHOPE, EMPIRE, JEDI], primaryFunction=Astromech}}"))
+        }
 
+        it ("should query for Human by id") {
+
+            val query = """{
+                    human(id: "1000") {
+                       name
+                    }}
+"""
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{human={name=Luke Skywalker}}"))
+        }
+
+        it ("return null result if Droid not found") {
+
+            val query = """{
+                    droid(id: "not a valid id") {
+                       name
+                    }}
+"""
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{droid=null}"))
         }
     }
 })
