@@ -39,51 +39,10 @@ object GraphQLFactory2 {
 //            }
 //        }
 
-//        val typeReolver = TypeResolver(function = { env ->
-//
-//
-//        })
-
-//        var characterInterface = newInterface()
-//            .name("Character")
-//            .description("A character in the Star Wars Trilogy")
-//            .field(
-//                newFieldDefinition()
-//                    .name("id")
-//                    .description("The id of the character.")
-//                    //.type(nonNull(GraphQLString))
-//            )
-//            .field(
-//                newFieldDefinition()
-//                    .name("name")
-//                    .description("The name of the character.")
-//                    .type(GraphQLString)
-//            )
-//            .field(
-//                newFieldDefinition()
-//                    .name("friends")
-//                    .description("The friends of the character, or an empty list if they have none.")
-//                    //.type(list(typeRef("Character")))
-//            )
-//            .field(
-//                newFieldDefinition()
-//                    .name("appearsIn")
-//                    .description("Which movies they appear in.")
-//                    //.type(list(episodeEnum))
-//            )
-//          //  .typeResolver(StarWarsData.getCharacterTypeResolver())
-//            .build()
 
 
-        //typeDefinitionRegistry.merge(schemaParser.parse(schemaFile));
 
         val characterInterfaceTypeDefinition = typeDefinitionRegistry.getType("Character", InterfaceTypeDefinition::class.java )
-        for (definition in typeDefinitionRegistry.getTypes(InterfaceTypeDefinition::class.java)) {
-                println("Creating type resolver  for ${definition.name}")
-                val docName = definition.name
-                //daos.put(docName, DocDao(definition))
-
-        }
 
 
         val runtimeWiring = newRuntimeWiring()
@@ -101,6 +60,7 @@ object GraphQLFactory2 {
                 }
             )
             .type(
+                // todo - should be working this out from the schema
                 newTypeWiring("Character")
                     .typeResolver(InterfaceTypeResolve(characterInterfaceTypeDefinition.get()))
                     .build()
@@ -110,8 +70,8 @@ object GraphQLFactory2 {
         val schemaGenerator = SchemaGenerator()
         val graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring)
 
-        val build = GraphQL.newGraphQL(graphQLSchema).build()
-        return build
+        val graphQL = GraphQL.newGraphQL(graphQLSchema).build()
+        return graphQL
     }
 
     /**
@@ -165,25 +125,19 @@ object GraphQLFactory2 {
         val definition = interfaceDefinition
         override fun getType(env: TypeResolutionEnvironment): GraphQLObjectType {
 
+            println ("In InterfaceTypeResolve!! ")
+            val builder =  GraphQLObjectType.Builder().name("Character")
+
             for (f in definition.fieldDefinitions){
                 println (f.name)
+                builder.field(
+                    newFieldDefinition()
+                   .name(f.name)
+                    //.description()
+                    .type(GraphQLString)        // todo - how to match types
+                )
             }
-
-            println ("In InterfaceTypeResolve!! ")
-            return GraphQLObjectType.Builder().name("Character")
-                .field(
-                newFieldDefinition()
-                    .name("id")
-                    .description("The id of the character.")
-                    .type(GraphQLString)
-            )
-            .field(
-                newFieldDefinition()
-                    .name("name")
-                    .description("The name of the character.")
-                    .type(GraphQLString)
-            )
-                .build()
+            return builder.build()
         }
 
     }

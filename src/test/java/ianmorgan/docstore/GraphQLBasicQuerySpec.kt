@@ -95,14 +95,14 @@ object GraphQLBasicQuerySpec : Spek({
 
             val query = """{
                     character(id: "1000") {
-                       name
+                       name,appearsIn
                     }}
 """
             val result = graphQL.execute(query)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
             assert.that(result.getData<Any>().toString(),
-                equalTo("{character={name=Luke Skywalker}}"))
+                equalTo("{character={name=Luke Skywalker, appearsIn=[NEWHOPE, EMPIRE, JEDI]}}"))
         }
     }
 })
