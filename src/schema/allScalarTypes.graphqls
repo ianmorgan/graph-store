@@ -1,0 +1,25 @@
+#
+# A schema to check that all the scalar types are being handled
+#
+
+# The query type, represents all of the entry points into our object graph
+
+type Query {
+  allTypes(id: ID!): Droid
+}
+
+
+
+type Droid  {
+  id: ID!
+  aString: String!
+  #mandatoryString : String!
+  #anInt: Int
+  #aFloat: Float
+  #aBoolean: Boolean
+}
+
+
+
+
+schema{query: Query}

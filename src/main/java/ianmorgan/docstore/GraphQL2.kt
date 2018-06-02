@@ -1,9 +1,10 @@
 package ianmorgan.docstore
 
 import graphql.GraphQL
+import graphql.Scalars.GraphQLID
 import graphql.Scalars.GraphQLString
 import graphql.TypeResolutionEnvironment
-import graphql.language.InterfaceTypeDefinition
+import graphql.language.*
 import graphql.schema.*
 import graphql.schema.GraphQLFieldDefinition.newFieldDefinition
 import graphql.schema.GraphQLInterfaceType.newInterface
@@ -14,9 +15,7 @@ import java.io.File
 
 import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
 import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
-import java.util.*
-import java.util.Collections.list
-import java.util.Objects.nonNull
+
 
 
 object GraphQLFactory2 {
@@ -48,12 +47,27 @@ object GraphQLFactory2 {
         val runtimeWiring = newRuntimeWiring()
             .type("Query",
                 { builder ->
+                    val queryDefinition = typeDefinitionRegistry.getType("Query",ObjectTypeDefinition::class.java)
+
+                    for (f in queryDefinition.get().fieldDefinitions){
+                        println (f.type)
+                        println (f.name)
+
+                        val type = (f.type as TypeName).name
+                        val name = f.name
+
+                        if (docsDao.availableDocs().contains(type)){
+                            builder.dataFetcher(name,DocDataFetcher(docsDao.daoForDoc(type)))
+                        }
+                    }
+
                     builder
                         .dataFetcher("hello", StaticDataFetcher("world"))
 
+
                          // todo - should be working this out from the schema
-                        .dataFetcher("droid", DocDataFetcher(docsDao.daoForDoc("Droid")))
-                        .dataFetcher("human", DocDataFetcher(docsDao.daoForDoc("Human")))
+                      //  .dataFetcher("droid", DocDataFetcher(docsDao.daoForDoc("Droid")))
+                      //  .dataFetcher("human", DocDataFetcher(docsDao.daoForDoc("Human")))
                         .dataFetcher("character", DocsDataFetcher(docsDao))
 
 
@@ -134,10 +148,23 @@ object GraphQLFactory2 {
                     newFieldDefinition()
                    .name(f.name)
                     //.description()
-                    .type(GraphQLString)        // todo - how to match types
+                    .type(typeFromType(f.type))
                 )
             }
             return builder.build()
+        }
+
+        // Take the schema type and convert to one of physical
+        // implementation classes
+        private fun typeFromType(type : Type<*>) : GraphQLScalarType{
+            if (type is NonNullType){
+                if (type is TypeName) {
+                    if (type.name == "ID") {
+                        return GraphQLID
+                    }
+                }
+            }
+            return GraphQLString
         }
 
     }
