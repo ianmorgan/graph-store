@@ -5,21 +5,18 @@
 # The query type, represents all of the entry points into our object graph
 
 type Query {
-  allTypes(id: ID!): Droid
+  allTypes(id: ID!): AllTypes
 }
 
 
-
-type Droid  {
+type AllTypes  {
   id: ID!
-  aString: String!
-  #mandatoryString : String!
-  #anInt: Int
-  #aFloat: Float
-  #aBoolean: Boolean
+  aString: String
+  mandatoryString : String!
+  anInt: Int
+  aFloat: Float
+  aBoolean: Boolean
 }
-
-
 
 
 schema{query: Query}

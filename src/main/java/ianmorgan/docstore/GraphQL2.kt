@@ -4,27 +4,24 @@ import graphql.GraphQL
 import graphql.Scalars.GraphQLID
 import graphql.Scalars.GraphQLString
 import graphql.TypeResolutionEnvironment
-import graphql.language.*
+import graphql.language.InterfaceTypeDefinition
+import graphql.language.NonNullType
+import graphql.language.Type
+import graphql.language.TypeName
 import graphql.schema.*
 import graphql.schema.GraphQLFieldDefinition.newFieldDefinition
-import graphql.schema.GraphQLInterfaceType.newInterface
-import graphql.schema.GraphQLTypeReference.typeRef
+import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
-import java.io.File
-
-import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
 import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
-
 
 
 object GraphQLFactory2 {
 
-    fun build(schema: String, docsDao : DocsDao) : GraphQL {
+    fun build(schema: String, docsDao: DocsDao): GraphQL {
 
-
-        val schemaParser = SchemaParser()
-        val typeDefinitionRegistry = schemaParser.parse(schema)
+        val typeDefinitionRegistry = SchemaParser().parse(schema)
+        val helper = GraphQLHelper(typeDefinitionRegistry)
 
 //         val typeResovler = TypeResolver() {
 //            @Override
@@ -39,51 +36,50 @@ object GraphQLFactory2 {
 //        }
 
 
+        val builder = newRuntimeWiring()
 
-
-        val characterInterfaceTypeDefinition = typeDefinitionRegistry.getType("Character", InterfaceTypeDefinition::class.java )
-
-
-        val runtimeWiring = newRuntimeWiring()
-            .type("Query",
+        // wireup handling of query fields
+        builder.type("Query",
                 { builder ->
-                    val queryDefinition = typeDefinitionRegistry.getType("Query",ObjectTypeDefinition::class.java)
+                    val queryDefinition = helper.queryDefinition()
 
-                    for (f in queryDefinition.get().fieldDefinitions){
-                        println (f.type)
-                        println (f.name)
+                    for (f in queryDefinition.fieldDefinitions) {
 
-                        val type = (f.type as TypeName).name
+                        val typeName = (f.type as TypeName).name
                         val name = f.name
 
-                        if (docsDao.availableDocs().contains(type)){
-                            builder.dataFetcher(name,DocDataFetcher(docsDao.daoForDoc(type)))
+                        if (helper.objectDefinitionNames().contains(typeName)) {
+                            // wire up a regular doc fetcher
+                            builder.dataFetcher(name, DocDataFetcher(docsDao.daoForDoc(typeName)))
+                        } else if (helper.interfaceDefinitionNames().contains(typeName)) {
+                            // wire up an Interface data fetcher - this is more complicated
+                            // as we need to also understand the interface details (see newTypeWiring
+                            // below
+                            //
+                            // TODO - interfaces need more logic !!
+                            builder.dataFetcher(name, DocsDataFetcher(docsDao))
+                        } else {
+                            println("Don't know what to do with query field $name")
                         }
+
                     }
-
                     builder
-                        .dataFetcher("hello", StaticDataFetcher("world"))
-
-
-                         // todo - should be working this out from the schema
-                      //  .dataFetcher("droid", DocDataFetcher(docsDao.daoForDoc("Droid")))
-                      //  .dataFetcher("human", DocDataFetcher(docsDao.daoForDoc("Human")))
-                        .dataFetcher("character", DocsDataFetcher(docsDao))
-
-
                 }
             )
-            .type(
-                // todo - should be working this out from the schema
-                newTypeWiring("Character")
-                    .typeResolver(InterfaceTypeResolve(characterInterfaceTypeDefinition.get()))
+
+        // wireup handling of interfaces
+        for (name in helper.interfaceDefinitionNames()) {
+            builder.type(
+                newTypeWiring(name)
+                    .typeResolver(InterfaceTypeResolve(helper.interfaceDefinition(name)))
                     .build()
             )
-            .build()
+        }
 
+        // build the complete GraphQL object
+        val wiring = builder.build()
         val schemaGenerator = SchemaGenerator()
-        val graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring)
-
+        val graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, wiring)
         val graphQL = GraphQL.newGraphQL(graphQLSchema).build()
         return graphQL
     }
@@ -91,7 +87,7 @@ object GraphQLFactory2 {
     /**
      * A DataFetcher for a single doc, linked to its DAO
      */
-    class DocDataFetcher constructor(docDao: DocDao) : DataFetcher<Map<String,Any>?> {
+    class DocDataFetcher constructor(docDao: DocDao) : DataFetcher<Map<String, Any>?> {
         val dao = docDao
         override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
             // TODO - what about finding by other fields ???
@@ -104,24 +100,24 @@ object GraphQLFactory2 {
     /**
      * Does nothing - useful for experimenting and debugging only
      */
-    class NullDataFetcher : DataFetcher<Map<String,Any>?> {
+    class NullDataFetcher : DataFetcher<Map<String, Any>?> {
         override fun get(environment: DataFetchingEnvironment?): Map<String, Any>? {
-            println ("In NullDataFetcher ")
+            println("In NullDataFetcher ")
             return emptyMap()
         }
     }
 
     /**
-     * A DataFetcher that just tries all docs
+     * A DataFetcher that just tries all docs. The most basic way of dealing with interfaces
      */
-    class DocsDataFetcher constructor(docsDao: DocsDao) : DataFetcher<Map<String,Any>?> {
+    class DocsDataFetcher constructor(docsDao: DocsDao) : DataFetcher<Map<String, Any>?> {
         val daos = docsDao
         override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
             val id = env.getArgument<String>("id")
 
-            for (doc in daos.availableDocs()){
+            for (doc in daos.availableDocs()) {
                 val data = daos.daoForDoc(doc).retrieve(id)
-                if (data != null){
+                if (data != null) {
                     return data
                 }
             }
@@ -130,25 +126,24 @@ object GraphQLFactory2 {
     }
 
 
-
     /**
      * A TypeResolver for an interface which will figure
      * out which doc to use
      */
-    class InterfaceTypeResolve constructor(interfaceDefinition :InterfaceTypeDefinition ): TypeResolver {
+    class InterfaceTypeResolve constructor(interfaceDefinition: InterfaceTypeDefinition) : TypeResolver {
         val definition = interfaceDefinition
         override fun getType(env: TypeResolutionEnvironment): GraphQLObjectType {
 
-            println ("In InterfaceTypeResolve!! ")
-            val builder =  GraphQLObjectType.Builder().name("Character")
+            println("In InterfaceTypeResolve!! ")
+            val builder = GraphQLObjectType.Builder().name("Character")
 
-            for (f in definition.fieldDefinitions){
-                println (f.name)
+            for (f in definition.fieldDefinitions) {
+                println(f.name)
                 builder.field(
                     newFieldDefinition()
-                   .name(f.name)
-                    //.description()
-                    .type(typeFromType(f.type))
+                        .name(f.name)
+                        //.description()
+                        .type(typeFromType(f.type))
                 )
             }
             return builder.build()
@@ -156,8 +151,8 @@ object GraphQLFactory2 {
 
         // Take the schema type and convert to one of physical
         // implementation classes
-        private fun typeFromType(type : Type<*>) : GraphQLScalarType{
-            if (type is NonNullType){
+        private fun typeFromType(type: Type<*>): GraphQLScalarType {
+            if (type is NonNullType) {
                 if (type is TypeName) {
                     if (type.name == "ID") {
                         return GraphQLID

@@ -1,6 +1,5 @@
 package ianmorgan.docstore
 
-import graphql.language.ObjectTypeDefinition
 import graphql.schema.idl.SchemaParser
 import java.io.File
 import java.io.FileInputStream
@@ -15,7 +14,6 @@ class DocsDao constructor(graphQLSchema: String) {
     init {
         initFromSchema(graphQLSchema)
     }
-
 
     val droids = listOf(
         mapOf(
