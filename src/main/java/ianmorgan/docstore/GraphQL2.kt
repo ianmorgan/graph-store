@@ -4,16 +4,16 @@ import graphql.GraphQL
 import graphql.Scalars.GraphQLID
 import graphql.Scalars.GraphQLString
 import graphql.TypeResolutionEnvironment
-import graphql.language.InterfaceTypeDefinition
-import graphql.language.NonNullType
-import graphql.language.Type
-import graphql.language.TypeName
+import graphql.language.*
 import graphql.schema.*
 import graphql.schema.GraphQLFieldDefinition.newFieldDefinition
 import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
 import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
+import ianmorgan.docstore.mapper.GraphQLMapper
+import java.util.HashMap
+import kotlin.reflect.KClass
 
 
 object GraphQLFactory2 {
@@ -50,7 +50,7 @@ object GraphQLFactory2 {
 
                         if (helper.objectDefinitionNames().contains(typeName)) {
                             // wire up a regular doc fetcher
-                            builder.dataFetcher(name, DocDataFetcher(docsDao.daoForDoc(typeName)))
+                            builder.dataFetcher(name, DocDataFetcher(docsDao, typeName, helper.objectDefinition(typeName)))
                         } else if (helper.interfaceDefinitionNames().contains(typeName)) {
                             // wire up an Interface data fetcher - this is more complicated
                             // as we need to also understand the interface details (see newTypeWiring
@@ -87,13 +87,71 @@ object GraphQLFactory2 {
     /**
      * A DataFetcher for a single doc, linked to its DAO
      */
-    class DocDataFetcher constructor(docDao: DocDao) : DataFetcher<Map<String, Any>?> {
-        val dao = docDao
+    class DocDataFetcher constructor(docsDao: DocsDao, docName: String, typeDefinition : ObjectTypeDefinition) : DataFetcher<Map<String, Any>?> {
+        val dao = docsDao
+        val docName = docName
+        val typeDefinition = typeDefinition
         override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
             // TODO - what about finding by other fields ???
             val id = env.getArgument<String>("id")
-            val data = dao.retrieve(id)
+            val data = lookupById(id)
+
+            if (data != null) {
+                for (field in typeDefinition.fieldDefinitions) {
+                    val rawType = field.type
+                    if (rawType is NonNullType) {
+                        val type = rawType.type
+                        println(type)
+                        if (type is TypeName) {
+                            //working[field.name] = GraphQLMapper.graphQLTypeToJsonType(type.name)
+                        }
+                        if (type is ListType) {
+                            // this represents a list of enumeration, which we will represent
+                            // a list
+                            //working[field.name] = List::class as KClass<Any>
+                        }
+                    }
+                    if (rawType is ListType) {
+                        println("ListTypp ${field.name} ")
+
+                        println((rawType.type as TypeName).name)
+
+                        if ((rawType.type as TypeName).name == docName) {
+                            println("recursive lookup by id")
+
+
+                            val ids = data.getOrDefault(field.name, emptyList<String>()) as List<String>
+
+                            val expanded = ArrayList<Map<String,Any>>()
+                            for (theId in ids){
+                                println ("internal id is $theId")
+                                val x = lookupById(theId)
+                                if (x != null){
+                                    expanded.add(x)
+                                }
+                            }
+                            // ids replaced with expanded list
+                            data.put(field.name,expanded)
+                        }
+                        //working[field.name] = List::class as KClass<Any>
+                    }
+                    if (rawType is TypeName) {
+                        println(field.name)
+                        //working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
+                    }
+                }
+            }
             return data
+        }
+
+        private fun lookupById (id : String) : HashMap<String,Any>? {
+            val data = dao.daoForDoc(docName).retrieve(id)
+            if (data != null){
+                return HashMap(data);
+            }
+            else {
+                return null;
+            }
         }
     }
 

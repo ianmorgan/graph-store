@@ -1,0 +1,19 @@
+#
+# Model a simple file system, a good test of nesting
+#
+
+
+# The query type, represents all of the entry points into our object graph
+type Query {
+  dir(id: ID!): Directory
+}
+
+# A directory entry
+type Directory  {
+  id : ID!  # todo , rename this to 'handle'. We must have an id for each node
+  name: String # todo - should be mandatory by my code isn't smart enough yet
+  files: [String]
+  children: [Directory]
+}
+
+schema{query: Query}

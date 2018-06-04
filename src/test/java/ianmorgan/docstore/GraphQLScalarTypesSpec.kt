@@ -15,33 +15,39 @@ object GraphQLScalarTypesSpec : Spek({
 
     val allScalarTypes = FileInputStream("src/schema/allScalarTypes.graphqls").bufferedReader().use { it.readText() }
     lateinit var theDao: DocsDao
-    lateinit var graphQL : GraphQL
+    lateinit var graphQL: GraphQL
 
-    describe ("Queries returning scalar types") {
-
+    describe("Queries returning scalar types") {
 
         beforeGroup {
             // setup GraphQL & DAO with some initial data
             theDao = DocsDao(allScalarTypes)
             val allTypesDao = theDao.daoForDoc("AllTypes")
-            allTypesDao.store(mapOf("id" to "everything",
-                "aString" to "A String",
-                "mandatoryString" to "Mandatory String",
-                "anInt" to 123,
-                "aFloat" to 99.9,
-            "aBoolean" to true)     )
+            allTypesDao.store(
+                mapOf(
+                    "id" to "everything",
+                    "aString" to "A String",
+                    "mandatoryString" to "Mandatory String",
+                    "anInt" to 123,
+                    "aFloat" to 99.9,
+                    "aBoolean" to true
+                )
+            )
 
             val allNullVariants = theDao.daoForDoc("AllNullVariants")
-            allNullVariants.store(mapOf("id" to "allvariants",
-                "storedAsNull" to null,
-                "storedAsEmpty" to "") as Map<String,Any>)
+            allNullVariants.store(
+                mapOf(
+                    "id" to "allvariants",
+                    "storedAsNull" to null,
+                    "storedAsEmpty" to ""
+                ) as Map<String, Any>
+            )
 
-
-            graphQL = GraphQLFactory2.build(allScalarTypes,theDao)
+            graphQL = GraphQLFactory2.build(allScalarTypes, theDao)
 
         }
 
-        it ("should return all variants of null and empty") {
+        it("should return all variants of null and empty") {
 
             val query = """{
                     allNullVariants(id: "allvariants") {
@@ -51,24 +57,26 @@ object GraphQLScalarTypesSpec : Spek({
             val result = graphQL.execute(query)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
-            assert.that(result.getData<Any>().toString(),
-                equalTo("{allNullVariants={notStored=null, storedAsNull=null, storedAsEmpty=}}"))
+            assert.that(
+                result.getData<Any>().toString(),
+                equalTo("{allNullVariants={notStored=null, storedAsNull=null, storedAsEmpty=}}")
+            )
         }
 
-        it ("should return all values with the correct type") {
+        it("should return all values with the correct type") {
 
             val query = """{
                     allTypes(id: "everything") {
-                       id,aString,mandatoryString,anInt,aFloat,aBoolean
+                       aString,mandatoryString,anInt,aFloat,aBoolean
                     }}
 """
             val result = graphQL.execute(query)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
-            assert.that(result.getData<Any>().toString(),
-                equalTo("{allTypes={id=everything, aString=A String, mandatoryString=Mandatory String, anInt=123, aFloat=99.9, aBoolean=true}}"))
+            assert.that(
+                result.getData<Any>().toString(),
+                equalTo("{allTypes={aString=A String, mandatoryString=Mandatory String, anInt=123, aFloat=99.9, aBoolean=true}}")
+            )
         }
-
-
     }
 })

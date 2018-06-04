@@ -13,7 +13,7 @@ import java.io.FileInputStream
 @RunWith(JUnitPlatform::class)
 object GraphQLBasicQuerySpec : Spek({
 
-    val starWarSchema = FileInputStream("src/schema/starwarsSimple.graphqls").bufferedReader().use { it.readText() }
+    val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }
     lateinit var docsDao: DocsDao
     lateinit var graphQL : GraphQL
 
@@ -90,6 +90,22 @@ object GraphQLBasicQuerySpec : Spek({
             assert.that(result.getData<Any>().toString(),
                 equalTo("{human={name=Luke Skywalker}}"))
         }
+
+        it ("should return friends for Luke") {
+
+            val query = """{
+                    human(id: "1000") {
+                       name,
+                       friends { name }
+                    }}
+"""
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{human={name=Luke Skywalker, friends=[{name=Han Solo}]}}"))
+        }
+
 
         it ("should query for Character") {
 
