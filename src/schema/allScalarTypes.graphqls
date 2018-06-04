@@ -1,14 +1,17 @@
 #
-# A schema to check that all the scalar types are being handled
+# A schema to check that all the scalar types are being handled correctly
+# including any necessary internal Java type conversions
 #
 
 # The query type, represents all of the entry points into our object graph
 
 type Query {
   allTypes(id: ID!): AllTypes
+  allNullVariants(id: ID!): AllNullVariants
 }
 
 
+# Check the minimum set of scalar types map correctly
 type AllTypes  {
   id: ID!
   aString: String
@@ -18,5 +21,18 @@ type AllTypes  {
   aBoolean: Boolean
 }
 
+# Check the
+type AllNullVariants {
+  id: ID!
+
+  # this was never stored
+  notStored: String
+
+  # this is in the object / doc, but is null
+  storedAsNull: String
+
+  # this was stored as an empty string
+  storedAsEmpty: String
+}
 
 schema{query: Query}

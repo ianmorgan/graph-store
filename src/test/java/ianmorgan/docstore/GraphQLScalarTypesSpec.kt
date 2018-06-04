@@ -14,32 +14,45 @@ import java.io.FileInputStream
 object GraphQLScalarTypesSpec : Spek({
 
     val allScalarTypes = FileInputStream("src/schema/allScalarTypes.graphqls").bufferedReader().use { it.readText() }
-    lateinit var docsDao: DocsDao
+    lateinit var theDao: DocsDao
     lateinit var graphQL : GraphQL
 
     describe ("Queries returning scalar types") {
 
-//        id: ID!
-//        aString: String
-//        mandatoryString : String!
-//        anInt, Int
-//        aFloat Float
 
         beforeGroup {
             // setup GraphQL & DAO with some initial data
-            // see https://github.com/graphql/graphql-js/blob/master/src/__tests__/starWarsData.js
-            docsDao = DocsDao(allScalarTypes)
-            val dao = docsDao.daoForDoc("AllTypes")
-            dao.store(mapOf("id" to "everything",
+            theDao = DocsDao(allScalarTypes)
+            val allTypesDao = theDao.daoForDoc("AllTypes")
+            allTypesDao.store(mapOf("id" to "everything",
                 "aString" to "A String",
                 "mandatoryString" to "Mandatory String",
                 "anInt" to 123,
                 "aFloat" to 99.9,
             "aBoolean" to true)     )
 
+            val allNullVariants = theDao.daoForDoc("AllNullVariants")
+            allNullVariants.store(mapOf("id" to "allvariants",
+                "storedAsNull" to null,
+                "storedAsEmpty" to "") as Map<String,Any>)
 
-            graphQL = GraphQLFactory2.build(allScalarTypes,docsDao)
 
+            graphQL = GraphQLFactory2.build(allScalarTypes,theDao)
+
+        }
+
+        it ("should return all variants of null and empty") {
+
+            val query = """{
+                    allNullVariants(id: "allvariants") {
+                       notStored,storedAsNull,storedAsEmpty
+                    }}
+"""
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{allNullVariants={notStored=null, storedAsNull=null, storedAsEmpty=}}"))
         }
 
         it ("should return all values with the correct type") {
