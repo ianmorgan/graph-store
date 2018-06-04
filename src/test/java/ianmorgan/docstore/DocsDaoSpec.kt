@@ -21,7 +21,7 @@ object DocsDaoSpec : Spek({
             assert.that(dao.availableDocs(), equalTo(setOf("Droid","Human")))
         }
 
-        it ("should return be aggregate id "){
+        it ("should return by aggregate id "){
             val dao = DocsDao.fromSchema(starWarSchema)
             val r2 = dao.retrieve("2001")
             assert.that("R2-D2", equalTo(r2["name"]))

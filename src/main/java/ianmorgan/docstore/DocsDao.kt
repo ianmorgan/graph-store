@@ -58,15 +58,9 @@ class DocsDao constructor(graphQLSchema: String) {
     }
 
     private fun initFromSchema(schema: String) {
-        val schemaParser = SchemaParser()
-        val typeDefinitionRegistry = schemaParser.parse(schema)
-
-        for (definition in typeDefinitionRegistry.getTypes(ObjectTypeDefinition::class.java)) {
-            if (!(definition.name == "Query")) {
-                println("Creating dao for ${definition.name}")
-                val docName = definition.name
-                daos.put(docName, DocDao(definition))
-            }
+        val helper = GraphQLHelper(SchemaParser().parse(schema))
+        for (docName in helper.objectDefinitionNames()) {
+            daos.put(docName, DocDao(helper.objectDefinition(docName)))
         }
     }
 
