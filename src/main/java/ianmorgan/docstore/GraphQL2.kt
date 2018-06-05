@@ -21,7 +21,7 @@ object GraphQLFactory2 {
     fun build(schema: String, docsDao: DocsDao): GraphQL {
 
         val typeDefinitionRegistry = SchemaParser().parse(schema)
-        val helper = GraphQLHelper(typeDefinitionRegistry)
+        val helper = Helper.build(typeDefinitionRegistry)
 
 //         val typeResovler = TypeResolver() {
 //            @Override
@@ -85,7 +85,9 @@ object GraphQLFactory2 {
     }
 
     /**
-     * A DataFetcher for a single doc, linked to its DAO
+     * A DataFetcher for a single doc, linked to its DAO. This fetcher is passed the
+     * complete ObjectTypeDefinition and also knows how to resolve data for child nodes, which requires
+     * recursive calls to the DAOs.
      */
     class DocDataFetcher constructor(docsDao: DocsDao, docName: String, typeDefinition : ObjectTypeDefinition) : DataFetcher<Map<String, Any>?> {
         val dao = docsDao
@@ -97,50 +99,26 @@ object GraphQLFactory2 {
             val data = lookupById(id)
 
             if (data != null) {
-                for (field in typeDefinition.fieldDefinitions) {
-                    val rawType = field.type
-                    if (rawType is NonNullType) {
-                        val type = rawType.type
-                        println(type)
-                        if (type is TypeName) {
-                            //working[field.name] = GraphQLMapper.graphQLTypeToJsonType(type.name)
-                        }
-                        if (type is ListType) {
-                            // this represents a list of enumeration, which we will represent
-                            // a list
-                            //working[field.name] = List::class as KClass<Any>
-                        }
-                    }
-                    if (rawType is ListType) {
-                        println("ListTypp ${field.name} ")
+                val helper = Helper.build(typeDefinition)
+                for (f in helper.listTypeFieldNames()) {
+                    val typeName = helper.typeForField(f)
 
-                        println((rawType.type as TypeName).name)
-
-                        if ((rawType.type as TypeName).name == docName) {
-                            println("recursive lookup by id")
-
-
-                            val ids = data.getOrDefault(field.name, emptyList<String>()) as List<String>
-
-                            val expanded = ArrayList<Map<String,Any>>()
-                            for (theId in ids){
-                                println ("internal id is $theId")
-                                val x = lookupById(theId)
-                                if (x != null){
-                                    expanded.add(x)
-                                }
+                    if (typeName == docName) {
+                        val ids = data.getOrDefault(f, emptyList<String>()) as List<String>
+                        val expanded = ArrayList<Map<String, Any>>()
+                        for (theId in ids) {
+                            println("internal id is $theId")
+                            val x = lookupById(theId)
+                            if (x != null) {
+                                expanded.add(x)
                             }
-                            // ids replaced with expanded list
-                            data.put(field.name,expanded)
                         }
-                        //working[field.name] = List::class as KClass<Any>
-                    }
-                    if (rawType is TypeName) {
-                        println(field.name)
-                        //working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
+                        // ids replaced with expanded list
+                        data.put(f, expanded)
                     }
                 }
             }
+
             return data
         }
 

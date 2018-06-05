@@ -56,7 +56,7 @@ class DocsDao constructor(graphQLSchema: String) {
     }
 
     private fun initFromSchema(schema: String) {
-        val helper = GraphQLHelper(SchemaParser().parse(schema))
+        val helper = Helper.build(SchemaParser().parse(schema))
         for (docName in helper.objectDefinitionNames()) {
             daos.put(docName, DocDao(helper.objectDefinition(docName)))
         }
