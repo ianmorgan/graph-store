@@ -13,7 +13,7 @@ import java.io.FileInputStream
 @RunWith(JUnitPlatform::class)
 object GraphQLNestingSpec : Spek({
 
-    val allScalarTypes = FileInputStream("src/schema/nesting.graphqls").bufferedReader().use { it.readText() }
+    val schema = FileInputStream("src/schema/nesting.graphqls").bufferedReader().use { it.readText() }
     lateinit var theDao: DocsDao
     lateinit var graphQL: GraphQL
 
@@ -21,11 +21,11 @@ object GraphQLNestingSpec : Spek({
 
         beforeGroup {
             // setup GraphQL & DAO with some initial data
-            theDao = DocsDao(allScalarTypes)
+            theDao = DocsDao(schema)
             val dao = theDao.daoForDoc("Directory")
             dao.store(
                 mapOf(
-                    "id" to "root",
+                    "handle" to "root",
                     "name" to "/",
                     "files" to listOf("file1", "file2"),
                     "children" to listOf("dir1")
@@ -34,7 +34,7 @@ object GraphQLNestingSpec : Spek({
 
             dao.store(
                 mapOf(
-                    "id" to "dir1",
+                    "handle" to "dir1",
                     "name" to "dir1",
                     "files" to listOf("a", "b", "c")
                 )
@@ -43,14 +43,14 @@ object GraphQLNestingSpec : Spek({
 
 
 
-            graphQL = GraphQLFactory2.build(allScalarTypes, theDao)
+            graphQL = GraphQLFactory2.build(schema, theDao)
 
         }
 
         it("should return the top node with files") {
-
+            // testing query, but no nesting
             val query = """{
-                    dir(id: "root") {
+                    dir(handle: "root") {
                        name,files
                     }}
 """
@@ -64,9 +64,9 @@ object GraphQLNestingSpec : Spek({
         }
 
         it("should return the top node with children") {
-
+            // testing  one level of nesting
             val query = """{
-                    dir(id: "root") {
+                    dir(handle: "root") {
                        name,
                        children {name}
                     }}
@@ -77,6 +77,24 @@ object GraphQLNestingSpec : Spek({
             assert.that(
                 result.getData<Any>().toString(),
                 equalTo("{dir={name=/, children=[{name=dir1}]}}")
+            )
+        }
+
+        it("should return no children for a leaf node ") {
+            // testing that no children are returned
+            val query = """{
+                    dir(handle: "dir1") {
+                       name,
+                       files,
+                       children {name}
+                    }}
+"""
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(
+                result.getData<Any>().toString(),
+                equalTo("{dir={name=dir1, files=[a, b, c], children=[]}}")
             )
         }
 

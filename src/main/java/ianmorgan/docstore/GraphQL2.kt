@@ -94,8 +94,11 @@ object GraphQLFactory2 {
         val docName = docName
         val typeDefinition = typeDefinition
         override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
+
+
             // TODO - what about finding by other fields ???
-            val id = env.getArgument<String>("id")
+            val idFieldName = dao.daoForDoc(docName).aggregateKey()
+            val id = env.getArgument<String>(idFieldName)
             val data = lookupById(id)
 
             if (data != null) {
