@@ -66,7 +66,8 @@ type Droid  {
         it("should store a valid doc") {
             val dao = DocDao(type)
             dao.store(mapOf("id" to "123", "name" to "Mouse Droid"))
-            assert.that(1, equalTo(1))
+            val stored = dao.retrieve("123")
+            assert.that(mapOf("id" to "123", "name" to "Mouse Droid"), equalTo(stored))
         }
 
         it("should throw exception if there is no 'aggregateId' in the doc") {
@@ -88,6 +89,15 @@ type Droid  {
 
             fun messageMatcher(ex: RuntimeException) = ex.message.orEmpty().contains("Types don't match for field name")
             assert.that({ dao.store(doc) }, throws(Matcher.invoke(::messageMatcher)))
+        }
+
+        it("should query on document field") {
+            val dao = DocDao(type)
+            dao.store(mapOf("id" to "123", "name" to "Mouse Droid"))
+            dao.store(mapOf("id" to "456", "name" to "BB-8"))
+
+            val stored = dao.retrieve("123")
+            assert.that(mapOf("id" to "123", "name" to "Mouse Droid"), equalTo(stored))
         }
 
 

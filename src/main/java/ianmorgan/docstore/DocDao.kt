@@ -45,6 +45,22 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
         return repo[aggregateId]
     }
 
+    /**
+     * Find all docs that match on this field name
+     *
+     */
+    fun findByField(fieldName: String, value : Any): List<Map<String, Any>> {
+        val result = ArrayList<Map<String, Any>>()
+
+        // TODO - production quality would need an indexing strategy
+        for (doc in repo.values){
+            if (value == doc[fieldName]){
+                result.add(doc)
+            }
+        }
+        return result
+    }
+
     fun delete(aggregateId: String) {
         repo.remove(aggregateId)
     }
