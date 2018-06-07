@@ -103,6 +103,8 @@ object GraphQLBasicQuerySpec : Spek({
             println (result.errors)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{humans=[{id=1000, homePlanet=Tatooine}]}"))
 
         }
 
