@@ -103,8 +103,7 @@ object GraphQLBasicQuerySpec : Spek({
             println (result.errors)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
-      //      assert.that(result.getData<Any>().toString(),
-      //          equalTo("{human={id=1000, homePlanet=Tatooine}}"))
+
         }
 
         it ("should return friends for Luke") {

@@ -72,6 +72,35 @@ object GraphQLFactory2 {
 
                         if (fType is ListType){
                             println ("What to do with a list type query '${f.name}' ??")
+
+                            val fTypeList = fType.type
+
+                            if (fTypeList is TypeName) {
+
+                                val typeName = fTypeList.name
+                                val name = f.name
+
+                                if (helper.objectDefinitionNames().contains(typeName)) {
+                                    // wire up a regular doc fetcher
+                                    builder.dataFetcher(
+                                        name,
+                                        DocListDataFetcher(docsDao, typeName, helper.objectDefinition(typeName))
+                                    )
+                                } else if (helper.interfaceDefinitionNames().contains(typeName)) {
+                                    // wire up an Interface data fetcher - this is more complicated
+                                    // as we need to also understand the interface details (see newTypeWiring
+                                    // below
+                                    //
+                                    // TODO - interfaces need more logic !!
+                                    builder.dataFetcher(name, DocsDataFetcher(docsDao))
+                                } else {
+                                    println("Don't know what to do with query field $name")
+                                }
+                            }
+
+
+
+
                         }
 
                     }
@@ -146,6 +175,29 @@ object GraphQLFactory2 {
                 return null;
             }
         }
+    }
+
+    /**
+     * A DataFetcher for a single doc, linked to its DAO. This fetcher is passed the
+     * complete ObjectTypeDefinition and also knows how to resolve data for child nodes, which requires
+     * recursive calls to the DAOs.
+     */
+    class DocListDataFetcher constructor(docsDao: DocsDao, docName: String, typeDefinition : ObjectTypeDefinition) :
+        DataFetcher<List<Map<String, Any>?>> {
+        val dao = docsDao
+        val docName = docName
+        val typeDefinition = typeDefinition
+        override fun get(env: DataFetchingEnvironment): List<Map<String, Any>?> {
+
+            if (env.containsArgument("name")){
+                val name = env.getArgument<String>("name")
+                return  dao.daoForDoc(docName).findByField("name",name);
+            }
+
+            return emptyList()
+        }
+
+
     }
 
     /**
