@@ -6,6 +6,7 @@ import graphql.language.ObjectTypeDefinition
 import graphql.language.TypeName
 import ianmorgan.docstore.mapper.GraphQLMapper
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction2
 
 /**
  * A Dao for saving (as events) and retrieving a single document. The document structure
@@ -49,17 +50,24 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
      * Find all docs that match on this field name
      *
      */
-    fun findByField(fieldName: String, value : Any): List<Map<String, Any>> {
+    fun findByField(fieldNameExpression: String, value : Any): List<Map<String, Any>> {
         val result = ArrayList<Map<String, Any>>()
+
+        val matcher = pickMatcher(fieldNameExpression)
+        val fieldName = rootFieldName(fieldNameExpression)
 
         // TODO - production quality would need an indexing strategy
         for (doc in repo.values){
-            if (value == doc[fieldName]){
+
+            if (matcher(doc[fieldName],value)){
                 result.add(doc)
             }
         }
         return result
     }
+
+
+
 
     fun delete(aggregateId: String) {
         repo.remove(aggregateId)
@@ -71,6 +79,34 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
      */
     fun aggregateKey(): String {
         return aggregateKey
+    }
+
+    private fun equalsMatcher (actual : Any?, expected : Any) : Boolean {
+        return actual == expected
+    }
+
+    private fun containsMatcher (actual : Any?, expected : Any) : Boolean {
+        if (actual is String) {
+            return actual.toLowerCase().contains((expected as String).toLowerCase())
+        }
+        else {
+            return actual.toString().toLowerCase().contains((expected as String).toLowerCase())
+        }
+    }
+
+    private fun rootFieldName(fieldNameExpression: String): String {
+        return fieldNameExpression.split("_")[0]
+    }
+
+    private fun pickMatcher(fieldNameExpression : String): KFunction2<@ParameterName(name = "actual") Any?, @ParameterName(
+        name = "expected"
+    ) Any, Boolean> {
+        if (fieldNameExpression.endsWith("_contains")){
+            return ::containsMatcher
+        }
+        else {
+            return ::equalsMatcher
+        }
     }
 
     private fun checkAgainstSchema(doc: Map<String, Any>) {

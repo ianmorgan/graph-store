@@ -93,12 +93,28 @@ type Droid  {
 
         it("should query on document field") {
             val dao = DocDao(type)
-            dao.store(mapOf("id" to "123", "name" to "Mouse Droid"))
-            dao.store(mapOf("id" to "456", "name" to "BB-8"))
+            dao.store(mapOf("id" to "101", "name" to "Mouse Droid"))
+            dao.store(mapOf("id" to "102", "name" to "BB-8"))
+            dao.store(mapOf("id" to "103", "name" to "Interrogation Droid"))
 
-            val stored = dao.retrieve("123")
-            assert.that(mapOf("id" to "123", "name" to "Mouse Droid"), equalTo(stored))
+            val stored = dao.findByField(fieldNameExpression = "name", value =  "Mouse Droid")
+            assert.that(listOf(mapOf("id" to "101", "name" to "Mouse Droid")), equalTo(stored))
         }
+
+        it("should query using contains wildcard") {
+            val dao = DocDao(type)
+            val mouse = mapOf("id" to "101", "name" to "Mouse Droid") as Map<String,Any>
+            val bb8 = mapOf("id" to "102", "name" to "BB-8") as Map<String,Any>
+            val interrogation = mapOf("id" to "103", "name" to "Interrogation Droid") as Map<String,Any>
+            dao.store(mouse)
+            dao.store(bb8)
+            dao.store(interrogation)
+
+            assert.that(dao.findByField(fieldNameExpression = "name_contains", value =  "Droid"), equalTo(listOf(mouse,interrogation)))
+            assert.that(dao.findByField(fieldNameExpression = "name_contains", value =  "droid"), equalTo(listOf(mouse,interrogation)))
+            assert.that(dao.findByField(fieldNameExpression = "name_contains", value =  "vader"), equalTo(listOf()))
+        }
+
 
 
     }
