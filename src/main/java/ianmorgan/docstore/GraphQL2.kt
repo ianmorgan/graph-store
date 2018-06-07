@@ -45,21 +45,33 @@ object GraphQLFactory2 {
 
                     for (f in queryDefinition.fieldDefinitions) {
 
-                        val typeName = (f.type as TypeName).name
-                        val name = f.name
+                        val fType = f.type
 
-                        if (helper.objectDefinitionNames().contains(typeName)) {
-                            // wire up a regular doc fetcher
-                            builder.dataFetcher(name, DocDataFetcher(docsDao, typeName, helper.objectDefinition(typeName)))
-                        } else if (helper.interfaceDefinitionNames().contains(typeName)) {
-                            // wire up an Interface data fetcher - this is more complicated
-                            // as we need to also understand the interface details (see newTypeWiring
-                            // below
-                            //
-                            // TODO - interfaces need more logic !!
-                            builder.dataFetcher(name, DocsDataFetcher(docsDao))
-                        } else {
-                            println("Don't know what to do with query field $name")
+                        if (fType is TypeName) {
+
+                            val typeName = fType.name
+                            val name = f.name
+
+                            if (helper.objectDefinitionNames().contains(typeName)) {
+                                // wire up a regular doc fetcher
+                                builder.dataFetcher(
+                                    name,
+                                    DocDataFetcher(docsDao, typeName, helper.objectDefinition(typeName))
+                                )
+                            } else if (helper.interfaceDefinitionNames().contains(typeName)) {
+                                // wire up an Interface data fetcher - this is more complicated
+                                // as we need to also understand the interface details (see newTypeWiring
+                                // below
+                                //
+                                // TODO - interfaces need more logic !!
+                                builder.dataFetcher(name, DocsDataFetcher(docsDao))
+                            } else {
+                                println("Don't know what to do with query field $name")
+                            }
+                        }
+
+                        if (fType is ListType){
+                            println ("What to do with a list type query '${f.name}' ??")
                         }
 
                     }

@@ -8,6 +8,8 @@ type Query {
 
   human(id: ID!): Human
 
+  humans(name : String!) : [Human]
+
 }
 
 
