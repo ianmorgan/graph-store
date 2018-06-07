@@ -3,6 +3,7 @@ package ianmorgan.docstore
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import graphql.GraphQL
+import ianmorgan.docstore.graphql.GraphQLFactory2
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

@@ -1,6 +1,7 @@
 package ianmorgan.docstore
 
 import graphql.schema.idl.SchemaParser
+import ianmorgan.docstore.graphql.Helper
 import java.io.File
 import java.io.FileInputStream
 

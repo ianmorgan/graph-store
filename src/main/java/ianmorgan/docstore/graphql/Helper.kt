@@ -1,4 +1,4 @@
-package ianmorgan.docstore
+package ianmorgan.docstore.graphql
 
 import graphql.language.*
 import graphql.schema.idl.TypeDefinitionRegistry
