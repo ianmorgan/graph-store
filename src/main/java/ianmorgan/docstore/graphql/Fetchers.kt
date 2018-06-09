@@ -5,16 +5,21 @@ import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import ianmorgan.docstore.DocsDao
 import java.util.HashMap
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.emptyList
+import kotlin.collections.emptyMap
 
 /**
  * A DataFetcher for a single doc, linked to its DAO. This fetcher is passed the
  * complete ObjectTypeDefinition and also knows how to resolve data for child nodes, which requires
  * recursive calls to the DAOs.
  */
-class DocDataFetcher constructor(docsDao: DocsDao, docName: String, typeDefinition : ObjectTypeDefinition) :
+class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDefinition) :
     DataFetcher<Map<String, Any>?> {
     val dao = docsDao
-    val docName = docName
+    val docName = typeDefinition.name
     val typeDefinition = typeDefinition
     override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
 
@@ -43,12 +48,11 @@ class DocDataFetcher constructor(docsDao: DocsDao, docName: String, typeDefiniti
         return data
     }
 
-    private fun lookupById (id : String) : HashMap<String, Any>? {
+    private fun lookupById(id: String): HashMap<String, Any>? {
         val data = dao.daoForDoc(docName).retrieve(id)
-        if (data != null){
+        if (data != null) {
             return HashMap(data);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -59,16 +63,16 @@ class DocDataFetcher constructor(docsDao: DocsDao, docName: String, typeDefiniti
  * complete ObjectTypeDefinition and also knows how to resolve data for child nodes, which requires
  * recursive calls to the DAOs.
  */
-class DocListDataFetcher constructor(docsDao: DocsDao, docName: String, typeDefinition : ObjectTypeDefinition) :
+class DocListDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDefinition) :
     DataFetcher<List<Map<String, Any>?>> {
     val dao = docsDao
-    val docName = docName
+    val docName = typeDefinition.name
     val typeDefinition = typeDefinition
     override fun get(env: DataFetchingEnvironment): List<Map<String, Any>?> {
 
-        if (env.containsArgument("name")){
+        if (env.containsArgument("name")) {
             val name = env.getArgument<String>("name")
-            return  dao.daoForDoc(docName).findByField("name",name);
+            return dao.daoForDoc(docName).findByField("name", name);
         }
 
         return emptyList()
@@ -106,19 +110,35 @@ class NullDataFetcher : DataFetcher<Map<String, Any>?> {
 }
 
 object Fetcher {
-    fun docFetcher (docsDao: DocsDao, docName: String, typeDefinition : ObjectTypeDefinition) : DataFetcher<Map<String, Any>?> {
-        return DocDataFetcher(docsDao, docName,typeDefinition)
+
+    /**
+     * Entry point to fetch for a single doc. Will internally drill down through the query structure until calling
+     * other fectchers as necessary, until leaf nodes with scalar values are reached
+     */
+    fun docFetcher(
+        docsDao: DocsDao,
+        typeDefinition: ObjectTypeDefinition
+    ): DataFetcher<Map<String, Any>?> {
+        return DocDataFetcher(docsDao, typeDefinition)
     }
 
-    fun interfaceFetcher (docsDao: DocsDao,  typeDefinition : ObjectTypeDefinition?) : DataFetcher<Map<String, Any>?> {
+    /**
+     * Entry point to fetch for an interface, picking the correct document by its id. Will internally drill down
+     * through the query structure until calling other fetchers as necessary, until leaf nodes with scalar values
+     * are reached
+     */
+    fun interfaceFetcher(docsDao: DocsDao, typeDefinition: ObjectTypeDefinition?): DataFetcher<Map<String, Any>?> {
         return DocsDataFetcher(docsDao)
     }
 
-    fun docListFetcher (docsDao: DocsDao, docName: String, typeDefinition : ObjectTypeDefinition) : DataFetcher<List<Map<String, Any>?>> {
-        return DocListDataFetcher(docsDao, docName,typeDefinition)
+    fun docListFetcher(
+        docsDao: DocsDao,
+        typeDefinition: ObjectTypeDefinition
+    ): DataFetcher<List<Map<String, Any>?>> {
+        return DocListDataFetcher(docsDao, typeDefinition)
     }
 
-    fun nullDocFetcher() : DataFetcher<Map<String, Any>?> {
+    fun nullDocFetcher(): DataFetcher<Map<String, Any>?> {
         return NullDataFetcher()
     }
 }

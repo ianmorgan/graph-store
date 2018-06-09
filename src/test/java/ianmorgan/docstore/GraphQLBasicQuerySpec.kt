@@ -101,7 +101,20 @@ object GraphQLBasicQuerySpec : Spek({
 """
             val result = graphQL.execute(query)
 
-            println (result.errors)
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{humans=[{id=1000, homePlanet=Tatooine}]}"))
+
+        }
+
+        it ("should query by name") {
+            // testing  query using a field that isn't the ID
+            val query = """{
+                    humans(name: "Luke Skywalker") {
+                       id,homePlanet
+                    }}
+"""
+            val result = graphQL.execute(query)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
             assert.that(result.getData<Any>().toString(),

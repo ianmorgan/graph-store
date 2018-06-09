@@ -56,7 +56,6 @@ object GraphQLFactory2 {
                                 name,
                                 Fetcher.docFetcher(
                                     docsDao,
-                                    typeName,
                                     helper.objectDefinition(typeName)
                                 )
                             )
@@ -88,7 +87,7 @@ object GraphQLFactory2 {
                                 // wire up a regular doc fetcher
                                 builder.dataFetcher(
                                     name,
-                                    Fetcher.docListFetcher(docsDao, typeName, helper.objectDefinition(typeName))
+                                    Fetcher.docListFetcher(docsDao, helper.objectDefinition(typeName))
                                 )
 
                             } else if (helper.interfaceDefinitionNames().contains(typeName)) {
