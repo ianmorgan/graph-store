@@ -12,6 +12,8 @@ using the appropriate technology.
 To get working quickly, follow the getting started [Getting Started](#getting-started) guide below. For more 
 detail see [Data Access](daos), [Type Mappings](typeMappings) and [Standards](standards).
 
+Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/doc-store) 
+
 
 
 ## Getting started 

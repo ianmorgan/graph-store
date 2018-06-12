@@ -13,3 +13,5 @@ documents and partial updates is supported.
 domains where an aggregate can simply be modelled as a document. The architectural benefits of event sourcing are 
 retained, for example another system could observe the events, but there is no attempt to define state as a set of 
 explicit domain events (AccountCreated, AccountApproved etc). 
+
+For more details try the [docs](https://ianmorgan.github.io/doc-store/) and also [Trello](https://trello.com/b/5lXXr7jc/doc-store) 
