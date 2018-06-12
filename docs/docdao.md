@@ -10,5 +10,13 @@ A schematic of the basic wiring implemented by the DocsDao is below
 
 <img src="images/docs-dao-wiring.png"  width="800"> 
 
+<br>
+<img src="/images/docs-dao-wiring.png"  width="800"> 
+
+<br>
+
+<img src="../images/docs-dao-wiring.png"  width="800"> 
+
+
  
 _Original at https://www.lucidchart.com/invitations/accept/c1bc70c1-c36d-41fa-9e2b-9d27859fdabf_
