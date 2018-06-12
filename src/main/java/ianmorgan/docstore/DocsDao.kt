@@ -35,7 +35,8 @@ class DocsDao constructor(graphQLSchema: String) {
     }
 
     private fun initFromSchema(schema: String) {
-        val helper = Helper.build(SchemaParser().parse(schema))
+        val typeDefinitionRegistry  = SchemaParser().parse(schema)
+        val helper = Helper.build(typeDefinitionRegistry)
 
         // wireup a DocDao for each type
         for (docName in helper.objectDefinitionNames()) {
@@ -45,7 +46,7 @@ class DocsDao constructor(graphQLSchema: String) {
         // wireup an InterfaceDao for each interface
         for (interfaceName in helper.interfaceDefinitionNames()){
             interfaceDaoLookup.put(interfaceName,
-                InterfaceDao(helper.interfaceDefinition(interfaceName),docDaoLookup))
+                InterfaceDao(interfaceName, typeDefinitionRegistry, docDaoLookup))
         }
     }
 

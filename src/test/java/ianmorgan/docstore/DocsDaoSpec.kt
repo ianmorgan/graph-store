@@ -21,7 +21,6 @@ object DocsDaoSpec : Spek({
             assert.that(dao.availableDocs(), equalTo(setOf("Droid","Human")))
         }
 
-
         it ("should have an InterfaceDao for each interface in the schema") {
             val dao = DocsDao.fromSchema(starWarSchema)
             assert.that(dao.availableInterfaces(), equalTo(setOf("Character")))
