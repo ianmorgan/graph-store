@@ -40,7 +40,7 @@ type Human implements Character {
 
   id: ID!
   name: String!
-  friends: [Human]      # TODO - should be Character , but the resolver isn't yet smart enough to deal with interfaces here
+  friends: [Character]      # TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here
   appearsIn: [Episode]!
 
   homePlanet: String

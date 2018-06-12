@@ -10,58 +10,46 @@ import java.io.FileInputStream
  * but the client doesn't need to know this.
  */
 class DocsDao constructor(graphQLSchema: String) {
-    private val daos = HashMap<String, DocDao>();
+    private val docDaoLookup = HashMap<String, DocDao>();
+    private val interfaceDaoLookup = HashMap<String, InterfaceDao>();
 
     init {
         initFromSchema(graphQLSchema)
     }
 
-    val droids = listOf(
-        mapOf(
-            "id" to "2001", "name" to "R2-D2",
-            "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI"), "primaryFunction" to "Astromech"
-        ),
-        mapOf(
-            "id" to "2002", "name" to "C-3PO",
-            "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI"), "primaryFunction" to "???"
-        )
-    )
-
-    val humans = listOf(
-        mapOf(
-            "id" to "1001", "name" to "Luke Skywalker",
-            "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI")
-        ),
-        mapOf(
-            "id" to "1002", "name" to "Princess Leia",
-            "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI")
-        )
-    )
 
     fun availableDocs(): Set<String> {
-        return daos.keys
+        return docDaoLookup.keys
     }
 
     fun daoForDoc(docName: String): DocDao {
-        return daos[docName]!!
+        return docDaoLookup[docName]!!
     }
 
-    fun retrieve(aggregateId: String): Map<String, Any> {
-        // todo - write some more elegant Kotlin code!
-        var ret = humans.find { it -> it["id"] == aggregateId }
-        if (ret == null) {
-            ret = droids.find { it -> it["id"] == aggregateId }
-        }
-        if (ret != null) return ret
-        throw RuntimeException("nothing found !")
+    fun availableInterfaces(): Set<String> {
+        return interfaceDaoLookup.keys
+    }
+
+    fun daoForInterface(interfaceName : String) : InterfaceDao {
+        return interfaceDaoLookup[interfaceName]!!
     }
 
     private fun initFromSchema(schema: String) {
         val helper = Helper.build(SchemaParser().parse(schema))
+
+        // wireup a DocDao for each type
         for (docName in helper.objectDefinitionNames()) {
-            daos.put(docName, DocDao(helper.objectDefinition(docName)))
+            docDaoLookup.put(docName, DocDao(helper.objectDefinition(docName)))
+        }
+
+        // wireup an InterfaceDao for each interface
+        for (interfaceName in helper.interfaceDefinitionNames()){
+            interfaceDaoLookup.put(interfaceName,
+                InterfaceDao(helper.interfaceDefinition(interfaceName),docDaoLookup))
         }
     }
+
+
 
     companion object {
         fun fromSchema(schema: String): DocsDao {

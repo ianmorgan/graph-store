@@ -16,15 +16,15 @@ object DocsDaoSpec : Spek({
 
     describe ("A simple DAO ") {
 
-        it ("should have a doc for each type in schema") {
+        it ("should have a DocDao for each type in schema") {
             val dao = DocsDao.fromSchema(starWarSchema)
             assert.that(dao.availableDocs(), equalTo(setOf("Droid","Human")))
         }
 
-        it ("should return by aggregate id "){
+
+        it ("should have an InterfaceDao for each interface in the schema") {
             val dao = DocsDao.fromSchema(starWarSchema)
-            val r2 = dao.retrieve("2001")
-            assert.that("R2-D2", equalTo(r2["name"]))
+            assert.that(dao.availableInterfaces(), equalTo(setOf("Character")))
         }
     }
 })

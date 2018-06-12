@@ -25,31 +25,55 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
 
         val idFieldName = dao.daoForDoc(docName).aggregateKey()
         val id = env.getArgument<String>(idFieldName)
-        val data = lookupById(id)
+        val data = lookupDocById(docName,id)
 
         if (data != null) {
             val helper = Helper.build(typeDefinition)
             for (f in helper.listTypeFieldNames()) {
                 val typeName = helper.typeForField(f)
 
+                // is this an embedded doc
                 if (typeName == docName) {
                     val ids = data.getOrDefault(f, emptyList<String>()) as List<String>
                     val expanded = ArrayList<Map<String, Any>>()
                     for (theId in ids) {
-                        val x = lookupById(theId)
+                        val x = lookupDocById(typeName!!,theId)
                         if (x != null) {
                             expanded.add(x)
                         }
                     }
                     data.put(f, expanded)
                 }
+
+                // is this an embedded interface
+                if (dao.availableInterfaces().contains(typeName)){
+                    val ids = data.getOrDefault(f, emptyList<String>()) as List<String>
+                    val expanded = ArrayList<Map<String, Any>>()
+                    for (theId in ids) {
+                        val x = lookupInterfaceById(typeName!!, theId)
+                        if (x != null) {
+                            expanded.add(x)
+                        }
+                    }
+                    data.put(f, expanded)
+
+                }
             }
         }
         return data
     }
 
-    private fun lookupById(id: String): HashMap<String, Any>? {
+    private fun lookupDocById(docName : String, id: String): HashMap<String, Any>? {
         val data = dao.daoForDoc(docName).retrieve(id)
+        if (data != null) {
+            return HashMap(data);
+        } else {
+            return null;
+        }
+    }
+
+    private fun lookupInterfaceById(interfaceName : String, id: String): HashMap<String, Any>? {
+        val data = dao.daoForInterface(interfaceName).retrieve(id)
         if (data != null) {
             return HashMap(data);
         } else {

@@ -13,7 +13,6 @@ import kotlin.reflect.KFunction2
  * is controlled by the GraphQL schema.
  */
 class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
-    private val definition = typeDefinition
     private val repo = HashMap<String, Map<String, Any>>()
     private lateinit var aggregateKey: String
     private lateinit var fields: Map<String, KClass<Any>>
@@ -65,8 +64,6 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
         }
         return result
     }
-
-
 
 
     fun delete(aggregateId: String) {
