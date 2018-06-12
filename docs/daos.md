@@ -1,4 +1,4 @@
-# Data Access (Daos)
+# Data Access 
 
 The basics of document storage are managed by a number of generic data access layer (referred to as Data Access Objects or DAO)
  in the implementation code.
