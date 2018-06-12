@@ -46,6 +46,8 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
         theDao = dao
 
         dao.daoForDoc("Droid").store(mapOf("id" to "2001", "name" to "R2D2"))
+        dao.daoForDoc("Human").store(mapOf("id" to "1000", "name" to "Luke Skywalker"))
+
         val graphQL = GraphQLFactory2.build(starWarSchema,dao)
 
         val controller = Controller(dao, graphQL)

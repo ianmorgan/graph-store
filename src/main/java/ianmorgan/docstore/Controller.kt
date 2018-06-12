@@ -81,9 +81,25 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                             val docType = ctx.param("type")!!
                             val aggregateId = ctx.param("aggregateId")!!
                             val dao = theDao.daoForDoc(docType)
-                            val doc = dao.delete(aggregateId)
+                            dao.delete(aggregateId)
                         }
+                    }
+                }
+            }
 
+            path("interfaces") {
+                path(":type") {
+
+                    // rest style - aggregateId in URL
+                    path(":aggregateId") {
+
+                        ApiBuilder.get() { ctx ->
+                            val interfaceType = ctx.param("type")!!
+                            val aggregateId = ctx.param("aggregateId")!!
+                            val dao = theDao.daoForInterface(interfaceType)
+                            val doc = dao.retrieve(aggregateId)
+                            ctx.json(mapOf("data" to doc))
+                        }
                     }
                 }
             }

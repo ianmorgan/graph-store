@@ -36,13 +36,10 @@ object ControllerSpec : Spek({
         context("'GET /graphql' behaviour") {
             beforeEachTest {}
 
-            it("should return all events if no filters") {
+            it("should return R2D2") {
                 val query = URIUtil.encodePath("query={droid(id: \"2001\") {name}}")
-                println(query)
                 val response = khttp.get(url = baseUrl + "graphql?" + query)
                 assert.that(response.statusCode, equalTo(200))
-
-                println(response.text)
 
                 val expectedJson = """
                     {"data":{"droid": {"name":"R2D2"}}}
@@ -60,7 +57,6 @@ object ControllerSpec : Spek({
                 val payload = """
                { "id" : "2001",  "name": "R2-D2","appearsIn": ["NEWHOPE","EMPIRE","JEDI"] }
 """
-
                 // save document
                 val response = khttp.post(url, data = JSONObject(payload))
                 assert.that(response.statusCode, equalTo(200))
@@ -87,6 +83,22 @@ object ControllerSpec : Spek({
                 assert.that(errors.length(), equalTo(1))
                 assert.that(errors.getJSONObject(0).getString("message"),
                     equalTo("Unexpected field rubbish in document "))
+            }
+        }
+
+        context("'GET /interface' behaviour") {
+            beforeEachTest {}
+
+            it("should return Luke") {
+                val response = khttp.get(url = baseUrl + "interfaces/Character/1000")
+                assert.that(response.statusCode, equalTo(200))
+
+                val expectedJson = """
+                    {"data":{"id":"1000", "name":"Luke Skywalker"}}}
+"""
+                val actualAsMap = JsonHelper.jsonToMap(response.jsonObject)
+                val expectedAsMap = JsonHelper.jsonToMap(JSONObject(expectedJson))
+                assert.that(expectedAsMap, equalTo(actualAsMap))
             }
         }
 
