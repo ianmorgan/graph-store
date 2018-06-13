@@ -5,7 +5,7 @@ import graphql.schema.idl.TypeDefinitionRegistry
 
 /**
  * Helper to work alongside the GraphQLJava TypeDefinitionRegistry object model, mainly to provide
- * a richer more type safe navigation of object graph.
+ * a richer & more type safe navigation of the object graph.
  */
 class TypeDefinitionRegistryHelper constructor(registry : TypeDefinitionRegistry){
     val tdr = registry

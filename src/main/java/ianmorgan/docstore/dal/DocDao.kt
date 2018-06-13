@@ -12,8 +12,9 @@ import kotlin.reflect.KFunction2
  * A Dao for saving (as events) and retrieving a single document. The document structure
  * is controlled by the GraphQL schema.
  */
-class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
-    private val repo = HashMap<String, Map<String, Any>>()
+class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient : EventStoreClient = InMemoryEventStore()) {
+    //private val repo = HashMap<String, Map<String, Any>>()
+    private val es = eventStoreClient
     private lateinit var aggregateKey: String
     private lateinit var fields: Map<String, KClass<Any>>
 
@@ -31,22 +32,26 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
      *
      * See https://ianmorgan.github.io/doc-store/storage for more detail.
      */
-    fun store(doc: Map<String, Any>) {
+    fun store(doc: Map<String, Any?>) {
         val id = doc.get(aggregateKey) as String
         if (id != null) {
             checkAgainstSchema(doc)
-            repo[id] = doc
+            es.storeEvent(id,doc)
         } else {
             throw RuntimeException("must have an aggregate id")
         }
     }
 
     fun retrieve(aggregateId: String): Map<String, Any>? {
-        return repo[aggregateId]
+        val events = es.events(aggregateId)
+        if (!events.isEmpty()){
+            return DocReducer.reduceEvents(events)
+        }
+        return null
     }
 
     fun count() : Int{
-        return repo.size
+        return es.aggregateKeys().size
     }
 
     /**
@@ -60,8 +65,8 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
         val fieldName = rootFieldName(fieldNameExpression)
 
         // TODO - production quality would need an indexing strategy
-        for (doc in repo.values){
-
+        for (key in es.aggregateKeys()){
+            val doc = retrieve(key)!!
             if (matcher(doc[fieldName],value)){
                 result.add(doc)
             }
@@ -71,7 +76,8 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
 
 
     fun delete(aggregateId: String) {
-        repo.remove(aggregateId)
+        // fake a delete type event for now
+        es.storeEvent(aggregateId, mapOf("action" to "delete"))
     }
 
     /**
@@ -110,7 +116,7 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
         }
     }
 
-    private fun checkAgainstSchema(doc: Map<String, Any>) {
+    private fun checkAgainstSchema(doc: Map<String, Any?>) {
         // simple implementation for now
 
         for (key in doc.keys) {
