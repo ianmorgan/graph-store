@@ -1,4 +1,4 @@
-package ianmorgan.docstore
+package ianmorgan.docstore.dal
 
 
 import graphql.language.InterfaceTypeDefinition
@@ -6,6 +6,7 @@ import graphql.language.ListType
 import graphql.language.NonNullType
 import graphql.language.TypeName
 import graphql.schema.idl.TypeDefinitionRegistry
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.graphql.Helper
 import ianmorgan.docstore.graphql.TypeDefinitionRegistryHelper
 

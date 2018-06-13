@@ -1,5 +1,6 @@
 package ianmorgan.docstore
 
+import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.graphql.GraphQLFactory2
 import io.javalin.Javalin
 import org.apache.commons.cli.Options

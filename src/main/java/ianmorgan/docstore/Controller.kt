@@ -1,6 +1,7 @@
 package ianmorgan.docstore
 
 import graphql.GraphQL
+import ianmorgan.docstore.dal.DocsDao
 import io.javalin.ApiBuilder
 import io.javalin.ApiBuilder.path
 import io.javalin.Javalin

@@ -1,4 +1,4 @@
-package ianmorgan.docstore
+package ianmorgan.docstore.dal
 
 import graphql.language.ListType
 import graphql.language.NonNullType

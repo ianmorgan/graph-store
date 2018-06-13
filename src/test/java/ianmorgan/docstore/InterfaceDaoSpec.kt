@@ -3,7 +3,7 @@ package ianmorgan.docstore
 import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
-import com.natpryce.hamkrest.isNullOrBlank
+import ianmorgan.docstore.dal.DocsDao
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

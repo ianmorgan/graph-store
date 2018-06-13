@@ -1,5 +1,6 @@
 package ianmorgan.docstore
 
+import ianmorgan.docstore.dal.DocsDao
 import org.json.JSONObject
 import java.io.File
 

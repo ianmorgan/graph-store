@@ -6,6 +6,7 @@ import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.throws
 import graphql.language.ObjectTypeDefinition
 import graphql.schema.idl.SchemaParser
+import ianmorgan.docstore.dal.DocDao
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

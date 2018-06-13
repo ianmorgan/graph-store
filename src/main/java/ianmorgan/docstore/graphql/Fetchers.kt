@@ -3,7 +3,7 @@ package ianmorgan.docstore.graphql
 import graphql.language.ObjectTypeDefinition
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
-import ianmorgan.docstore.DocsDao
+import ianmorgan.docstore.dal.DocsDao
 import java.util.HashMap
 import kotlin.collections.ArrayList
 import kotlin.collections.List

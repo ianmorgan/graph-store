@@ -1,4 +1,4 @@
-package ianmorgan.docstore
+package ianmorgan.docstore.dal
 
 import graphql.schema.idl.SchemaParser
 import ianmorgan.docstore.graphql.Helper
@@ -46,7 +46,8 @@ class DocsDao constructor(graphQLSchema: String) {
         // wireup an InterfaceDao for each interface
         for (interfaceName in helper.interfaceDefinitionNames()){
             interfaceDaoLookup.put(interfaceName,
-                InterfaceDao(interfaceName, typeDefinitionRegistry, docDaoLookup))
+                InterfaceDao(interfaceName, typeDefinitionRegistry, docDaoLookup)
+            )
         }
     }
 

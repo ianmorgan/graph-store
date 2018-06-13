@@ -11,7 +11,7 @@ import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
 import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
-import ianmorgan.docstore.DocsDao
+import ianmorgan.docstore.dal.DocsDao
 
 
 object GraphQLFactory2 {
