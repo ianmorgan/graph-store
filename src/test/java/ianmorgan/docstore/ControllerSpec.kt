@@ -42,7 +42,7 @@ object ControllerSpec : Spek({
                 assert.that(response.statusCode, equalTo(200))
 
                 val expectedJson = """
-                    {"data":{"droid": {"name":"R2D2"}}}
+                    {"data":{"droid": {"name":"R2-D2"}}}
 """
                 val actualAsMap = JsonHelper.jsonToMap(response.jsonObject)
                 val expectedAsMap = JsonHelper.jsonToMap(JSONObject(expectedJson))
@@ -94,11 +94,14 @@ object ControllerSpec : Spek({
                 assert.that(response.statusCode, equalTo(200))
 
                 val expectedJson = """
-                    {"data":{"id":"1000", "name":"Luke Skywalker"}}}
+                    {"data":{"id":"1000",
+                         "name":"Luke Skywalker",
+                         "appearsIn":["NEWHOPE", "EMPIRE", "JEDI"],
+                         "friends":["1002", "1003", "2000", "2001"]}}
 """
                 val actualAsMap = JsonHelper.jsonToMap(response.jsonObject)
                 val expectedAsMap = JsonHelper.jsonToMap(JSONObject(expectedJson))
-                assert.that(expectedAsMap, equalTo(actualAsMap))
+                assert.that( actualAsMap,equalTo(expectedAsMap))
             }
         }
 

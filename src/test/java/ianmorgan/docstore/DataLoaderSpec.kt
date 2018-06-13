@@ -14,7 +14,7 @@ object DataLoaderSpec : Spek({
 
     val starWarSchema = File("src/schema/starwars.graphqls")
 
-    describe ("a simple dataloader  ") {
+    describe ("a simple dataloader ") {
 
         it ("should load the starwars example data") {
             val dao = DocsDao.fromSchema(starWarSchema)
@@ -23,9 +23,6 @@ object DataLoaderSpec : Spek({
             dataLoader.loadDirectory("src/test/resources/starwars")
             assert.that(dao.daoForDoc("Human").count(), equalTo(5))
             assert.that(dao.daoForDoc("Droid").count(), equalTo(2))
-
         }
-
-
     }
 })
