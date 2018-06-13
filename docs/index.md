@@ -1,7 +1,7 @@
 # About
 
 This is a basic doc store that supports an event sourcing storage model and GraphQL enabled API. 
-Think of it as cutdown, single node MongoDB that supports GraphQL and which keeps a full history 
+Think of it as a cutdown, single node MongoDB that supports GraphQL and which keeps a full history 
 of every change.
 
 The inbuilt query model is quite limited, as this solution is aimed for applications built 

@@ -4,7 +4,7 @@ Provides a simple document style persistence API with the
 following features: 
 
 * data is stored using an event sourcing model in an 'event-store'.
-* GraphQL API is provided for querying 
+* a [GraphQL](https://graphql.org/) API is provided for querying 
 * Schema information can be attached to drive GraphQL 
 API and to provide some level of validation when saving data.
 * like most document style stores, the ability to store both complete 

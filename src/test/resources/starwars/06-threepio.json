@@ -1,0 +1,17 @@
+{
+  "docType": "Droid",
+  "id": "2000",
+  "name": "C-3PO",
+  "friends": [
+    "1000",
+    "1002",
+    "1003",
+    "2001"
+  ],
+  "appearsIn": [
+    "NEWHOPE",
+    "EMPIRE",
+    "JEDI"
+  ],
+  "primaryFunction" : "Protocol"
+}

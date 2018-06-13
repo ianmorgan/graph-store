@@ -1,0 +1,15 @@
+{
+  "docType": "Human",
+  "id": "1001",
+  "name": "Darth Vader",
+  "friends": [
+    "1004"
+  ],
+  "appearsIn": [
+    "NEWHOPE",
+    "EMPIRE",
+    "JEDI"
+  ],
+  "homePlanet": "Tatooine"
+}
+

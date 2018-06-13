@@ -45,6 +45,10 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition) {
         return repo[aggregateId]
     }
 
+    fun count() : Int{
+        return repo.size
+    }
+
     /**
      * Find all docs that match on this field name
      *
