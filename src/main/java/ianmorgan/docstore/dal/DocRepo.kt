@@ -16,12 +16,12 @@ interface EventStoreClient {
      *
      *
      */
-    fun storeEvent(aggregateId: String, eventPayload: Map<String, Any?>)
+    fun storeEvent(aggregateId: String, eventPayload: Map<String, Any>)
 
     /**
      * Retrieve all events for a given aggregate
      */
-    fun events(aggregateId: String): List<Map<String, Any?>>
+    fun events(aggregateId: String): List<Map<String, Any>>
 
 
     fun aggregateKeys() : Set<String>
@@ -34,9 +34,9 @@ interface EventStoreClient {
 class InMemoryEventStore : EventStoreClient {
 
 
-    private val repo: MutableMap<String, MutableList<Map<String, Any?>>> = HashMap()
+    private val repo: MutableMap<String, MutableList<Map<String, Any>>> = HashMap()
 
-    override fun events(aggregateId: String): List<Map<String, Any?>> {
+    override fun events(aggregateId: String): List<Map<String, Any>> {
         var eventsForDoc = repo[aggregateId]
         if (eventsForDoc == null) {
             return emptyList()
@@ -45,7 +45,7 @@ class InMemoryEventStore : EventStoreClient {
         }
     }
 
-    override fun storeEvent(aggregateId: String, eventPayload: Map<String, Any?>) {
+    override fun storeEvent(aggregateId: String, eventPayload: Map<String, Any>) {
         var eventsForDoc = repo[aggregateId]
         if (eventsForDoc == null) {
             eventsForDoc = ArrayList()

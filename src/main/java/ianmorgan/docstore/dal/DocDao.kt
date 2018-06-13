@@ -5,6 +5,7 @@ import graphql.language.NonNullType
 import graphql.language.ObjectTypeDefinition
 import graphql.language.TypeName
 import ianmorgan.docstore.mapper.GraphQLMapper
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction2
 
@@ -12,7 +13,10 @@ import kotlin.reflect.KFunction2
  * A Dao for saving (as events) and retrieving a single document. The document structure
  * is controlled by the GraphQL schema.
  */
-class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient : EventStoreClient = InMemoryEventStore()) {
+class DocDao constructor(
+    typeDefinition: ObjectTypeDefinition,
+    eventStoreClient: EventStoreClient = InMemoryEventStore()
+) {
     //private val repo = HashMap<String, Map<String, Any>>()
     private val es = eventStoreClient
     private lateinit var aggregateKey: String
@@ -36,7 +40,7 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient 
         val id = doc.get(aggregateKey) as String
         if (id != null) {
             checkAgainstSchema(doc)
-            es.storeEvent(id,doc)
+            es.storeEvent(id, buildUpdateEvent(doc))
         } else {
             throw RuntimeException("must have an aggregate id")
         }
@@ -44,13 +48,13 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient 
 
     fun retrieve(aggregateId: String): Map<String, Any>? {
         val events = es.events(aggregateId)
-        if (!events.isEmpty()){
+        if (!events.isEmpty()) {
             return DocReducer.reduceEvents(events)
         }
         return null
     }
 
-    fun count() : Int{
+    fun count(): Int {
         return es.aggregateKeys().size
     }
 
@@ -58,16 +62,16 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient 
      * Find all docs that match on this field name
      *
      */
-    fun findByField(fieldNameExpression: String, value : Any): List<Map<String, Any>> {
+    fun findByField(fieldNameExpression: String, value: Any): List<Map<String, Any>> {
         val result = ArrayList<Map<String, Any>>()
 
         val matcher = pickMatcher(fieldNameExpression)
         val fieldName = rootFieldName(fieldNameExpression)
 
         // TODO - production quality would need an indexing strategy
-        for (key in es.aggregateKeys()){
+        for (key in es.aggregateKeys()) {
             val doc = retrieve(key)!!
-            if (matcher(doc[fieldName],value)){
+            if (matcher(doc[fieldName], value)) {
                 result.add(doc)
             }
         }
@@ -76,8 +80,7 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient 
 
 
     fun delete(aggregateId: String) {
-        // fake a delete type event for now
-        es.storeEvent(aggregateId, mapOf("action" to "delete"))
+        es.storeEvent(aggregateId, buildDeleteEvent())
     }
 
     /**
@@ -88,15 +91,14 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient 
         return aggregateKey
     }
 
-    private fun equalsMatcher (actual : Any?, expected : Any) : Boolean {
+    private fun equalsMatcher(actual: Any?, expected: Any): Boolean {
         return actual == expected
     }
 
-    private fun containsMatcher (actual : Any?, expected : Any) : Boolean {
+    private fun containsMatcher(actual: Any?, expected: Any): Boolean {
         if (actual is String) {
             return actual.toLowerCase().contains((expected as String).toLowerCase())
-        }
-        else {
+        } else {
             return actual.toString().toLowerCase().contains((expected as String).toLowerCase())
         }
     }
@@ -105,13 +107,12 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient 
         return fieldNameExpression.split("_")[0]
     }
 
-    private fun pickMatcher(fieldNameExpression : String): KFunction2<@ParameterName(name = "actual") Any?, @ParameterName(
+    private fun pickMatcher(fieldNameExpression: String): KFunction2<@ParameterName(name = "actual") Any?, @ParameterName(
         name = "expected"
     ) Any, Boolean> {
-        if (fieldNameExpression.endsWith("_contains")){
+        if (fieldNameExpression.endsWith("_contains")) {
             return ::containsMatcher
-        }
-        else {
+        } else {
             return ::equalsMatcher
         }
     }
@@ -137,57 +138,76 @@ class DocDao constructor(typeDefinition: ObjectTypeDefinition, eventStoreClient 
     }
 
 
-        /**
-         * Expose the fields in the GraphQL schema mapped to their Java types
-         *
-         * TODO - more work will be needed to define the base set of type conversion rules.
-         */
-        fun fields(): Map<String, KClass<Any>> {
-            return fields
-        }
+    /**
+     * Expose the fields in the GraphQL schema mapped to their Java types
+     *
+     * TODO - more work will be needed to define the base set of type conversion rules.
+     */
+    fun fields(): Map<String, KClass<Any>> {
+        return fields
+    }
 
 
-        private fun initAggregateKey(typeDefinition: ObjectTypeDefinition) {
-            // navigate the schema information to find an ID field
-            for (field in typeDefinition.fieldDefinitions) {
-                val rawType = field.type
-                if (rawType is NonNullType) {
-                    val type = rawType.type
-                    if (type is TypeName) {
-                        if (type.name == "ID") {
-                            aggregateKey = field.name
-                            break
-                        }
+    private fun initAggregateKey(typeDefinition: ObjectTypeDefinition) {
+        // navigate the schema information to find an ID field
+        for (field in typeDefinition.fieldDefinitions) {
+            val rawType = field.type
+            if (rawType is NonNullType) {
+                val type = rawType.type
+                if (type is TypeName) {
+                    if (type.name == "ID") {
+                        aggregateKey = field.name
+                        break
                     }
                 }
             }
         }
+    }
 
-        private fun initFields(typeDefinition: ObjectTypeDefinition) {
-            val working = HashMap<String, KClass<Any>>();
+    private fun initFields(typeDefinition: ObjectTypeDefinition) {
+        val working = HashMap<String, KClass<Any>>();
 
-            for (field in typeDefinition.fieldDefinitions) {
-                val rawType = field.type
-                if (rawType is NonNullType) {
-                    val type = rawType.type
-                    if (type is TypeName) {
-                        working[field.name] = GraphQLMapper.graphQLTypeToJsonType(type.name)
-                    }
-                    if (type is ListType) {
-                        // this represents a list of enumeration, which we will represent
-                        // a list
-                        working[field.name] = List::class as KClass<Any>
-                    }
+        for (field in typeDefinition.fieldDefinitions) {
+            val rawType = field.type
+            if (rawType is NonNullType) {
+                val type = rawType.type
+                if (type is TypeName) {
+                    working[field.name] = GraphQLMapper.graphQLTypeToJsonType(type.name)
                 }
-                if (rawType is ListType) {
+                if (type is ListType) {
+                    // this represents a list of enumeration, which we will represent
+                    // a list
                     working[field.name] = List::class as KClass<Any>
                 }
-                if (rawType is TypeName) {
-                    working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
-                }
             }
-            fields = working
+            if (rawType is ListType) {
+                working[field.name] = List::class as KClass<Any>
+            }
+            if (rawType is TypeName) {
+                working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
+            }
         }
-
-
+        fields = working
     }
+
+    private fun buildUpdateEvent(data: Map<String, Any?>): Map<String, Any> {
+        val ev = HashMap<String, Any>()
+        ev["type"] = "DocUpdated"
+        ev["id"] = UUID.randomUUID().toString()
+        ev["timestamp"] = System.currentTimeMillis()
+        ev["creator"] = "doc-store"
+        ev["payload"] = data
+        return ev
+    }
+
+    private fun buildDeleteEvent(): Map<String, Any> {
+        val ev = HashMap<String, Any>()
+        ev["type"] = "DocDeleted"
+        ev["id"] = UUID.randomUUID().toString()
+        ev["timestamp"] = System.currentTimeMillis()
+        ev["creator"] = "doc-store"
+        return ev
+    }
+}
+
+
