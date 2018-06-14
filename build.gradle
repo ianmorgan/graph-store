@@ -96,13 +96,25 @@ compileTestKotlin {
 }
 
 
-jar {
-    manifest {
-        attributes "Main-Class": "$mainClassName"
-    }
+task depsJar(type: Jar) {
+    archiveName = "doc-store-deps.jar"
 
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
-
 }
+
+task stashDepsJar(type: Copy) {
+    from 'build/libs/doc-store-deps.jar'
+    into "stash"
+}
+
+task appJar (type: Jar) {
+    dependsOn = ['compileKotlin']
+
+    archiveName = "doc-store-app.jar"
+    from {
+        sourceSets.main.java
+    }
+}
+

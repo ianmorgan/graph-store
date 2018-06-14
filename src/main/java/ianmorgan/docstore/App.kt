@@ -24,7 +24,7 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
     lateinit var theDao : DocsDao
 
     fun init(): Javalin {
-
+        println ("Starting...")
         if(cmd.hasOption("h")) {
             println ("help message")
         }
@@ -53,6 +53,9 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
 
         val controller = Controller(dao, graphQL)
         controller.register(app)
+
+        println ("Ready :)")
+
 
         //JavalinJacksonPlugin.configure()
 
