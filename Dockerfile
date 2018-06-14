@@ -1,18 +1,19 @@
-FROM mirriad/mmp-java:latest
-LABEL maintainer="marketplace@mirriad.com"
+FROM openjdk:10.0.1-jre
+LABEL maintainer="ian.j.morgan@gmail.com"
 
-EXPOSE 9912
+EXPOSE 7002
 
-RUN mkdir -p /home/mirriad/app/datasets
-RUN mkdir -p /home/mirriad/app/src/main/resources/mirriaddocs
+RUN mkdir -p /home/app/
+RUN mkdir -p /home/app/src/test/resources/starwars
+RUN mkdir -p /home/app/src/schema
 
-COPY ./docker/run.sh /home/mirriad/app/run.sh
-RUN chmod +x /home/mirriad/app/run.sh
+COPY ./docker/run.sh /home/app/run.sh
+RUN chmod +x /home/app/run.sh
 
-COPY ./src/main/resources/eventfiles/* /home/mirriad/app/datasets/
-COPY ./src/main/resources/mirriaddocs/* /home/mirriad/app/src/main/resources/mirriaddocs/
-COPY ./build/libs/event-store-service2*.jar /home/mirriad/app/event-store-service2.jar
+COPY ./src/schema/* /home/app/src/schema/
+COPY ./src/test/resources/starwars/* /home/app/src/test/resources/starwars/
+COPY ./build/libs/doc-store*.jar /home/app/doc-store.jar
 
-WORKDIR /home/mirriad/app
+WORKDIR /home/app
 
 ENTRYPOINT ["./run.sh"]
