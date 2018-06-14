@@ -15,17 +15,21 @@ object DocReducerSpec : Spek({
 
     describe ("reducing doc events to recreate state") {
 
-        it ("should reduce single event to itself") {
+        it ("should reduce a single event to itself") {
+            // setup
             val event = mapOf<String,Any>("name" to "Luke")
-            val result = DocReducer.reduceEvents(listOf(Helper.buildEvent(event)))
 
+            // verify
+            val result = DocReducer.reduceEvents(listOf(Helper.buildEvent(event)))
             assert.that(result, equalTo(event))
         }
 
-        it ("should apply partial update to original state") {
+        it ("should apply update to preceding state") {
+            // setup
             val ev1 = mapOf<String,Any>("name" to "Luke", "homePlanet" to "Tatooine")
             val ev2 = mapOf("name" to "Luke Skywalker", "appearsIn" to listOf("NEWHOPE"))
 
+            // verify
             val expected =  mapOf<String,Any>("name" to "Luke Skywalker",
                 "homePlanet" to "Tatooine",
                 "appearsIn" to listOf("NEWHOPE"))
@@ -33,10 +37,12 @@ object DocReducerSpec : Spek({
             assert.that(result, equalTo(expected))
         }
 
-        it ("should remove uodated fields set to null") {
+        it ("should remove updated fields set to null") {
+            // setup
             val ev1 = mapOf<String,Any?>("name" to "Luke", "homePlanet" to "Tatooine")
             val ev2 = mapOf<String,Any?>("name" to "Luke Skywalker", "homePlanet" to null)
 
+            // verify
             val expected =  mapOf<String,Any>("name" to "Luke Skywalker")
             val result = DocReducer.reduceEvents(Helper.buildEvents(listOf(ev1, ev2)))
             assert.that(result, equalTo(expected))
