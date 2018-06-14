@@ -5,7 +5,7 @@ Think of it as a cutdown, single node MongoDB that supports GraphQL and which ke
 of every change.
 
 The inbuilt query model is quite limited, as this solution is aimed for applications built 
-using DDD and CQRS principles. The intention is that is as more complex query models are 
+using DDD and CQRS principles. The intention is that as more complex query models are 
 required other services will monitor the event stream(s) to build dedicated views 
 using the appropriate technology.
 
