@@ -16,8 +16,6 @@ Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/doc-
 
 
 
-
-
 ## Getting started 
 
 The doc-store requires a running [event-store](https://ianmorgan.github.io/event-store/) and a JVM 
@@ -39,7 +37,7 @@ More detail on building and running under Docker is [here](docker).
 
 
 The API is document centric, 
-with each document representing a [DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html) . 
+with each document representing a [DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html). 
 
 The first step is to register a schema associated with one or more documents. This is in the [GraphQL schema](http://graphql.org/learn/schema/)
 format. The examples here are all based on the [Star Wars](https://github.com/apollographql/starwars-server/blob/master/data/swapiSchema.js) 
