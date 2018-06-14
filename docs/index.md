@@ -16,6 +16,8 @@ Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/doc-
 
 
 
+
+
 ## Getting started 
 
 The doc-store requires a running [event-store](https://ianmorgan.github.io/event-store/) and a JVM 
@@ -26,6 +28,14 @@ To run locally
 ```bash
 ./gradlew run
 ```
+
+To run under Docker 
+
+```bash
+docker run -d -p 7002:7002 ianmorgan/doc-store
+```
+
+More detail on building and running under Docker is [here](docker).
 
 
 The API is document centric, 
