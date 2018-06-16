@@ -7,10 +7,14 @@ RUN mkdir -p /home/app/
 RUN mkdir -p /home/app/src/test/resources/starwars
 RUN mkdir -p /home/app/src/schema
 
-WORKDIR /home/app
-ENTRYPOINT ["./run.sh"]
 COPY ./docker/run.sh /home/app/run.sh
 RUN chmod +x /home/app/run.sh
+
+COPY ./wait-for-it/wait-for-it.sh /home/app/wait-for-it.sh
+RUN chmod +x /home/app/wait-for-it.sh
+
+WORKDIR /home/app
+ENTRYPOINT ["./run.sh"]
 
 # try to reduce times this is updated
 COPY ./stash/doc-store-deps.jar /home/app/doc-store-deps.jar
