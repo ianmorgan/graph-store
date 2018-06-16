@@ -25,7 +25,7 @@ import java.io.File
 object RealEventStoreClientSpec : Spek({
 
 
-    xdescribe ("the client to a real event store") {
+    describe ("the client to a real event store") {
 
         it ("should read existing events for an aggregate ") {
             val client = RealEventStore()
