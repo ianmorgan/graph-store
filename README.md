@@ -1,4 +1,5 @@
 # doc-store
+[![Travis CI](https://img.shields.io/travis/ianmorgan/doc-store/master.svg)](https://travis-ci.org/ianmorgan/doc-store)
 
 Provides a simple document style persistence API with the 
 following features: 
