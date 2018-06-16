@@ -1,5 +1,7 @@
 package ianmorgan.docstore.dal
 
+import ianmorgan.github.io.jsonUtils.JsonHelper
+
 /**
  * General interface to an underlying event store holding the updates
  */
@@ -33,7 +35,6 @@ interface EventStoreClient {
  */
 class InMemoryEventStore : EventStoreClient {
 
-
     private val repo: MutableMap<String, MutableList<Map<String, Any>>> = HashMap()
 
     override fun events(aggregateId: String): List<Map<String, Any>> {
@@ -59,5 +60,26 @@ class InMemoryEventStore : EventStoreClient {
     }
 
 
+}
+
+class RealEventStore : EventStoreClient {
+    override fun events(aggregateId: String): List<Map<String, Any>> {
+        val response = khttp.get("http://event-store:7001/events?aggregateId=$aggregateId")
+
+        val result  = JsonHelper.jsonToMap(response.jsonObject)
+        println (result)
+
+        val payload = result["payload"] as Map<String,Any>;
+        val events = payload["events"] as List<Map<String,Any>>
+        return events
+    }
+
+    override fun aggregateKeys(): Set<String> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun storeEvent(aggregateId: String, eventPayload: Map<String, Any>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
 }
