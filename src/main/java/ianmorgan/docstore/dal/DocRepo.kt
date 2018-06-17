@@ -1,6 +1,7 @@
 package ianmorgan.docstore.dal
 
 import ianmorgan.github.io.jsonUtils.JsonHelper
+import org.json.JSONArray
 
 /**
  * General interface to an underlying event store holding the updates
@@ -63,8 +64,10 @@ class InMemoryEventStore : EventStoreClient {
 }
 
 class RealEventStore : EventStoreClient {
+    val baseURL = "http://event-store:7001/"
     override fun events(aggregateId: String): List<Map<String, Any>> {
-        val response = khttp.get("http://event-store:7001/events?aggregateId=$aggregateId")
+        // TODO - nicer handing of error conditions
+        val response = khttp.get(baseURL + "events?aggregateId=$aggregateId")
 
         val result  = JsonHelper.jsonToMap(response.jsonObject)
         println (result)
@@ -75,11 +78,23 @@ class RealEventStore : EventStoreClient {
     }
 
     override fun aggregateKeys(): Set<String> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // TODO - nicer handing of error conditions
+        val response = khttp.get(baseURL + "aggregates")
+
+        val result  = JsonHelper.jsonToMap(response.jsonObject)
+        println (result)
+
+        val payload = result["payload"] as Map<String,Any>;
+        val aggragates = payload["aggregates"] as List<String>
+        return aggragates.toSet()
     }
 
     override fun storeEvent(aggregateId: String, eventPayload: Map<String, Any>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // TODO - nicer handing of error conditions
+        val response = khttp.post(baseURL + "events", data = JSONArray(listOf(eventPayload)))
+        if (response.statusCode != 200){
+            throw RuntimeException("Problem saving event! ")
+        }
     }
 
 }

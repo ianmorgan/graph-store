@@ -34,7 +34,11 @@ repositories {
     maven { url "http://dl.bintray.com/jetbrains/spek" }
     maven { url  "https://dl.bintray.com/ianmorgan/commons" }
 
+
+
     jcenter()
+
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -80,6 +84,9 @@ dependencies {
     testCompile ('org.junit.platform:junit-platform-runner:1.0.0')
 
     testCompile 'khttp:khttp:0.1.0'
+
+    implementation 'com.github.ianmorgan:json-utils:cfade3eb55'
+
 
 }
 
