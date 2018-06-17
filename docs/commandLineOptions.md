@@ -6,12 +6,12 @@ The following are (will be!) supported
 
 Prints a help message
 
-### --schmea <schmea> (-S) 
+### ---schmea <schmea> (-S) 
 
 Will automatically load one of the predefined schemas. By default the starwars 
 schema is loaded.
 
-### --seed <dataset> (-s)
+### ----seed <dataset> (-s)
 
 Will automatically seed with the schema and data in the dataset. By default the 
 test data for the starwars schema is loaded
