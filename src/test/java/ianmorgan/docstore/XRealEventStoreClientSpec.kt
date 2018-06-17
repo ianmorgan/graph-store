@@ -46,7 +46,7 @@ object XRealEventStoreClientSpec : Spek({
                 "creator" to "test",
                 "aggregateId" to aggregateId
             )
-            client.storeEvent(aggregateId, ev)
+            client.storeEvent(ev)
 
             // verify saved
             val result = client.events(aggregateId)
@@ -58,7 +58,6 @@ object XRealEventStoreClientSpec : Spek({
             val result = client.aggregateKeys("Aggregate")
             assert.that(result.isEmpty(), equalTo(false))
         }
-
 
     }
 

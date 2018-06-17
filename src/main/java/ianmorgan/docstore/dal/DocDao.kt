@@ -40,7 +40,7 @@ class DocDao constructor(
         val id = doc.get(aggregateKey) as String
         if (id != null) {
             checkAgainstSchema(doc)
-            es.storeEvent(id, buildUpdateEvent(id,doc))
+            es.storeEvent(buildUpdateEvent(id,doc))
         } else {
             throw RuntimeException("must have an aggregate id")
         }
@@ -80,7 +80,7 @@ class DocDao constructor(
 
 
     fun delete(aggregateId: String) {
-        es.storeEvent(aggregateId, buildDeleteEvent(aggregateId))
+        es.storeEvent(buildDeleteEvent(aggregateId))
     }
 
     /**

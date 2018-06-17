@@ -19,7 +19,7 @@ interface EventStoreClient {
      *
      *
      */
-    fun storeEvent(aggregateId: String, eventPayload: Map<String, Any>)
+    fun storeEvent(eventPayload: Map<String, Any>)
 
     /**
      * Retrieve all events for a given aggregate
@@ -47,7 +47,8 @@ class InMemoryEventStore : EventStoreClient {
         }
     }
 
-    override fun storeEvent(aggregateId: String, eventPayload: Map<String, Any>) {
+    override fun storeEvent(eventPayload: Map<String, Any>) {
+        val aggregateId = eventPayload["aggregateId"] as String
         var eventsForDoc = repo[aggregateId]
         if (eventsForDoc == null) {
             eventsForDoc = ArrayList()
@@ -97,7 +98,7 @@ class RealEventStore : EventStoreClient {
         return aggragates.toSet()
     }
 
-    override fun storeEvent(aggregateId: String, eventPayload: Map<String, Any>) {
+    override fun storeEvent(eventPayload: Map<String, Any>) {
         // TODO - nicer handing of error conditions
         val response = khttp.post(baseURL + "events", data = JSONArray(listOf(eventPayload)))
         if (response.statusCode != 200){

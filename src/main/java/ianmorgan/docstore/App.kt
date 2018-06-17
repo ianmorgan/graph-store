@@ -10,6 +10,7 @@ import org.apache.commons.cli.Options
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import java.io.FileInputStream
+import kotlin.math.exp
 
 
 fun main(args: Array<String>) {
@@ -34,11 +35,12 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
         var eventStoreClient : EventStoreClient = InMemoryEventStore()
         println ("Starting...")
         if(cmd.hasOption("h")) {
-            println ("help message")
+            println ("todo - add a help message")
+            System.exit(0)
         }
 
         if (cmd.hasOption("E")) {
-            println("use a real event store")
+            println("Using  a real event store")
             eventStoreClient = RealEventStore()
         }
 
