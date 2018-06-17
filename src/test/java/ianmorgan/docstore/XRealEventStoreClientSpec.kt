@@ -6,6 +6,7 @@ import ianmorgan.docstore.dal.RealEventStore
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.api.dsl.xdescribe
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
 import java.util.*
@@ -23,7 +24,7 @@ object XRealEventStoreClientSpec : Spek({
 
     val randoms = Random().ints(1, 1000000).iterator()
 
-    describe("the client to a real event store") {
+    xdescribe("the client to a real event store") {
 
         it("should read existing events for an aggregate") {
             val client = RealEventStore()
