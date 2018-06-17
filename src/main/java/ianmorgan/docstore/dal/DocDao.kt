@@ -40,7 +40,7 @@ class DocDao constructor(
         val id = doc.get(aggregateKey) as String
         if (id != null) {
             checkAgainstSchema(doc)
-            es.storeEvent(id, buildUpdateEvent(doc))
+            es.storeEvent(id, buildUpdateEvent(id,doc))
         } else {
             throw RuntimeException("must have an aggregate id")
         }
@@ -80,7 +80,7 @@ class DocDao constructor(
 
 
     fun delete(aggregateId: String) {
-        es.storeEvent(aggregateId, buildDeleteEvent())
+        es.storeEvent(aggregateId, buildDeleteEvent(aggregateId))
     }
 
     /**
@@ -190,21 +190,23 @@ class DocDao constructor(
         fields = working
     }
 
-    private fun buildUpdateEvent(data: Map<String, Any?>): Map<String, Any> {
+    private fun buildUpdateEvent(aggregateId : String, data: Map<String, Any?>): Map<String, Any> {
         //val docName =
         val ev = HashMap<String, Any>()
         ev["type"] = docName+"Updated"
         ev["id"] = UUID.randomUUID().toString()
+        ev["aggregateId"] = aggregateId
         ev["timestamp"] = System.currentTimeMillis()
         ev["creator"] = "doc-store"
         ev["payload"] = data
         return ev
     }
 
-    private fun buildDeleteEvent(): Map<String, Any> {
+    private fun buildDeleteEvent(aggregateId : String): Map<String, Any> {
         val ev = HashMap<String, Any>()
         ev["type"] = docName+"Deleted"
         ev["id"] = UUID.randomUUID().toString()
+        ev["aggregateId"] = aggregateId
         ev["timestamp"] = System.currentTimeMillis()
         ev["creator"] = "doc-store"
         return ev
