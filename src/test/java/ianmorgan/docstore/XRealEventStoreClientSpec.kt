@@ -55,7 +55,7 @@ object XRealEventStoreClientSpec : Spek({
 
         it("should read list of all aggregates ") {
             val client = RealEventStore()
-            val result = client.aggregateKeys()
+            val result = client.aggregateKeys("Aggregate")
             assert.that(result.isEmpty(), equalTo(false))
         }
 

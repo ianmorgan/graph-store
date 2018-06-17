@@ -12,13 +12,14 @@ object DocReducer {
         for (event in events){
             val type = event["type"] as String
 
-            if (type == "DocUpdated") {
+
+            if (type.endsWith("Updated")) {
                 val payload = event["payload"] as Map<String,Any?>
                 working = working
                     .plus(payload)      // merge event
                     .filterValues { it -> it != null }              // null indicates removal of the field
             }
-            if (type == "DocDeleted"){
+            if (type.endsWith("Deleted")){
                 working = HashMap()
             }
         }

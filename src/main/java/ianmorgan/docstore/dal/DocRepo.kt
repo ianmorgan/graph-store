@@ -27,7 +27,7 @@ interface EventStoreClient {
     fun events(aggregateId: String): List<Map<String, Any>>
 
 
-    fun aggregateKeys() : Set<String>
+    fun aggregateKeys(docType : String) : Set<String>
 
 }
 
@@ -56,10 +56,18 @@ class InMemoryEventStore : EventStoreClient {
         eventsForDoc.add(eventPayload)
     }
 
-    override fun aggregateKeys(): Set<String> {
-        return repo.keys
+    override fun aggregateKeys(docType : String): Set<String> {
+        val result = HashSet<String>()
+        for (entry in repo.entries){
+          for (event in entry.value){
+              if ((event["type"] as String).startsWith(docType) ){
+                  result.add(entry.key)
+                  break;
+              }
+          }
+        }
+        return result
     }
-
 
 }
 
@@ -77,7 +85,7 @@ class RealEventStore : EventStoreClient {
         return events
     }
 
-    override fun aggregateKeys(): Set<String> {
+    override fun aggregateKeys(docType: String): Set<String> {
         // TODO - nicer handing of error conditions
         val response = khttp.get(baseURL + "aggregates")
 

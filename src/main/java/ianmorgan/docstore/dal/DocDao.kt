@@ -17,7 +17,7 @@ class DocDao constructor(
     typeDefinition: ObjectTypeDefinition,
     eventStoreClient: EventStoreClient = InMemoryEventStore()
 ) {
-    //private val repo = HashMap<String, Map<String, Any>>()
+    private val docName = typeDefinition.name
     private val es = eventStoreClient
     private lateinit var aggregateKey: String
     private lateinit var fields: Map<String, KClass<Any>>
@@ -55,7 +55,7 @@ class DocDao constructor(
     }
 
     fun count(): Int {
-        return es.aggregateKeys().size
+        return es.aggregateKeys(docName).size
     }
 
     /**
@@ -69,7 +69,7 @@ class DocDao constructor(
         val fieldName = rootFieldName(fieldNameExpression)
 
         // TODO - production quality would need an indexing strategy
-        for (key in es.aggregateKeys()) {
+        for (key in es.aggregateKeys(docName)) {
             val doc = retrieve(key)!!
             if (matcher(doc[fieldName], value)) {
                 result.add(doc)
@@ -191,8 +191,9 @@ class DocDao constructor(
     }
 
     private fun buildUpdateEvent(data: Map<String, Any?>): Map<String, Any> {
+        //val docName =
         val ev = HashMap<String, Any>()
-        ev["type"] = "DocUpdated"
+        ev["type"] = docName+"Updated"
         ev["id"] = UUID.randomUUID().toString()
         ev["timestamp"] = System.currentTimeMillis()
         ev["creator"] = "doc-store"
@@ -202,7 +203,7 @@ class DocDao constructor(
 
     private fun buildDeleteEvent(): Map<String, Any> {
         val ev = HashMap<String, Any>()
-        ev["type"] = "DocDeleted"
+        ev["type"] = docName+"Deleted"
         ev["id"] = UUID.randomUUID().toString()
         ev["timestamp"] = System.currentTimeMillis()
         ev["creator"] = "doc-store"

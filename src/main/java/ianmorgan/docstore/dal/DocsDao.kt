@@ -9,9 +9,11 @@ import java.io.FileInputStream
  * A Dao to query documents. The real implementation uses an event store,
  * but the client doesn't need to know this.
  */
-class DocsDao constructor(graphQLSchema: String) {
-    private val docDaoLookup = HashMap<String, DocDao>();
-    private val interfaceDaoLookup = HashMap<String, InterfaceDao>();
+class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreClient = InMemoryEventStore()) {
+    private val docDaoLookup = HashMap<String, DocDao>()
+    private val interfaceDaoLookup = HashMap<String, InterfaceDao>()
+    private val eventStoreClient = eventStoreClient
+
 
     init {
         initFromSchema(graphQLSchema)
@@ -40,7 +42,8 @@ class DocsDao constructor(graphQLSchema: String) {
 
         // wireup a DocDao for each type
         for (docName in helper.objectDefinitionNames()) {
-            docDaoLookup.put(docName, DocDao(helper.objectDefinition(docName)))
+            docDaoLookup[docName]= DocDao(typeDefinition = helper.objectDefinition(docName),
+                eventStoreClient = eventStoreClient)
         }
 
         // wireup an InterfaceDao for each interface

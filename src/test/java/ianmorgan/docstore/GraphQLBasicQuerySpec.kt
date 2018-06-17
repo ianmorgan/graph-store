@@ -64,7 +64,6 @@ object GraphQLBasicQuerySpec : Spek({
                 equalTo("{droid={name=R2-D2, appearsIn=[NEWHOPE, EMPIRE, JEDI], primaryFunction=Astromech}}"))
         }
 
-
         it ("return null result if Droid not found") {
 
             val query = """{

@@ -121,3 +121,8 @@ task appJar (type: Jar) {
     }
 }
 
+run {
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    }
+}

@@ -18,14 +18,20 @@ Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/doc-
 
 ## Getting started 
 
-The doc-store requires a running [event-store](https://ianmorgan.github.io/event-store/) and a JVM 
-(at least version 8)
 
-To run locally
+To run locally with an in memory event-store and default star wars schema
 
 ```bash
 ./gradlew run
 ```
+
+To run with [command line options](commandLineOptions)
+
+```bash
+.\gradlew run -PappArgs="['-h']"
+```
+
+
 
 To run under Docker 
 
@@ -33,6 +39,8 @@ To run under Docker
 docker run -d -p 7002:7002 ianmorgan/doc-store
 ```
 
+As there are dependencies on other services, its better to use a docker compose file. There is 
+an example on [Github](https://github.com/ianmorgan/docker-stacks/tree/master/doc-store-starwars). 
 More detail on building and running under Docker is [here](docker).
 
 
