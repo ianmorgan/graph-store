@@ -6,6 +6,7 @@ import ianmorgan.docstore.dal.InMemoryEventStore
 import ianmorgan.docstore.dal.RealEventStore
 import ianmorgan.docstore.graphql.GraphQLFactory2
 import io.javalin.Javalin
+import io.javalin.embeddedserver.Location
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
@@ -48,6 +49,7 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
             port(port)
             exception(Exception::class.java) { e, _ -> e.printStackTrace() }
             error(404) { ctx -> ctx.json("not found") }
+            enableStaticFiles("/www", Location.CLASSPATH)
         }.start()
         app.routes {
         }

@@ -5,6 +5,7 @@ import ianmorgan.docstore.dal.DocsDao
 import io.javalin.ApiBuilder
 import io.javalin.ApiBuilder.path
 import io.javalin.Javalin
+import io.javalin.embeddedserver.Location
 import org.json.JSONObject
 
 
@@ -21,6 +22,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                 "stackTrace" to e.stackTrace.joinToString("\n"))
             ctx.json(mapOf("errors" to listOf(payload)))
         }
+
 
         app.routes {
             ApiBuilder.get("/graphql") { ctx ->
@@ -105,7 +107,13 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                 }
             }
 
+            ApiBuilder.get("/") { ctx ->
+                ctx.redirect("/index.html")
+            }
+
 
         }
+
+
     }
 }
