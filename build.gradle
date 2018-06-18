@@ -100,6 +100,8 @@ compileTestKotlin {
 
 
 task depsJar(type: Jar) {
+    dependsOn = ['compileKotlin']
+
     archiveName = "doc-store-deps.jar"
 
     from {
@@ -117,7 +119,7 @@ task appJar (type: Jar) {
 
     archiveName = "doc-store-app.jar"
     from {
-        sourceSets.main.java
+        sourceSets.main.output
     }
 }
 

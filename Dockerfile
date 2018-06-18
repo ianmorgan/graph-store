@@ -13,8 +13,7 @@ RUN chmod +x /home/app/run.sh
 COPY ./wait-for-it/wait-for-it.sh /home/app/wait-for-it.sh
 RUN chmod +x /home/app/wait-for-it.sh
 
-WORKDIR /home/app
-ENTRYPOINT ["./run.sh"]
+
 
 # try to reduce times this is updated
 COPY ./stash/doc-store-deps.jar /home/app/doc-store-deps.jar
@@ -23,5 +22,10 @@ COPY ./stash/doc-store-deps.jar /home/app/doc-store-deps.jar
 COPY ./src/schema/* /home/app/src/schema/
 COPY ./src/test/resources/starwars/* /home/app/src/test/resources/starwars/
 COPY ./build/libs/doc-store-app.jar /home/app/doc-store-app.jar
+
+RUN ls -l /home/app/
+
+WORKDIR /home/app
+ENTRYPOINT ["./run.sh"]
 
 
