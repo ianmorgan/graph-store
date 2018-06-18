@@ -35,16 +35,26 @@
 <div id="content-wrapper">
     <div class="inner clearfix">
         <div>
-
             <a href="https://travis-ci.org/ianmorgan/doc-store" rel="nofollow"><img src="https://camo.githubusercontent.com/713fe61739b8aa64c234ea038250d230759228b6/68747470733a2f2f696d672e736869656c64732e696f2f7472617669732f69616e6d6f7267616e2f646f632d73746f72652f6d61737465722e737667" alt="Travis CI" data-canonical-src="https://img.shields.io/travis/ianmorgan/doc-store/master.svg" style="max-width:100%;"></a>
             <a href="https://github.com/ianmorgan/doc-store/blob/master/LICENSE"><img src="https://camo.githubusercontent.com/fb40b6b49e267481498161e73a8c1a5e1bd9a381/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f6c6963656e73652f69616e6d6f7267616e2f646f632d73746f72652e737667" alt="License" data-canonical-src="https://img.shields.io/github/license/ianmorgan/doc-store.svg" style="max-width:100%;"></a></p>
         </div>
 
         <section id="main-content">
-            <h2 id="introduction">Introduction</h2>
+            <h2 id="about">About</h2>
 
             Setup DDD style aggregates from a GraphQL schema. Store aggregate state to an
-            event-store and query using both traditional REST style and GraphQL
+            event-store and query using both traditional REST style and GraphQL.
+
+            For more detail see the [online docs](https://ianmorgan.github.io/doc-store/) or
+            the [Github repo](https://github.com/ianmorgan/doc-store).
+
+
+            <h2 id="queries">Example GraphQL Queries</h2>
+
+            <p>Below are some example of GraphQL queries against the star wars demo schema</p>
+
+            <a href="/graphql?query={droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends}}">R2-D2</a>
+
 
         </section>
 

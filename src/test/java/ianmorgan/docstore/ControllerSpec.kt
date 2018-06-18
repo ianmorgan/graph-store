@@ -37,16 +37,22 @@ object ControllerSpec : Spek({
             beforeEachTest {}
 
             it("should return R2D2") {
-                val query = URIUtil.encodePath("query={droid(id: \"2001\") {name}}")
+                val query = URIUtil.encodePath("query={droid(id: \"2001\") {name, friends { name } }}")
                 val response = khttp.get(url = baseUrl + "graphql?" + query)
                 assert.that(response.statusCode, equalTo(200))
 
+
                 val expectedJson = """
-                    {"data":{"droid": {"name":"R2-D2"}}}
+                    {"data":{"droid": {
+                        "name":"R2-D2",
+                         "friends":[{"name":"Luke Skywalker"}, {"name":"Han Solo"}, {"name":"Leia Organa"}]
+                         }
+                        }
+                    }
 """
                 val actualAsMap = JsonHelper.jsonToMap(response.jsonObject)
                 val expectedAsMap = JsonHelper.jsonToMap(JSONObject(expectedJson))
-                assert.that(expectedAsMap, equalTo(actualAsMap))
+                assert.that(actualAsMap, equalTo(expectedAsMap))
             }
         }
 

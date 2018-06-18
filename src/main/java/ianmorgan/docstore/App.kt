@@ -55,7 +55,7 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
         }
 
         // setup the  main controller
-        val starWarSchema = FileInputStream("src/schema/starwarsSimple.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
+        val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
         val dao = DocsDao(starWarSchema,eventStoreClient)
         theDao = dao
 

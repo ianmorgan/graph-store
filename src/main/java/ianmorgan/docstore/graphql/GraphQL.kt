@@ -51,12 +51,15 @@ object GraphQLFactory2 {
                         val name = f.name
 
                         if (helper.objectDefinitionNames().contains(typeName)) {
+
+
                             // wire up a regular doc fetcher
                             builder.dataFetcher(
                                 name,
                                 Fetcher.docFetcher(
                                     docsDao,
-                                    helper.objectDefinition(typeName)
+                                    helper.objectDefinition(typeName),
+                                    builder
                                 )
                             )
                         } else if (helper.interfaceDefinitionNames().contains(typeName)) {
@@ -112,6 +115,22 @@ object GraphQLFactory2 {
                 builder
             }
         )
+
+//        builder.type("Human", typeWiring -> typeWiring
+//        .dataFetcher("friends", StarWarsData.getFriendsDataFetcher())
+//        )
+
+        // TODO - this should be built dynamiaclly from the shchema
+//        builder.type("Droid", { builder ->
+//            builder.dataFetcher("friends", FriendsDataFetcher(docsDao.daoForInterface("Character")))
+//            builder
+//        })
+//
+//        builder.type("Human", { builder ->
+//            builder.dataFetcher("friends", FriendsDataFetcher(docsDao.daoForInterface("Character")))
+//            builder
+//        })
+
 
         // wireup handling of interfaces
         for (name in helper.interfaceDefinitionNames()) {

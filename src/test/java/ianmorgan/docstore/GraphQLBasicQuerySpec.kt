@@ -29,10 +29,12 @@ object GraphQLBasicQuerySpec : Spek({
             droidDao.store(mapOf("id" to "2001",
                 "name" to "R2-D2",
                 "appearsIn" to listOf("NEWHOPE","EMPIRE","JEDI"),
+                "friends" to listOf("1000"),
                 "primaryFunction" to "Astromech"))
             droidDao.store( mapOf(  "id" to "2002",
                 "name" to "C-3PO",
                 "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI"),
+                "friends" to listOf("2001"),
                 "primaryFunction" to "Protocol Droid"))
             val humanDao = docsDao.daoForDoc("Human")
             humanDao.store( mapOf(  "id" to "1000",
@@ -53,15 +55,13 @@ object GraphQLBasicQuerySpec : Spek({
         it ("should query for a Droid by id") {
 
             val query = """{
-                    droid(id: "2001") {
-                       name,appearsIn,primaryFunction
-                    }}
+                    droid(id: "2001") {name,appearsIn,primaryFunction,friends { name }}}
 """
             val result = graphQL.execute(query)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
             assert.that(result.getData<Any>().toString(),
-                equalTo("{droid={name=R2-D2, appearsIn=[NEWHOPE, EMPIRE, JEDI], primaryFunction=Astromech}}"))
+                equalTo("{droid={name=R2-D2, appearsIn=[NEWHOPE, EMPIRE, JEDI], primaryFunction=Astromech, friends=[{name=Luke Skywalker}]}}"))
         }
 
         it ("return null result if Droid not found") {
@@ -127,14 +127,14 @@ object GraphQLBasicQuerySpec : Spek({
             val query = """{
                     human(id: "1000") {
                        name,
-                       friends { name }
+                       friends { id, name }
                     }}
 """
             val result = graphQL.execute(query)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
             assert.that(result.getData<Any>().toString(),
-                equalTo("{human={name=Luke Skywalker, friends=[{name=Han Solo}]}}"))
+                equalTo("{human={name=Luke Skywalker, friends=[{id=1002, name=Han Solo}]}}"))
         }
 
 
