@@ -116,7 +116,7 @@ public class HelloWorld {
 //                        builder -> builder
 //                                .dataFetcher("hello", new StaticDataFetcher("world"))
 //                                .dataFetcher("character", starwarsDataFetcher)
-//                                .dataFetcher("driod", starwarsDataFetcher)
+//                                .dataFetcher("droid", starwarsDataFetcher)
 //
 //                                .typeResolver(typeResolver)
 //                                )

@@ -143,7 +143,7 @@ This is also available to query as a regular JSON doc (i.e. simple REST, no Grap
 
  
 ```bash
-curl -X GET http://localhost:7002/docs/Driod/2001
+curl -X GET http://localhost:7002/docs/Droid/2001
 ```
 
 returns 
