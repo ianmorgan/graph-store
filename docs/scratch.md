@@ -35,3 +35,7 @@ https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-an-instance.html
 sudo service httpd start
 
 ifconfig eth0 | grep inet | awk '{ print $2 }'
+
+```text
+gjgh
+```

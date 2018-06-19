@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-US" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,7 +9,9 @@
 
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <![endif]
+
+
 
     <!-- Begin Jekyll SEO tag v2.4.0 -->
     <title>doc-store</title>
@@ -20,6 +22,22 @@
     <script type="application/ld+json">
 {"name":"ianmorgan.github.io","description":"Ian’s Github website","@type":"WebSite","url":"http://ianmorgan.github.io/","headline":"Introduction","@context":"http://schema.org"}</script>
     <!-- End Jekyll SEO tag -->
+
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous">
+    </script>
+
+    <script>
+        $(document).ready(function(){
+    $("#doit").click(function(){
+        //$(this).hide();
+        //alert ("hello world");
+        //$.post( "docs/Droid/1234", { name: "John", time: "2pm" } );
+    });
+});
+    </script>
 
 </head>
 
@@ -40,50 +58,20 @@
         </div>
 
         <section id="main-content">
-            <h2 id="about">About</h2>
+            <h2 id="about">Update Doc</h2>
+
+            <form method="POST" action="/docs">
+
+                <textarea rows="20" cols="128" name="payload">
+{ &quot;id&quot; : &quot;2002&quot;,  &quot;docType&quot; : &quot;Droid&quot;, &quot;name&quot;: &quot;R5-D4&quot;,&quot;appearsIn&quot;: [&quot;NEWHOPE&quot;] }
+                </textarea>
+
+
+                <input id="doit" type="submit">Update Doc</input>
+            </form>
 
             Setup <a href="https://martinfowler.com/bliki/DDD_Aggregate.html">DDD style aggregates</a> from a GraphQL schema. Store aggregate state to an
-            event-store using REST, and query using both GraphQL and traditional REST. More advanced applications
-            can use CQRS principle to build custom data integrations and views by simply reducing
-            the underlying event stream
 
-            For more detail see the <a href="https://ianmorgan.github.io/doc-store/">online docs</a>  or
-            the <a href="https://github.com/ianmorgan/doc-store">Github repo</a>.
-
-
-            <h2 id="queries">Example GraphQL Queries</h2>
-
-            <p>Below are some example of GraphQL queries against the star wars demo schema</p>
-
-            <a href="/graphql?query={droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends{name}}}">R2-D2</a>
-
-            <h2 id="rest">Example Rest Interface</h2>
-
-            <h3>Query</h3>
-            <p>Individual types can be accessed via a more traditional resource style API</p>
-
-            <a href="/docs/Droid/2001">R2-D2</a>
-
-            <h3>Update</h3>
-            <p>To update, use one of the three POST form</p>
-
-            <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight">
-<code>http://doc-store:7001/docs/Droid/2001</code>
-<code>http://doc-store:7001/docs/Droid</code>
-<code>http://doc-store:7001/docs/</code>
-</pre></div></div>
-
-
-
-            <p>All forms accept either JSON in the body or as a FORM submission
-            with the JSON in a field named "payload"
-
-            Note that API is designed to work with document fragments,
-                see the <a href="https://ianmorgan.github.io/doc-store/">Docs</a> for more detail
-
-                There is a <a href="/post.html">POST form</a> for testing
-
-            </p>
 
 
         </section>
