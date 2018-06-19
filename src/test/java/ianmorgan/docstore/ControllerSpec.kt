@@ -90,6 +90,23 @@ object ControllerSpec : Spek({
                 assert.that(errors.getJSONObject(0).getString("message"),
                     equalTo("Unexpected field rubbish in document "))
             }
+
+            it("should extract docType amd Id from the doc") {
+                val url = baseUrl + "docs"
+                val payload = """
+               { "id" : "2002",  "docType" : "Droid", "name": "R5-D4","appearsIn": ["NEWHOPE"] }
+"""
+                // save document
+                val response = khttp.post(url, data = JSONObject(payload))
+                assert.that(response.statusCode, equalTo(200))
+                assert.that(response.jsonObject.toMap().isEmpty(), equalTo(true))
+
+                // check it can be read back
+                val readResponse = khttp.get(url = url + "/Droid/2002")
+                val result = readResponse.jsonObject.getJSONObject("data")
+
+                assert.that(result.getString("name"), equalTo("R5-D4"))
+            }
         }
 
         context("'GET /interface' behaviour") {

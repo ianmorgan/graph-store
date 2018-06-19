@@ -4,6 +4,7 @@ import graphql.GraphQL
 import ianmorgan.docstore.dal.DocsDao
 import io.javalin.ApiBuilder
 import io.javalin.ApiBuilder.path
+import io.javalin.Context
 import io.javalin.Javalin
 import io.javalin.embeddedserver.Location
 import org.json.JSONObject
@@ -88,6 +89,16 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                         }
                     }
                 }
+                ApiBuilder.post() { ctx ->
+                    val json = extractJson(ctx)
+                    val payload = json.toMap()
+
+                    val docType = payload["docType"] as String
+                    payload.remove("docType")
+                    val dao = theDao.daoForDoc(docType)
+                    dao.store(payload)
+                    ctx.result("{}")
+                }
             }
 
             path("interfaces") {
@@ -114,6 +125,14 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
 
         }
 
+
+    }
+
+    private fun extractJson(ctx: Context): JSONObject {
+        if (ctx.formParamMap().containsKey("payload")){
+            return JSONObject(ctx.formParam("payload"))
+        }
+        return JSONObject(ctx.body())
 
     }
 }
