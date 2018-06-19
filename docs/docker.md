@@ -8,7 +8,7 @@ docker run -d -p 7002:7002 ianmorgan/doc-store
 
 This starts the service with the in-memory event-store and the demo StarWars schema and data 
  
-Can test running instance on [AWS](http://34.246.171.255:7002/docs/Human/1000).
+Can test running instance on [AWS](http://graphstore.app:7002/docs/Human/1000).
 
 For production style deploys see the example [Docker Compose](https://github.com/ianmorgan/docker-stacks) scripts (_still 
 very much work in progress_)

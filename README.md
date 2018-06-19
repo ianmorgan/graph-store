@@ -2,8 +2,14 @@
 [![Travis CI](https://img.shields.io/travis/ianmorgan/doc-store/master.svg)](https://travis-ci.org/ianmorgan/doc-store)
 [![License](https://img.shields.io/github/license/ianmorgan/doc-store.svg)](https://github.com/ianmorgan/doc-store/blob/master/LICENSE)
 
-Provides a simple document style persistence API with the 
-following features: 
+
+ Setup [DDD style aggregates](https://martinfowler.com/bliki/DDD_Aggregate.html) from a GraphQL schema. 
+ Store aggregate state to an event-store using REST, and query using both GraphQL 
+ and traditional REST. More advanced applications can use CQRS principle 
+ to build custom data integrations and views by simply reducing 
+ the underlying event stream.
+ 
+ 
 
 * data is stored using an event sourcing model in an 'event-store'.
 * a [GraphQL](https://graphql.org/) API is provided for querying 

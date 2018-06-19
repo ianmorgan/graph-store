@@ -26,3 +26,12 @@ services would not start with seeded data. Some apps might support more than one
 Start in debug mode with extended logging. For simplicity we only allow one set of debug settings
 
 
+### AWS 
+
+46.137.72.123
+
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-an-instance.html
+
+sudo service httpd start
+
+ifconfig eth0 | grep inet | awk '{ print $2 }'

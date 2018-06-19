@@ -42,11 +42,13 @@
         <section id="main-content">
             <h2 id="about">About</h2>
 
-            Setup DDD style aggregates from a GraphQL schema. Store aggregate state to an
-            event-store and query using both traditional REST style and GraphQL.
+            Setup <a href="https://martinfowler.com/bliki/DDD_Aggregate.html">DDD style aggregates</a> from a GraphQL schema. Store aggregate state to an
+            event-store using REST, and query using both GraphQL and traditional REST. More advanced applications
+            can use CQRS principle to build custom data integrations and views by simply reducing
+            the underlying event stream
 
-            For more detail see the [online docs](https://ianmorgan.github.io/doc-store/) or
-            the [Github repo](https://github.com/ianmorgan/doc-store).
+            For more detail see the <a href="https://ianmorgan.github.io/doc-store/">online docs</a>  or
+            the <a href="https://github.com/ianmorgan/doc-store">Github repo</a>.
 
 
             <h2 id="queries">Example GraphQL Queries</h2>
@@ -54,6 +56,12 @@
             <p>Below are some example of GraphQL queries against the star wars demo schema</p>
 
             <a href="/graphql?query={droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends{name}}}">R2-D2</a>
+
+            <h2 id="rest">Example Rest Interface</h2>
+
+            <p>Individual types can be accessed via a more traditional resource style API</p>
+
+            <a href="/docs/Droid/2001">R2-D2</a>
 
 
         </section>
