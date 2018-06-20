@@ -12,9 +12,11 @@ RUN chmod +x /home/app/run.sh
 
 # work around to corrupt file run.sh on windows - something to do
 # with character encoding
-RUN echo "java -cp /home/app/doc-store-app.jar:/home/app/doc-store-deps.jar ianmorgan.docstore.AppKt" > /home/app/runIt.sh
+RUN echo "#!/bin/bash" > /home/app/runIt.sh
+RUN echo "java -cp /home/app/doc-store-app.jar:/home/app/doc-store-deps.jar ianmorgan.docstore.AppKt" >> /home/app/runIt.sh
 RUN chmod +x /home/app/runIt.sh
 
+RUN cat /home/app/runIt.sh
 #COPY ./wait-for-it/wait-for-it.sh /home/app/wait-for-it.sh
 #RUN chmod +x /home/app/wait-for-it.sh
 
