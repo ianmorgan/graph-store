@@ -10,8 +10,8 @@ RUN mkdir -p /home/app/src/schema
 COPY ./docker/run.sh /home/app/run.sh
 RUN chmod +x /home/app/run.sh
 
-COPY ./wait-for-it/wait-for-it.sh /home/app/wait-for-it.sh
-RUN chmod +x /home/app/wait-for-it.sh
+#COPY ./wait-for-it/wait-for-it.sh /home/app/wait-for-it.sh
+#RUN chmod +x /home/app/wait-for-it.sh
 
 
 
@@ -26,6 +26,6 @@ COPY ./build/libs/doc-store-app.jar /home/app/doc-store-app.jar
 RUN ls -l /home/app/
 
 WORKDIR /home/app
-ENTRYPOINT ["./run.sh"]
+# ENTRYPOINT ["./run.sh"]
 
 
