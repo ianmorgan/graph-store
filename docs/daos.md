@@ -3,9 +3,9 @@
 The basics of document storage are managed by a number of generic data access layer (referred to as Data Access Objects or DAO)
  in the implementation code.
 
-Individual documents are controlled by the [DocDao](https://github.com/ianmorgan/doc-store/blob/master/src/main/java/ianmorgan/docstore/DocDao.kt), 
-and Interfaces, which are always read only, are controlled the [InterfaceDao](https://github.com/ianmorgan/doc-store/blob/master/src/main/java/ianmorgan/docstore/InterfaceDao.kt) 
-Finally the  [DocsDao](https://github.com/ianmorgan/doc-store/blob/master/src/main/java/ianmorgan/docstore/DocsDao.kt) is 
+Individual documents are controlled by the [DocDao](https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/docstore/DocDao.kt), 
+and Interfaces, which are always read only, are controlled the [InterfaceDao](https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/docstore/InterfaceDao.kt) 
+Finally the  [DocsDao](https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/docstore/DocsDao.kt) is 
 simply a collection of all the daos.
 
 Basically a DocDao is built for each type in the GraphQL schema and an InterfaceDao for each interface. 
