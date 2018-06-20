@@ -1,19 +1,20 @@
 # About
 
-This is a basic doc store that supports an event sourcing storage model and GraphQL enabled API. 
-Think of it as a cutdown, single node MongoDB that supports GraphQL and which keeps a full history 
-of every change.
 
-The inbuilt query model is quite limited, as this solution is aimed for applications built 
-using DDD and CQRS principles. The intention is that as more complex query models are 
-required other services will monitor the event stream(s) to build dedicated views 
+Setup [DDD style aggregates](https://martinfowler.com/bliki/DDD_Aggregate.html) from a GraphQL schema. 
+Store aggregate state to an event-store using REST, and query using both GraphQL 
+and traditional REST. More advanced applications can use [CQRS](https://www.martinfowler.com/bliki/CQRS.html)
+principle to build custom data integrations and views by simply reducing 
+the underlying event stream.
+ 
+The inbuilt query model is quite basic limited. The intention is that as more complex query models are 
+required other services will monitor the event stream(s) and aggregate data to build dedicated views 
 using the appropriate technology.
 
 To get working quickly, follow the getting started [Getting Started](#getting-started) guide below. For more 
 detail see [Data Access](daos), [Type Mappings](typeMappings) and [Standards](standards).
 
 Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/doc-store) 
-
 
 
 ## Getting started 
