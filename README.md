@@ -1,6 +1,6 @@
-# doc-store
-[![Travis CI](https://img.shields.io/travis/ianmorgan/doc-store/master.svg)](https://travis-ci.org/ianmorgan/doc-store)
-[![License](https://img.shields.io/github/license/ianmorgan/doc-store.svg)](https://github.com/ianmorgan/doc-store/blob/master/LICENSE)
+# graph-store
+[![Travis CI](https://img.shields.io/travis/ianmorgan/graph-store/master.svg)](https://travis-ci.org/ianmorgan/graph-store)
+[![License](https://img.shields.io/github/license/ianmorgan/graph-store.svg)](https://github.com/ianmorgan/graph-store/blob/master/LICENSE)
 
 
 Setup [DDD style aggregates](https://martinfowler.com/bliki/DDD_Aggregate.html) from a GraphQL schema. Store 
