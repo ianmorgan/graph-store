@@ -10,6 +10,11 @@ RUN mkdir -p /home/app/src/schema
 COPY ./docker/run.sh /home/app/run.sh
 RUN chmod +x /home/app/run.sh
 
+# work around to corrupt file run.sh on windows - something to do
+# with character encoding
+RUN echo "java -cp /home/app/doc-store-app.jar:/home/app/doc-store-deps.jar ianmorgan.docstore.AppKt" > /home/app/runIt.sh
+RUN chmod +x /home/app/runIt.sh
+
 #COPY ./wait-for-it/wait-for-it.sh /home/app/wait-for-it.sh
 #RUN chmod +x /home/app/wait-for-it.sh
 
@@ -26,6 +31,6 @@ COPY ./build/libs/doc-store-app.jar /home/app/doc-store-app.jar
 RUN ls -l /home/app/
 
 WORKDIR /home/app
-# ENTRYPOINT ["./run.sh"]
+ENTRYPOINT ["./runIt.sh"]
 
 
