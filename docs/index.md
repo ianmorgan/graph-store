@@ -7,7 +7,7 @@ and traditional REST. More advanced applications can use [CQRS](https://www.mart
 principle to build custom data integrations and views by simply reducing 
 the underlying event stream.
  
-The inbuilt query model is quite basic limited. The intention is that as more complex query models are 
+The inbuilt query model is quite basic. The intention is that as more complex query models are 
 required other services will monitor the event stream(s) and aggregate data to build dedicated views 
 using the appropriate technology.
 

@@ -3,12 +3,12 @@
 ## Running under Docker 
 
 ```bash
-docker run -d -p 7002:7002 ianmorgan/doc-store
+docker run -d -p 7002:7002 ianmorgan/graph-store
 ```
 
 This starts the service with the in-memory event-store and the demo StarWars schema and data 
  
-Can test running instance on [AWS](http://graphstore.app:7002/docs/Human/1000).
+Can test running instance on [AWS](https://graphstore.app/docs/Human/1000).
 
 For production style deploys see the example [Docker Compose](https://github.com/ianmorgan/docker-stacks) scripts (_still 
 very much work in progress_)
@@ -36,9 +36,9 @@ the docker build & publish & pull steps
 ### build image and publish 
 
 ```bash
-docker build -t doc-store .
-docker tag doc-store:latest ianmorgan/doc-store:latest
-docker push ianmorgan/doc-store:latest
+docker build -t graph-store .
+docker tag graph-store:latest ianmorgan/graph-store:latest
+docker push ianmorgan/graph-store:latest
 ```
 
 

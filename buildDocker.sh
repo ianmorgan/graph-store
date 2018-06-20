@@ -1,4 +1,4 @@
 
-docker build -t doc-store .
-docker tag doc-store:latest ianmorgan/doc-store:latest
-docker push ianmorgan/doc-store:latest
+docker build -t graph-store .
+docker tag graph-store:latest ianmorgan/graph-store:latest
+docker push ianmorgan/graph-store:latest
