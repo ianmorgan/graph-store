@@ -5,7 +5,7 @@ language: java
 services:
   - docker
 
-before_install:
+after-success:
   - docker build -t graph-store .
   - docker tag graph-store:latest ianmorgan/graph-store:travis
   - docker push ianmorgan/graph-store:travis
