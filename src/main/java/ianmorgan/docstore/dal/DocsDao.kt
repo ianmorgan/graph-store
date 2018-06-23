@@ -13,6 +13,7 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
     private val docDaoLookup = HashMap<String, DocDao>()
     private val interfaceDaoLookup = HashMap<String, InterfaceDao>()
     private val eventStoreClient = eventStoreClient
+    private val schema = graphQLSchema
 
 
     init {
@@ -36,6 +37,10 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
         return interfaceDaoLookup[interfaceName]!!
     }
 
+    fun schema () : String {
+        return schema
+    }
+
     private fun initFromSchema(schema: String) {
         val typeDefinitionRegistry  = SchemaParser().parse(schema)
         val helper = Helper.build(typeDefinitionRegistry)
@@ -52,6 +57,8 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
                 InterfaceDao(interfaceName, typeDefinitionRegistry, docDaoLookup)
             )
         }
+
+
     }
 
 

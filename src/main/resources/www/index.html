@@ -40,7 +40,7 @@
         </div>
 
         <section id="main-content">
-            <h2 id="about">About</h2>
+            <h1 id="about">About</h1>
 
             Setup <a href="https://martinfowler.com/bliki/DDD_Aggregate.html">DDD style aggregates</a> from a GraphQL schema. Store aggregate state to an
             event-store using REST, and query using both GraphQL and traditional REST. More advanced applications
@@ -51,20 +51,20 @@
             the <a href="https://github.com/ianmorgan/graph-store">Github repo</a>.
 
 
-            <h2 id="queries">Example GraphQL Queries</h2>
+            <h1 id="queries">Example GraphQL Queries</h1>
 
             <p>Below are some example of GraphQL queries against the star wars demo schema</p>
 
             <a href="/graphql?query={droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends{name}}}">R2-D2</a>
 
-            <h2 id="rest">Example Rest Interface</h2>
+            <h1 id="rest">Example Rest Interface</h1>
 
-            <h3>Query</h3>
+            <h2>Query</h2>
             <p>Individual types can be accessed via a more traditional resource style API</p>
 
             <a href="/docs/Droid/2001">R2-D2</a>
 
-            <h3>Update</h3>
+            <h2>Update</h2>
             <p>To update, use one of the three POST form</p>
 
             <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight">
@@ -72,7 +72,6 @@
 <code>http://graph-store:7001/docs/Droid</code>
 <code>http://graph-store:7001/docs</code>
 </pre></div></div>
-
 
 
             <p>All forms accept either JSON in the body or as a FORM submission
@@ -84,6 +83,13 @@
                 There is a simple <a href="/post.html">POST form</a> for basic testing.
 
             </p>
+
+            <h1 id="schema">The GraphQL schema</h1>
+
+            <p> The current active schema can be viewed <a href="schema">here</a>. A new
+            modified schema can be uploaded with a simple POST command, there is a simple
+                <a href="/post.html">POST form</a> for basic testing.</p>
+
 
 
         </section>

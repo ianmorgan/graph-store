@@ -14,30 +14,9 @@
 
 
     <!-- Begin Jekyll SEO tag v2.4.0 -->
-    <title>graph-store</title>
-    <meta property="og:title" content="Introduction" />
-    <meta property="og:locale" content="en_US" />
-    <meta name="description" content="Ian’s Github website" />
-    <meta property="og:description" content="Ian’s Github website" />
-    <script type="application/ld+json">
-{"name":"ianmorgan.github.io","description":"Ian’s Github website","@type":"WebSite","url":"http://ianmorgan.github.io/","headline":"Introduction","@context":"http://schema.org"}</script>
-    <!-- End Jekyll SEO tag -->
+    <title>Graph Store - POST schema </title>
 
-    <script
-            src="https://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-            crossorigin="anonymous">
-    </script>
 
-    <script>
-        $(document).ready(function(){
-    $("#doit").click(function(){
-        //$(this).hide();
-        //alert ("hello world");
-        //$.post( "docs/Droid/1234", { name: "John", time: "2pm" } );
-    });
-});
-    </script>
 
 </head>
 
@@ -58,19 +37,19 @@
         </div>
 
         <section id="main-content">
-            <h2 id="about">Update Doc</h2>
+            <h1 id="about">Update Schema</h1>
 
-            <form method="POST" action="/docs">
+            <form method="POST" action="/schema">
 
-                <textarea rows="20" cols="128" name="payload">
-{ &quot;id&quot; : &quot;2002&quot;,  &quot;docType&quot; : &quot;Droid&quot;, &quot;name&quot;: &quot;R5-D4&quot;,&quot;appearsIn&quot;: [&quot;NEWHOPE&quot;] }
+                <textarea rows="80" cols="128" name="payload">
+                    TODO - a complete and valid GraphQL schema
+                    The existing schema will be dropped, however
+                    all data will be retained.
                 </textarea>
 
 
-                <input id="doit" type="submit">Update Doc</input>
+                <input id="doit" type="submit">Update Schema</input>
             </form>
-
-
 
 
         </section>

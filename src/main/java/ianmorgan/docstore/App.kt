@@ -7,11 +7,10 @@ import ianmorgan.docstore.dal.RealEventStore
 import ianmorgan.docstore.graphql.GraphQLFactory2
 import io.javalin.Javalin
 import io.javalin.embeddedserver.Location
-import org.apache.commons.cli.Options
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
+import org.apache.commons.cli.Options
 import java.io.FileInputStream
-import kotlin.math.exp
 
 
 fun main(args: Array<String>) {
@@ -19,7 +18,7 @@ fun main(args: Array<String>) {
     // Setup common command line options
     val options = Options()
 
-        //options.addOption( "a", "all", false, "do not hide entries starting with ." );
+    //options.addOption( "a", "all", false, "do not hide entries starting with ." );
     options.addOption("h", "help", false, "display a help message")
     options.addOption("E", "eventstore", false, "use a real event store")
 
@@ -29,14 +28,14 @@ fun main(args: Array<String>) {
     JavalinApp(7002, cmd).init()
 }
 
-class JavalinApp(private val port: Int, private val cmd : CommandLine) {
-    lateinit var theDao : DocsDao
+class JavalinApp(private val port: Int, private val cmd: CommandLine) {
+    lateinit var theDao: DocsDao
 
     fun init(): Javalin {
-        var eventStoreClient : EventStoreClient = InMemoryEventStore()
-        println ("Starting...")
-        if(cmd.hasOption("h")) {
-            println ("todo - add a help message")
+        var eventStoreClient: EventStoreClient = InMemoryEventStore()
+        println("Starting...")
+        if (cmd.hasOption("h")) {
+            println("todo - add a help message")
             System.exit(0)
         }
 
@@ -47,27 +46,39 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
 
         val app = Javalin.create().apply {
             port(port)
-            exception(Exception::class.java) { e, _ -> e.printStackTrace() }
-            error(404) { ctx -> ctx.json("not found") }
+            exception(Exception::class.java) { e, ctx ->
+                // build the standard error response
+                ctx.status(500)
+                val payload = mapOf(
+                    "message" to e.message,
+                    "stackTrace" to e.stackTrace.joinToString("\n")
+                )
+                ctx.json(mapOf("errors" to listOf(payload)))
+            }
+
+            error(404) { ctx ->
+                val payload = mapOf("message" to "not found")
+                ctx.json(mapOf("errors" to listOf(payload)))
+            }
+
             enableStaticFiles("/www", Location.CLASSPATH)
-        }.start()
-        app.routes {
         }
 
         // setup the  main controller
-        val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
-        val dao = DocsDao(starWarSchema,eventStoreClient)
+        val starWarSchema =
+            FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
+        val dao = DocsDao(starWarSchema, eventStoreClient)
         theDao = dao
 
         val dataLoader = DataLoader(dao)
         dataLoader.loadDirectory("src/test/resources/starwars")
 
-        val graphQL = GraphQLFactory2.build(starWarSchema,dao)
+        val graphQL = GraphQLFactory2.build(starWarSchema, dao)
 
-        val controller = Controller(dao, graphQL)
-        controller.register(app)
-
-        println ("Ready :)")
+        Controller(dao, graphQL).register(app)
+        SchemaController(dao,graphQL).register(app)
+        app.start()
+        println("Ready :)")
 
 
         //JavalinJacksonPlugin.configure()
@@ -76,7 +87,7 @@ class JavalinApp(private val port: Int, private val cmd : CommandLine) {
 
     }
 
-    fun theDao() : DocsDao {
+    fun theDao(): DocsDao {
         return theDao
     }
 }

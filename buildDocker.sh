@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 docker build -t graph-store .
 docker tag graph-store:latest ianmorgan/graph-store:latest
