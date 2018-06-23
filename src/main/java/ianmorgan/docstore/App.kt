@@ -70,6 +70,10 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         val dao = DocsDao(starWarSchema, eventStoreClient)
         theDao = dao
 
+        // starting to wireup real state holder
+        val stateHolder = StateHolder(eventStoreClient)
+        stateHolder.build(starWarSchema)
+
         val dataLoader = DataLoader(dao)
         dataLoader.loadDirectory("src/test/resources/starwars")
 
