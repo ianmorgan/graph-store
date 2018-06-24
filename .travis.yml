@@ -1,3 +1,5 @@
+sudo: required
+
 language: java
 
 
@@ -9,3 +11,9 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+deploy:
+  provider: script
+  script: bash buildDocker.sh
+  on:
+    branch: master
