@@ -1,11 +1,9 @@
 package ianmorgan.docstore
 
-import graphql.GraphQL
-import ianmorgan.docstore.dal.DocsDao
+
 import io.javalin.ApiBuilder
 import io.javalin.Context
 import io.javalin.Javalin
-import org.json.JSONObject
 
 /**
  * Expose operations on the graphQL schema
@@ -23,17 +21,18 @@ class SchemaController constructor(stateHolder: StateHolder) {
 
             ApiBuilder.post("/schema") { ctx ->
                 val schema = extractPayload(ctx)
+                val result = HashMap<Any,Any>()
 
-                try {
-                    stateHolder.build(schema)
-                }
-                catch (ex : RuntimeException){
-                    ex.printStackTrace()
-                    // todo - a fail response
+                if (!stateHolder.build(schema)){
+
+                    val error =
+                        mapOf("message" to "Problem parsing the GraphQL schema",
+                              "schemaError" to stateHolder.exception()!!.message)
+                        result["errors"] = listOf(error)
+                    ctx.status(500)
                 }
 
-                // todo - fill in a proper result
-                ctx.result("{}")
+                ctx.json(result)
             }
         }
     }
