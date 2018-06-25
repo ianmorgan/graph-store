@@ -12,6 +12,10 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
+# Make the additional deps jar for docker build -
+# should find a better way of managing this
+install: - TERM=dumb ./gradlew -s depsJar stashDepsJar
+
 deploy:
   provider: script
   script: bash buildDocker.sh
