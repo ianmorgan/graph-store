@@ -14,7 +14,7 @@ cache:
 
 # Make the additional deps jar for docker build -
 # should find a better way of managing this
-before_deploy: ./gradlew depsJar stashDepsJar
+# before_deploy: ./gradlew depsJar stashDepsJar
 
 deploy:
   provider: script
