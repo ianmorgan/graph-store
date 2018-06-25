@@ -74,7 +74,7 @@ interface GraphQLScalarType {
 
 
 object GraphQLMapper {
-    val JSON_TYPES = listOf<KClass<Any>>(
+    val JSON_TYPES = listOf(
         String::class as KClass<Any>,
         Int::class as KClass<Any>,
         Double::class as KClass<Any>,

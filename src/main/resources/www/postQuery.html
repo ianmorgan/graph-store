@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="http://ianmorgan.github.io/assets/css/style.css?v=8bf51261ae87acf76a120a5f502b963e9964a468" media="screen" type="text/css">
+    <link rel="stylesheet" href="http://ianmorgan.github.io//assets/css/print.css" media="print" type="text/css">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]
+
+
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+    <title>Graph Store - Query </title>
+
+
+
+</head>
+
+<body>
+<header>
+    <div class="inner">
+        <a href="http://github.com/ianmorgan/graph-store">
+            <h1>Graph Store</h1>
+        </a>
+    </div>
+</header>
+
+<div id="content-wrapper">
+    <div class="inner clearfix">
+        <div>
+            <a href="https://travis-ci.org/ianmorgan/graph-store" rel="nofollow"><img src="https://img.shields.io/travis/ianmorgan/graph-store.svg" alt="Travis CI" ></a>
+            <a href="https://github.com/ianmorgan/graph-store/blob/master/LICENSE"><img  alt="License" src="https://img.shields.io/github/license/ianmorgan/graph-store.svg" ></a></p>
+        </div>
+
+        <section id="main-content">
+            <h1 id="about">Run Query </h1>
+
+            <p>Enter a valid GraphQL query </p>
+
+            <form method="POST" action="/graphql">
+
+                <textarea rows="20" cols="128" name="payload">
+    {droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends{name}}}
+                </textarea>
+                <input type="submit" value="Run Query"></input>
+            </form>
+
+
+        </section>
+
+
+    </div>
+</div>
+
+
+</body>
+</html>

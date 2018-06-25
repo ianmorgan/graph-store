@@ -1,7 +1,5 @@
 package ianmorgan.docstore
 
-import graphql.GraphQL
-import ianmorgan.docstore.dal.DocsDao
 import io.javalin.ApiBuilder
 import io.javalin.ApiBuilder.path
 import io.javalin.Context
@@ -9,15 +7,17 @@ import io.javalin.Javalin
 import org.json.JSONObject
 
 
-class Controller constructor(stateHolder : StateHolder) {
+class Controller constructor(stateHolder: StateHolder) {
     private val stateHolder = stateHolder
 
     fun register(app: Javalin) {
         app.exception(Exception::class.java) { e, ctx ->
             // build the standard error response
             ctx.status(500)
-            val payload = mapOf("message" to e.message,
-                "stackTrace" to e.stackTrace.joinToString("\n"))
+            val payload = mapOf(
+                "message" to e.message,
+                "stackTrace" to e.stackTrace.joinToString("\n")
+            )
             ctx.json(mapOf("errors" to listOf(payload)))
         }
 
@@ -29,14 +29,32 @@ class Controller constructor(stateHolder : StateHolder) {
 
                 if (query != null) {
                     val executionResult = stateHolder.graphQL().execute(query)
-                    println(executionResult.getData<Any>().toString())
+                    if (executionResult.errors.isEmpty()){
+                        val result = mapOf("data" to executionResult.getData<Any>());
+                        ctx.json(result)
+                    }
+                    else {
+                        val result = mapOf("errors" to executionResult.errors);
+                        ctx.json(result)
+                    }
+                }
+            }
 
-                    // todo - what about errors
+            ApiBuilder.post("/graphql") { ctx ->
+                val query = extractPayload(ctx, listOf("query", "payload"))
 
+                val executionResult = stateHolder.graphQL().execute(query)
+                if (executionResult.errors.isEmpty()){
                     val result = mapOf("data" to executionResult.getData<Any>());
                     ctx.json(result)
                 }
+                else {
+                    val result = mapOf("errors" to executionResult.errors);
+                    ctx.json(result)
+                }
+
             }
+
 
 //            ApiBuilder.post("/doc/:type") {
 //
@@ -126,10 +144,19 @@ class Controller constructor(stateHolder : StateHolder) {
     }
 
     private fun extractJson(ctx: Context): JSONObject {
-        if (ctx.formParamMap().containsKey("payload")){
+        if (ctx.formParamMap().containsKey("payload")) {
             return JSONObject(ctx.formParam("payload"))
         }
         return JSONObject(ctx.body())
 
+    }
+
+    private fun extractPayload(ctx: Context, formFields: List<String> = listOf("payload")): String {
+        for (field in formFields) {
+            if (ctx.formParamMap().containsKey(field)) {
+                return ctx.formParam(field)!!
+            }
+        }
+        return ctx.body()
     }
 }

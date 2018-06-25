@@ -1,5 +1,8 @@
 package ianmorgan.docstore
 
+import com.fasterxml.jackson.core.PrettyPrinter
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.ObjectMapper
 import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.dal.EventStoreClient
 import ianmorgan.docstore.dal.InMemoryEventStore
@@ -7,6 +10,7 @@ import ianmorgan.docstore.dal.RealEventStore
 import ianmorgan.docstore.graphql.GraphQLFactory2
 import io.javalin.Javalin
 import io.javalin.embeddedserver.Location
+import io.javalin.translator.json.JavalinJacksonPlugin
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
@@ -32,6 +36,7 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
     lateinit var theDao: DocsDao
 
     fun init(): Javalin {
+
         var eventStoreClient: EventStoreClient = InMemoryEventStore()
         println("Starting...")
         if (cmd.hasOption("h")) {
@@ -43,6 +48,12 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
             println("Using  a real event store")
             eventStoreClient = RealEventStore()
         }
+
+        val mapper = ObjectMapper()
+        //.writerWithDefaultPrettyPrinter()
+        //mapper.s(DefaultPrettyPrinter())
+        JavalinJacksonPlugin.configure(mapper)
+
 
         val app = Javalin.create().apply {
             port(port)
@@ -78,6 +89,7 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         dataLoader.loadDirectory("src/test/resources/starwars")
 
         val graphQL = GraphQLFactory2.build(starWarSchema, dao)
+
 
         Controller(stateHolder).register(app)
         SchemaController(stateHolder).register(app)
