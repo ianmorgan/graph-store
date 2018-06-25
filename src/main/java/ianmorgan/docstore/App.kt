@@ -79,8 +79,8 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
 
         val graphQL = GraphQLFactory2.build(starWarSchema, dao)
 
-        Controller(dao, graphQL).register(app)
-        SchemaController(dao,graphQL).register(app)
+        Controller(stateHolder).register(app)
+        SchemaController(stateHolder).register(app)
         app.start()
         println("Ready :)")
 

@@ -9,10 +9,8 @@ import io.javalin.Javalin
 import org.json.JSONObject
 
 
-class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
-    private val theDao = dao
-    private val graphQL = graphQL
-
+class Controller constructor(stateHolder : StateHolder) {
+    private val stateHolder = stateHolder
 
     fun register(app: Javalin) {
         app.exception(Exception::class.java) { e, ctx ->
@@ -30,7 +28,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                 val query = ctx.queryParam("query")
 
                 if (query != null) {
-                    val executionResult = graphQL.execute(query)
+                    val executionResult = stateHolder.graphQL().execute(query)
                     println(executionResult.getData<Any>().toString())
 
                     // todo - what about errors
@@ -51,7 +49,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                     ApiBuilder.post() { ctx ->
                         val docType = ctx.param("type")!!
                         val json = JSONObject(ctx.body())
-                        val dao = theDao.daoForDoc(docType)
+                        val dao = stateHolder.docsDao().daoForDoc(docType)
                         dao.store(json.toMap())
                         ctx.result("{}")
                     }
@@ -62,7 +60,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                         ApiBuilder.post() { ctx ->
                             val docType = ctx.param("type")!!
                             val json = JSONObject(ctx.body())
-                            val dao = theDao.daoForDoc(docType)
+                            val dao = stateHolder.docsDao().daoForDoc(docType)
 
                             // aggregateId from URL
                             val aggregateId = ctx.param("aggregateId")!!
@@ -75,7 +73,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                         ApiBuilder.get() { ctx ->
                             val docType = ctx.param("type")!!
                             val aggregateId = ctx.param("aggregateId")!!
-                            val dao = theDao.daoForDoc(docType)
+                            val dao = stateHolder.docsDao().daoForDoc(docType)
                             val doc = dao.retrieve(aggregateId)
                             ctx.json(mapOf("data" to doc))
                         }
@@ -83,7 +81,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                         ApiBuilder.delete() { ctx ->
                             val docType = ctx.param("type")!!
                             val aggregateId = ctx.param("aggregateId")!!
-                            val dao = theDao.daoForDoc(docType)
+                            val dao = stateHolder.docsDao().daoForDoc(docType)
                             dao.delete(aggregateId)
                         }
                     }
@@ -94,7 +92,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
 
                     val docType = payload["docType"] as String
                     payload.remove("docType")
-                    val dao = theDao.daoForDoc(docType)
+                    val dao = stateHolder.docsDao().daoForDoc(docType)
                     dao.store(payload)
                     ctx.result("{}")
                 }
@@ -109,7 +107,7 @@ class Controller constructor(dao: DocsDao, graphQL: GraphQL) {
                         ApiBuilder.get() { ctx ->
                             val interfaceType = ctx.param("type")!!
                             val aggregateId = ctx.param("aggregateId")!!
-                            val dao = theDao.daoForInterface(interfaceType)
+                            val dao = stateHolder.docsDao().daoForInterface(interfaceType)
                             val doc = dao.retrieve(aggregateId)
                             ctx.json(mapOf("data" to doc))
                         }
