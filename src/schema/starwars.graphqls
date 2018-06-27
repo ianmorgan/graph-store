@@ -27,7 +27,7 @@ interface Character {
   name: String!
 
   # The friends of the character, or an empty list if they have none
-  friends: [Character]
+  friends(first: Int, count: Int): [Character]
 
   # The movies this character appears in
   appearsIn: [Episode]!
@@ -40,7 +40,9 @@ type Human implements Character {
 
   id: ID!
   name: String!
-  friends: [Character]      # TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here
+  friends(first: Int, count: Int): [Character]      # TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here
+  friendsCount: Int       # Build by convention as the count of 'friends'
+
   appearsIn: [Episode]!
 
   homePlanet: String
@@ -53,7 +55,9 @@ type Droid implements Character {
 
   id: ID!
   name: String!
-  friends: [Character]
+  friends(first: Int, count: Int): [Character]      # TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here
+  friendsCount: Int       # Build by convention
+
   appearsIn: [Episode]!
 
   primaryFunction: String

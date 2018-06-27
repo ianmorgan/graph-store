@@ -15,11 +15,9 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
     private val eventStoreClient = eventStoreClient
     private val schema = graphQLSchema
 
-
     init {
         initFromSchema(graphQLSchema)
     }
-
 
     fun availableDocs(): Set<String> {
         return docDaoLookup.keys
@@ -60,8 +58,6 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
 
 
     }
-
-
 
     companion object {
         fun fromSchema(schema: String): DocsDao {

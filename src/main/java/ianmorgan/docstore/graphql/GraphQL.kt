@@ -5,8 +5,10 @@ import graphql.Scalars.GraphQLID
 import graphql.Scalars.GraphQLString
 import graphql.TypeResolutionEnvironment
 import graphql.language.*
-import graphql.schema.*
 import graphql.schema.GraphQLFieldDefinition.newFieldDefinition
+import graphql.schema.GraphQLObjectType
+import graphql.schema.GraphQLScalarType
+import graphql.schema.TypeResolver
 import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
@@ -116,9 +118,11 @@ object GraphQLFactory2 {
             }
         )
 
-//        builder.type("Human", typeWiring -> typeWiring
-//        .dataFetcher("friends", StarWarsData.getFriendsDataFetcher())
-//        )
+//        builder.type("Human", { builder ->
+//            builder.
+//            )
+
+       // builder.type("Human", typeWiring -> type
 
         // TODO - this should be built dynamiaclly from the shchema
 //        builder.type("Droid", { builder ->

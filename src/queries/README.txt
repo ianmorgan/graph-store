@@ -1,0 +1,1 @@
+Some predefined useful queries

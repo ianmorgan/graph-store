@@ -19,7 +19,7 @@ object GraphQLIntrospectionSpec : Spek({
     lateinit var docsDao: DocsDao
     lateinit var graphQL : GraphQL
 
-    describe ("Some basic tests to confirm introspection API") {
+    describe ("To confirm inbuilt graphql-java introspection API working as expected") {
 
         beforeGroup {
             graphQL = GraphQLFactory2.build(starWarSchema,DocsDao(starWarSchema))
@@ -47,12 +47,9 @@ object GraphQLIntrospectionSpec : Spek({
 
             assert.that(result.errors.isEmpty(), equalTo(true))
 
-            // TODO - we are not returning all the data necessary here, in particular type information is null
             assert.that(result.getData<Any>().toString(),
-                equalTo("{__type={kind=OBJECT, name=Human, fields=[{name=id, description=null, type={name=null}}, {name=name, description=null, type={name=null}}, {name=friends, description=null, type={name=null}}, {name=appearsIn, description= TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here, type={name=null}}, {name=homePlanet, description=null, type={name=String}}]}}"))
+                equalTo("{__type={kind=OBJECT, name=Human, fields=[{name=id, description=null, type={name=null}}, {name=name, description=null, type={name=null}}, {name=friends, description=null, type={name=null}}, {name=friendsCount, description= TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here, type={name=Int}}, {name=appearsIn, description= Build by convention as the count of 'friends', type={name=null}}, {name=homePlanet, description=null, type={name=String}}]}}"))
         }
-
-
 
 
 

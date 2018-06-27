@@ -32,13 +32,25 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         if (data != null) {
             val helper = Helper.build(typeDefinition)
             for (f in helper.listTypeFieldNames()) {
-                val typeName = helper.typeForField(f)
 
-                // is this an embedded doc
-                fetchEmbeddedDoc(typeName, data, f)
 
-                // is this an embedded interface
-                fetchEmebbedInterface(typeName, data, f)
+                    val typeName = helper.typeForField(f)
+
+                    // is this an embedded doc
+                    fetchEmbeddedDoc(typeName, data, f)
+
+                    // is this an embedded interface
+                    fetchEmebbedInterface(typeName, data, f)
+
+            }
+
+            // todo - generalise this a little more as a way of dealing with "pseudo" fields
+            for (f in typeDefinition.fieldDefinitions){
+                if (f.name.endsWith("Count")){
+                    val rawField = f.name.replace("Count","")
+                    val ids = data.getOrDefault(rawField, emptyList<String>()) as List<String>
+                    data[f.name] = ids.size
+                }
             }
         }
         return data

@@ -39,3 +39,8 @@ ifconfig eth0 | grep inet | awk '{ print $2 }'
 ```text
 gjgh
 ```
+
+### GraphQI 
+
+docker run -d --name graph-store -p 7002:7002   graph-store
+docker run -d --name graphiql -p 4000:4000 -e API_URL=http://graph-store:7002  npalm/graphiql
