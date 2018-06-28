@@ -1,6 +1,7 @@
 package ianmorgan.docstore.graphql
 
 import graphql.language.*
+import graphql.schema.DataFetchingFieldSelectionSet
 import graphql.schema.idl.TypeDefinitionRegistry
 
 /**
@@ -112,16 +113,33 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
         return null
     }
 
-
-
 }
 
+class DataFetchingFieldSelectionSetHelper constructor(selectionSet : DataFetchingFieldSelectionSet){
+    val selectionSet = selectionSet
+
+    fun argsForField (fieldName : String) : Map<String,Any>?{
+        for (set in selectionSet.arguments){
+            if (set.key == fieldName){
+                return set.value
+            }
+        }
+        return null;
+    }
+}
+
+
+
 object Helper {
-    fun build (tyepDefintion: TypeDefinitionRegistry) : TypeDefinitionRegistryHelper {
-        return TypeDefinitionRegistryHelper(tyepDefintion)
+    fun build (typeDefintion: TypeDefinitionRegistry) : TypeDefinitionRegistryHelper {
+        return TypeDefinitionRegistryHelper(typeDefintion)
     }
 
     fun build(definition : ObjectTypeDefinition) : ObjectTypeDefinitionHelper {
         return ObjectTypeDefinitionHelper(definition)
+    }
+
+    fun build(set : DataFetchingFieldSelectionSet) : DataFetchingFieldSelectionSetHelper {
+        return DataFetchingFieldSelectionSetHelper(set)
     }
 }

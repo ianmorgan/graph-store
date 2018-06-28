@@ -29,6 +29,8 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         val id = env.getArgument<String>(idFieldName)
         val data = lookupDocById(docName,id)
 
+        val argsHelper = Helper.build(env.selectionSet)
+
         if (data != null) {
             val helper = Helper.build(typeDefinition)
             for (f in helper.listTypeFieldNames()) {
@@ -37,17 +39,18 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
                     val typeName = helper.typeForField(f)
 
                     // is this an embedded doc
-                    fetchEmbeddedDoc(typeName, data, f)
+                    fetchEmbeddedDoc(typeName, data, f,argsHelper)
 
                     // is this an embedded interface
-                    fetchEmebbedInterface(typeName, data, f)
+                    fetchEmebbedInterface(typeName, data, f, argsHelper)
 
             }
 
             // todo - generalise this a little more as a way of dealing with "pseudo" fields
+            // note that the order in which steps are run is important here
             for (f in typeDefinition.fieldDefinitions){
                 if (f.name.endsWith("Count")){
-                    val rawField = f.name.replace("Count","")
+                    val rawField = "$" + f.name.replace("Count","") + "Raw"
                     val ids = data.getOrDefault(rawField, emptyList<String>()) as List<String>
                     data[f.name] = ids.size
                 }
@@ -59,10 +62,23 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
     private fun fetchEmbeddedDoc(
         typeName: String?,
         data: HashMap<String, Any>,
-        f: String
+        field: String,
+        fieldSetHelper : DataFetchingFieldSelectionSetHelper
     ) {
         if (dao.availableDocs().contains(typeName)) {
-            val ids = data.getOrDefault(f, emptyList<String>()) as List<String>
+            var ids = data.getOrDefault(field, emptyList<String>()) as List<String>
+            data.put("$" + field + "Raw" ,ids)  // preserve the raw values
+
+
+            // process argument to the collections
+            val args = fieldSetHelper.argsForField(field)
+            if (args != null){
+                if (args.containsKey("first")){
+                    val first = args.get("first") as Int
+                    ids = ids.subList(first,ids.size-1)
+                }
+            }
+
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in ids) {
                 val x = lookupDocById(typeName!!, theId)
@@ -70,18 +86,30 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
                     expanded.add(x)
                 }
             }
-            data.put(f, expanded)
-
+            data.put(field, expanded)
         }
     }
 
     private fun fetchEmebbedInterface(
         typeName: String?,
         data: HashMap<String, Any>,
-        f: String
+        field: String,
+        fieldSetHelper : DataFetchingFieldSelectionSetHelper
+
     ) {
         if (dao.availableInterfaces().contains(typeName)) {
-            val ids = data.getOrDefault(f, emptyList<String>()) as List<String>
+            var ids = data.getOrDefault(field, emptyList<String>()) as List<String>
+            data.put("$" + field + "Raw" ,ids)  // preserve the raw values
+
+            // process argument to the collections
+            val args = fieldSetHelper.argsForField(field)
+            if (args != null){
+                if (args.containsKey("first")){
+                    val first = args.get("first") as Int
+                    ids = ids.subList(first,ids.size)
+                }
+            }
+
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in ids) {
                 val x = lookupInterfaceById(typeName!!, theId)
@@ -89,10 +117,12 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
                     expanded.add(x)
                 }
             }
-            data.put(f, expanded)
+            data.put(field, expanded)
 
         }
     }
+
+
 
     private fun lookupDocById(docName : String, id: String): HashMap<String, Any>? {
         val data = dao.daoForDoc(docName).retrieve(id)
