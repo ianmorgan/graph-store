@@ -8,10 +8,6 @@ import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.dal.InterfaceDao
 import java.util.HashMap
 import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.emptyList
-import kotlin.collections.emptyMap
 
 /**
  * A DataFetcher for a single doc, linked to its DAO. This fetcher is passed the
@@ -69,18 +65,10 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
             var ids = data.getOrDefault(field, emptyList<String>()) as List<String>
             data.put("$" + field + "Raw" ,ids)  // preserve the raw values
 
-
-            // process argument to the collections
-            val args = fieldSetHelper.argsForField(field)
-            if (args != null){
-                if (args.containsKey("first")){
-                    val first = args.get("first") as Int
-                    ids = ids.subList(first,ids.size-1)
-                }
-            }
+            val filtered  = applyPaginationFilters(fieldSetHelper, field, ids)
 
             val expanded = ArrayList<Map<String, Any>>()
-            for (theId in ids) {
+            for (theId in filtered) {
                 val x = lookupDocById(typeName!!, theId)
                 if (x != null) {
                     expanded.add(x)
@@ -98,20 +86,14 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
 
     ) {
         if (dao.availableInterfaces().contains(typeName)) {
-            var ids = data.getOrDefault(field, emptyList<String>()) as List<String>
+            val ids = data.getOrDefault(field, emptyList<String>()) as List<String>
             data.put("$" + field + "Raw" ,ids)  // preserve the raw values
 
             // process argument to the collections
-            val args = fieldSetHelper.argsForField(field)
-            if (args != null){
-                if (args.containsKey("first")){
-                    val first = args.get("first") as Int
-                    ids = ids.subList(first,ids.size)
-                }
-            }
+            val filtered  = applyPaginationFilters(fieldSetHelper, field, ids)
 
             val expanded = ArrayList<Map<String, Any>>()
-            for (theId in ids) {
+            for (theId in filtered) {
                 val x = lookupInterfaceById(typeName!!, theId)
                 if (x != null) {
                     expanded.add(x)
@@ -122,6 +104,26 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         }
     }
 
+    private fun applyPaginationFilters(
+        fieldSetHelper: DataFetchingFieldSelectionSetHelper,
+        field: String,
+        ids: List<String>
+    ): List<String> {
+        var result = ids
+        val args = fieldSetHelper.argsForField(field)
+        if (args != null) {
+            if (args.containsKey("first")) {
+                val first = args.get("first") as Int
+                result = result.subList(first, result.size)
+            }
+
+            if (args.containsKey("count")) {
+                val count = args.get("count") as Int
+                result = result.subList(0, count)
+            }
+        }
+        return result
+    }
 
 
     private fun lookupDocById(docName : String, id: String): HashMap<String, Any>? {

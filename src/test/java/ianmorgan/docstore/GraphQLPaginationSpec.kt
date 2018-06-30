@@ -57,5 +57,18 @@ object GraphQLPaginationSpec : Spek({
                 equalTo("{droid={friendsCount=3, friends=[{name=Leia Organa}]}}"))
         }
 
+
+        it ("should limit friend collection using 'count' param") {
+
+            val query = """{
+                    droid(id: "2001") {friendsCount,friends(count: 2) { name }}}
+"""
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{droid={friendsCount=3, friends=[{name=Luke Skywalker}, {name=Han Solo}]}}"))
+        }
+
     }
 })
