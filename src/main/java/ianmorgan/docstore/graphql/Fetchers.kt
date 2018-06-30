@@ -90,7 +90,7 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
             data.put("$" + field + "Raw" ,ids)  // preserve the raw values
 
             // process argument to the collections
-            val filtered  = applyPaginationFilters(fieldSetHelper, field, ids)
+            val filtered = applyPaginationFilters(fieldSetHelper, field, ids)
 
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
@@ -114,12 +114,19 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         if (args != null) {
             if (args.containsKey("first")) {
                 val first = args.get("first") as Int
-                result = result.subList(first, result.size)
+                if (first < result.size) {
+                    result = result.subList(first, result.size)
+                }
+                else {
+                    result = ArrayList()
+                }
             }
 
             if (args.containsKey("count")) {
                 val count = args.get("count") as Int
-                result = result.subList(0, count)
+                if (count < result.size) {
+                    result = result.take(count)
+                }
             }
         }
         return result

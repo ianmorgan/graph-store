@@ -70,5 +70,36 @@ object GraphQLPaginationSpec : Spek({
                 equalTo("{droid={friendsCount=3, friends=[{name=Luke Skywalker}, {name=Han Solo}]}}"))
         }
 
+        it ("should return empty list for 'count' param of 0") {
+
+            val query = "{droid(id: \"2001\") {friends(count: 0) { name }}}"
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{droid={friends=[]}}"))
+        }
+
+        it ("should return empty list if 'first' param larger than list") {
+
+            val query = "{droid(id: \"2001\") {friends(first: 4) { name }}}"
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{droid={friends=[]}}"))
+        }
+
+        it ("should return full list if 'count' param larger than list") {
+
+            val query = "{droid(id: \"2001\") {friends(count: 4) { name }}}"
+            val result = graphQL.execute(query)
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(result.getData<Any>().toString(),
+                equalTo("{droid={friends=[{name=Luke Skywalker}, {name=Han Solo}, {name=Leia Organa}]}}"))
+        }
+
+
     }
 })
