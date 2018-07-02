@@ -29,9 +29,12 @@ interface Character {
   # The friends of the character, or an empty list if they have none
   friends(first: Int, count: Int): [Character]
 
+  # Build by convention as the count of 'friends' before any pagination has been applied.
+  # so is the total possible 'Characters' available in the node
+  friendsCount: Int
+
   # The movies this character appears in
   appearsIn: [Episode]!
-
 }
 
 
@@ -40,8 +43,8 @@ type Human implements Character {
 
   id: ID!
   name: String!
-  friends(first: Int, count: Int): [Character]      # TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here
-  friendsCount: Int       # Build by convention as the count of 'friends'
+  friends(first: Int, count: Int): [Character]
+  friendsCount: Int
 
   appearsIn: [Episode]!
 
@@ -55,8 +58,8 @@ type Droid implements Character {
 
   id: ID!
   name: String!
-  friends(first: Int, count: Int): [Character]      # TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here
-  friendsCount: Int       # Build by convention
+  friends(first: Int, count: Int): [Character]
+  friendsCount: Int
 
   appearsIn: [Episode]!
 

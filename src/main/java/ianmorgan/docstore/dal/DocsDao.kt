@@ -45,7 +45,7 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
 
         // wireup a DocDao for each type
         for (docName in helper.objectDefinitionNames()) {
-            docDaoLookup[docName]= DocDao(typeDefinition = helper.objectDefinition(docName),
+            docDaoLookup[docName]= DocDao(typeDefinitionRegistry,docName,
                 eventStoreClient = eventStoreClient)
         }
 

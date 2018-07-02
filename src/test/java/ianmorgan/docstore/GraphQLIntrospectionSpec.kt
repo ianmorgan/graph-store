@@ -48,7 +48,8 @@ object GraphQLIntrospectionSpec : Spek({
             assert.that(result.errors.isEmpty(), equalTo(true))
 
             assert.that(result.getData<Any>().toString(),
-                equalTo("{__type={kind=OBJECT, name=Human, fields=[{name=id, description=null, type={name=null}}, {name=name, description=null, type={name=null}}, {name=friends, description=null, type={name=null}}, {name=friendsCount, description= TODO - should be Character, but the resolver isn't yet smart enough to deal with interfaces here, type={name=Int}}, {name=appearsIn, description= Build by convention as the count of 'friends', type={name=null}}, {name=homePlanet, description=null, type={name=String}}]}}"))
+                equalTo("{__type={kind=OBJECT, name=Human, fields=[{name=id, description=null, type={name=null}}, {name=name, description=null, type={name=null}}, {name=friends, description=null, type={name=null}}, {name=friendsCount, description=null, type={name=Int}}, {name=appearsIn, description=null, type={name=null}}, {name=homePlanet, description=null, type={name=String}}]}}"))
+
         }
 
 

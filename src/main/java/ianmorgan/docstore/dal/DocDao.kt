@@ -1,9 +1,8 @@
 package ianmorgan.docstore.dal
 
-import graphql.language.ListType
-import graphql.language.NonNullType
-import graphql.language.ObjectTypeDefinition
-import graphql.language.TypeName
+import graphql.language.*
+import graphql.schema.idl.TypeDefinitionRegistry
+import ianmorgan.docstore.graphql.Helper
 import ianmorgan.docstore.mapper.GraphQLMapper
 import java.util.*
 import kotlin.reflect.KClass
@@ -14,17 +13,20 @@ import kotlin.reflect.KFunction2
  * is controlled by the GraphQL schema.
  */
 class DocDao constructor(
-    typeDefinition: ObjectTypeDefinition,
+    typeDefinitionRegistry: TypeDefinitionRegistry,
+    docName : String,
     eventStoreClient: EventStoreClient = InMemoryEventStore()
 ) {
-    private val docName = typeDefinition.name
+    private val docName = docName
     private val es = eventStoreClient
     private lateinit var aggregateKey: String
     private lateinit var fields: Map<String, KClass<Any>>
+    private val helper = Helper.build(typeDefinitionRegistry)
+
 
     init {
-        initAggregateKey(typeDefinition)
-        initFields(typeDefinition)
+        initAggregateKey(typeDefinitionRegistry)
+        initFields(typeDefinitionRegistry)
 
         if (aggregateKey == null) throw RuntimeException("Cannot find an ID field to use as the aggregateId")
     }
@@ -148,7 +150,10 @@ class DocDao constructor(
     }
 
 
-    private fun initAggregateKey(typeDefinition: ObjectTypeDefinition) {
+    private fun initAggregateKey(registry: TypeDefinitionRegistry) {
+
+        val typeDefinition  = registry.getType(docName, ObjectTypeDefinition::class.java).get()
+
         // navigate the schema information to find an ID field
         for (field in typeDefinition.fieldDefinitions) {
             val rawType = field.type
@@ -164,8 +169,33 @@ class DocDao constructor(
         }
     }
 
-    private fun initFields(typeDefinition: ObjectTypeDefinition) {
-        val working = HashMap<String, KClass<Any>>();
+    private fun initFields(registry: TypeDefinitionRegistry) {
+        val typeDefinition  = registry.getType(docName, ObjectTypeDefinition::class.java).get()
+
+        val working = HashMap<String, KClass<Any>>()
+
+        // TODO - not sue this is really needed ?
+        // everything on the interface must be defined on the ObjectTypeDefinition to be valid GraphQL
+        for (interfce in typeDefinition.implements){
+            //println (interfce)
+            //println (interfce.comments)
+
+            val t = interfce as TypeName
+            //println(t.name)
+
+            val typeDefinition  = registry.getType(t.name, InterfaceTypeDefinition::class.java).get()
+            working.putAll(fieldsFromInterface(typeDefinition))
+
+        }
+
+        working.putAll(fieldsFromType(typeDefinition))
+        fields = working
+    }
+
+    private fun fieldsFromType(
+        typeDefinition: ObjectTypeDefinition
+    ) : HashMap<String, KClass<Any>> {
+        val working : HashMap<String, KClass<Any>> = HashMap()
 
         for (field in typeDefinition.fieldDefinitions) {
             val rawType = field.type
@@ -187,8 +217,37 @@ class DocDao constructor(
                 working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
             }
         }
-        fields = working
+        return working
     }
+
+    private fun fieldsFromInterface(
+        typeDefinition: InterfaceTypeDefinition
+    ) : HashMap<String, KClass<Any>> {
+        val working : HashMap<String, KClass<Any>> = HashMap()
+
+        for (field in typeDefinition.fieldDefinitions) {
+            val rawType = field.type
+            if (rawType is NonNullType) {
+                val type = rawType.type
+                if (type is TypeName) {
+                    working[field.name] = GraphQLMapper.graphQLTypeToJsonType(type.name)
+                }
+                if (type is ListType) {
+                    // this represents a list of enumeration, which we will represent
+                    // a list
+                    working[field.name] = List::class as KClass<Any>
+                }
+            }
+            if (rawType is ListType) {
+                working[field.name] = List::class as KClass<Any>
+            }
+            if (rawType is TypeName) {
+                working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
+            }
+        }
+        return working
+    }
+
 
     private fun buildUpdateEvent(aggregateId : String, data: Map<String, Any?>): Map<String, Any> {
         //val docName =
