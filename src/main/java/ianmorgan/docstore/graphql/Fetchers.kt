@@ -136,7 +136,9 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
     private fun lookupDocById(docName : String, id: String): HashMap<String, Any>? {
         val data = dao.daoForDoc(docName).retrieve(id)
         if (data != null) {
-            return HashMap(data);
+            val result = HashMap(data)
+            result["$docName"] = docName
+            return result
         } else {
             return null;
         }
