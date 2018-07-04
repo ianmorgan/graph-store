@@ -187,8 +187,8 @@ object GraphQLFactory2 {
         val definition = interfaceDefinition
         override fun getType(env: TypeResolutionEnvironment): GraphQLObjectType {
 
-            println("In InterfaceTypeResolve!! ")
-            val builder = GraphQLObjectType.Builder().name("Character")
+            val name = definition.name
+            val builder = GraphQLObjectType.Builder().name(name)
 
             for (f in definition.fieldDefinitions) {
                 println(f.name)
@@ -226,8 +226,8 @@ object GraphQLFactory2 {
         val definition = unionDefinition
         override fun getType(env: TypeResolutionEnvironment): GraphQLObjectType {
 
-            println("In UnionTypeResolve!! ")
-            val builder = GraphQLObjectType.Builder().name("SearchResult")
+            val name = definition.name
+            val builder = GraphQLObjectType.Builder().name(name)
 
 //            for (f in definition) {
 //                println(f.name)
