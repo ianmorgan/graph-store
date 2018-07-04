@@ -74,7 +74,18 @@ object GraphQLFactory2 {
                                 name,
                                 Fetcher.interfaceFetcher(docsDao, null)
                             )
-                        } else {
+                        } else if (helper.unionDefinitionNames().contains(typeName)) {
+                            // wire up an Interface data fetcher - this is more complicated
+                            // as we need to also understand the interface details (see newTypeWiring
+                            // below
+                            //
+                            // TODO - interfaces need more logic !!
+                            builder.dataFetcher(
+                                name,
+                                Fetcher.unionFetcher(docsDao, helper.unionDefinition(typeName))
+                            )
+                        }
+                        else {
                             println("Don't know what to do with query field $name")
                         }
                     }
@@ -104,6 +115,16 @@ object GraphQLFactory2 {
                                 builder.dataFetcher(
                                     name,
                                     DocsDataFetcher(docsDao)
+                                )
+                            } else if (helper.unionDefinitionNames().contains(typeName)) {
+                                // wire up an Interface data fetcher - this is more complicated
+                                // as we need to also understand the interface details (see newTypeWiring
+                                // below
+                                //
+                                // TODO - interfaces need more logic !!
+                                builder.dataFetcher(
+                                    name,
+                                    Fetcher.unionFetcher(docsDao, helper.unionDefinition(typeName))
                                 )
                             } else {
                                 println("Don't know what to do with query field $name")
@@ -228,7 +249,7 @@ object GraphQLFactory2 {
 
             val name = definition.name
             val builder = GraphQLObjectType.Builder().name(name)
-
+//
 //            for (f in definition) {
 //                println(f.name)
 //                builder.field(

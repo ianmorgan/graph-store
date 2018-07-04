@@ -1,6 +1,7 @@
 package ianmorgan.docstore.graphql
 
 import graphql.language.ObjectTypeDefinition
+import graphql.language.UnionTypeDefinition
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.idl.TypeRuntimeWiring
@@ -30,7 +31,6 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         if (data != null) {
             val helper = Helper.build(typeDefinition)
             for (f in helper.listTypeFieldNames()) {
-
 
                     val typeName = helper.typeForField(f)
 
@@ -272,6 +272,19 @@ object Fetcher {
     fun interfaceFetcher(docsDao: DocsDao,
                          typeDefinition: ObjectTypeDefinition?): DataFetcher<Map<String, Any>?> {
         return DocsDataFetcher(docsDao)
+    }
+
+    /**
+     * Entry point to fetch for an interface, picking the correct document by its id. Will internally drill down
+     * through the query structure until calling other fetchers as necessary, until leaf nodes with scalar values
+     * are reached
+     */
+    fun unionFetcher(docsDao: DocsDao,
+                         typeDefinition: UnionTypeDefinition?): DataFetcher<List<Map<String, Any>?>> {
+        //return DocsDataFetcher(docsDao)
+
+        // hardcoded test data for now
+        return FixedListDataFetcher(listOf(mapOf("name" to "RD-D2") as Map<String,Any>))
     }
 
     fun docListFetcher(
