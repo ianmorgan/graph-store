@@ -13,17 +13,17 @@ import org.junit.runner.RunWith
 import java.io.FileInputStream
 
 /**
- * Introspection should be handled by the graphql-java library. These tests are just
+ * Union types  should be handled by the graphql-java library. These tests are just
  * to confirm that the basic behaviour has not been affected by the graph-store
  */
 @RunWith(JUnitPlatform::class)
-object GraphQLIntrospectionSpec : Spek({
+object GraphQLUnionSpec : Spek({
 
     val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }
     lateinit var docsDao: DocsDao
     lateinit var graphQL : GraphQL
 
-    describe ("To confirm inbuilt graphql-java introspection API working as expected") {
+    describe ("To confirm inbuilt graphql-java union API working as expected") {
 
         beforeGroup {
             graphQL = GraphQLFactory2.build(starWarSchema,DocsDao(starWarSchema))

@@ -2,13 +2,19 @@
 
 type Query {
 
-  character(id: ID!): Character
-
   droid(id: ID!): Droid
 
   human(id: ID!): Human
 
   humans(name : String!) : [Human]
+
+  character(id: ID!): Character
+
+  # Find characters by name
+  characters(name : String) : [Character]
+
+  # Search by name
+  search(name : String) : [SearchResult]
 
 }
 
@@ -66,5 +72,7 @@ type Droid implements Character {
   primaryFunction: String
 
 }
+
+union SearchResult = Human | Droid
 
 schema{query: Query}

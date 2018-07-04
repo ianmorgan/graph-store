@@ -45,11 +45,30 @@ class TypeDefinitionRegistryHelper constructor(registry : TypeDefinitionRegistry
         return result
     }
 
+
+    /**
+     * List of 'InterfaceTypeDefinition'
+     */
+    fun unionDefinitionNames() : List<String> {
+        val result = ArrayList<String>()
+        for (definition in tdr.getTypes(UnionTypeDefinition::class.java)) {
+            result.add(definition.name)
+        }
+        return result
+    }
+
     /**
      * Return the InterfaceTypeDefinition for this name or throw an exception
      */
     fun interfaceDefinition (name : String) : InterfaceTypeDefinition {
         return tdr.getType(name,InterfaceTypeDefinition::class.java).get()
+    }
+
+    /**
+     * Return the UnionTypeDefinition for this name or throw an exception
+     */
+    fun unionDefinition (name : String) : UnionTypeDefinition {
+        return tdr.getType(name,UnionTypeDefinition::class.java).get()
     }
 
 

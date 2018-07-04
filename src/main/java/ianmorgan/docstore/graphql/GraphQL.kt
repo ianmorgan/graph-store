@@ -151,6 +151,21 @@ object GraphQLFactory2 {
             )
         }
 
+        // wireup handling of union types
+        for (name in helper.unionDefinitionNames()) {
+            builder.type(
+                newTypeWiring(name)
+                    .typeResolver(
+                        UnionTypeResolve(
+                            helper.unionDefinition(
+                                name
+                            )
+                        )
+                    )
+                    .build()
+            )
+        }
+
         // build the complete GraphQL object
         val wiring = builder.build()
         val schemaGenerator = SchemaGenerator()
@@ -184,6 +199,45 @@ object GraphQLFactory2 {
                         .type(typeFromType(f.type))
                 )
             }
+            return builder.build()
+        }
+
+        // Take the schema type and convert to one of physical
+        // implementation classes
+        private fun typeFromType(type: Type<*>): GraphQLScalarType {
+            if (type is NonNullType) {
+                if (type is TypeName) {
+                    if (type.name == "ID") {
+                        return GraphQLID
+                    }
+                }
+            }
+            return GraphQLString
+        }
+
+    }
+
+
+    /**
+     * A TypeResolver for an interface which will figure
+     * out which doc to use
+     */
+    class UnionTypeResolve constructor(unionDefinition: UnionTypeDefinition) : TypeResolver {
+        val definition = unionDefinition
+        override fun getType(env: TypeResolutionEnvironment): GraphQLObjectType {
+
+            println("In UnionTypeResolve!! ")
+            val builder = GraphQLObjectType.Builder().name("SearchResult")
+
+//            for (f in definition) {
+//                println(f.name)
+//                builder.field(
+//                    newFieldDefinition()
+//                        .name(f.name)
+//                        //.description()
+//                        .type(typeFromType(f.type))
+//                )
+//            }
             return builder.build()
         }
 
