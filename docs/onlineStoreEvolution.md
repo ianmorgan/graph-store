@@ -15,17 +15,24 @@ Lets start with a simple online store.
 
 The first version is a simple online form. It needs a simple catalogue published as web pages which our customer can 
 browse, the ability to talk to a payment gateway to make a credit card payment and enough security to make sure user and 
-credit cards details arent't inadvertanlly leaked. This is simple enough to build in just about any language / framework. 
+credit cards details arent't inadvertently leaked. This is simple enough to build in just about any language / framework. 
 
 
 <img src="images/simple-order.png" width="600">
 
 The backend fulfilment processes can be manually, as long the customer gets their goods in time, they don't care. 
 
-This is easily expressed as a [JSON](json/order-v1.json) document
+This is easily expressed as a simple [JSON](json/order-v1.json) document, which can be our initial schema.
 
-## Version two, 
+And a very simple schematic of the site and the business process is
 
+<img src="images/site-components.png" width="600">
+
+
+
+## Version two
+
+The next version should be determined 
 
     
 
