@@ -5,7 +5,9 @@ Setup [DDD style aggregates](https://martinfowler.com/bliki/DDD_Aggregate.html) 
 Store aggregate state to an event-store using REST, and query using both GraphQL 
 and traditional REST. More advanced applications can use [CQRS](https://www.martinfowler.com/bliki/CQRS.html)
 principle to build custom data integrations and views by simply reducing 
-the underlying event stream.
+the underlying event stream. See the [Online Store Evolution](onlineStoreEvolution) for some more 
+detail.
+ 
  
 The inbuilt query model is quite basic. The intention is that as more complex query models are 
 required other services will monitor the event stream(s) and aggregate data to build dedicated views 
@@ -14,7 +16,9 @@ using the appropriate technology.
 To get working quickly, follow the getting started [Getting Started](#getting-started) guide below. For more 
 detail see [Data Access](daos), [Type Mappings](typeMappings) and [Standards](standards).
 
-Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/graph-store) 
+Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/graph-store). 
+
+
 
 
 ## Getting started 
