@@ -18,7 +18,7 @@ browse, the ability to talk to a payment gateway to make a credit card payment a
 credit cards details arent't inadvertently leaked. This is simple enough to build in just about any language / framework. 
 
 
-<img src="images/simple-order.png" width="600">
+<img src="images/orderv1/simple-order.png" width="600">
 
 The backend fulfilment processes can be manually, as long the customer gets their goods in time, they don't care. 
 
@@ -26,7 +26,14 @@ This is easily expressed as a simple [JSON](json/order-v1.json) document, which 
 
 And a very simple schematic of the site and the business process is
 
-<img src="images/site-components.png" width="600">
+<img src="images/orderv1/site-components.png" width="600">
+
+And the UI flow for the user is something like 
+
+<img src="images/orderv1/ui-flow.png" width="300">
+
+
+
 
 
 
