@@ -1,0 +1,16 @@
+{
+  "id" : "95f0acee-8762-11e8-9a94-a6cf71072f73",
+  "items" : [
+    {
+      "name" : "Ray Blaster",
+      "quantity" : 6,
+      "totalPrice" : 300
+    },
+    {
+      "name" : "Wookie Comb - Large",
+      "quantity" : 1,
+      "totalPrice" : 20
+    }
+  ]
+
+}
