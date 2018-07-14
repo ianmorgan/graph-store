@@ -11,6 +11,14 @@
       "quantity" : 1,
       "totalPrice" : 20
     }
-  ]
-
+  ],
+  "customer" : {
+    "name" : "Han Solo",
+    "email" : "han.solo@good.org",
+    "address" : "Correllia"
+  },
+  "payment" : {
+    "token" : "0c63607ac150c8c4a0ef3d8daf09104d",
+    "billingAddressSame" : true
+  }
 }
