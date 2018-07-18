@@ -4,11 +4,10 @@ import graphql.language.ObjectTypeDefinition
 import graphql.language.UnionTypeDefinition
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
+import graphql.schema.idl.TypeDefinitionRegistry
 import graphql.schema.idl.TypeRuntimeWiring
 import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.dal.InterfaceDao
-import kotlin.collections.ArrayList
-
 
 
 /**
@@ -24,7 +23,7 @@ class NullDataFetcher : DataFetcher<Map<String, Any>?> {
 /**
  * Return fixed data - mainly for experimenting and debugging
  */
-class FixedDataFetcher constructor(data : Map<String, Any>?) : DataFetcher<Map<String, Any>?> {
+class FixedDataFetcher constructor(data: Map<String, Any>?) : DataFetcher<Map<String, Any>?> {
     val data = data
     override fun get(environment: DataFetchingEnvironment?): Map<String, Any>? {
         println("In FixedDataFetcher ")
@@ -35,7 +34,7 @@ class FixedDataFetcher constructor(data : Map<String, Any>?) : DataFetcher<Map<S
 /**
  * Return fixed data - mainly for experimenting and debugging
  */
-class FixedListDataFetcher constructor(data : List<Map<String, Any>?>) : DataFetcher<List<Map<String, Any>?>> {
+class FixedListDataFetcher constructor(data: List<Map<String, Any>?>) : DataFetcher<List<Map<String, Any>?>> {
     val data = data
     override fun get(environment: DataFetchingEnvironment?): List<Map<String, Any>?> {
         println("In FixedListDataFetcher ")
@@ -43,28 +42,27 @@ class FixedListDataFetcher constructor(data : List<Map<String, Any>?>) : DataFet
     }
 }
 
-class FriendsDataFetcher constructor(dao : InterfaceDao) :  DataFetcher<List<Map<String, Any>?>> {
+class FriendsDataFetcher constructor(dao: InterfaceDao) : DataFetcher<List<Map<String, Any>?>> {
     val dao = dao
     override fun get(environment: DataFetchingEnvironment): List<Map<String, Any>?> {
         println("In FriendsDataFetcher ")
 
         val result = ArrayList<Map<String, Any>?>()
 
-        val source = environment.getSource<Map<String,Any?>>()
+        val source = environment.getSource<Map<String, Any?>>()
 
-        if (source.containsKey("friends")){
-            for (friendId in source["friends"] as List<String>){
+        if (source.containsKey("friends")) {
+            for (friendId in source["friends"] as List<String>) {
                 val friend = dao.retrieve(friendId)
-                if (friend != null){
+                if (friend != null) {
                     result.add(friend)
-                }
-                else {
+                } else {
                     // todo - this should be adding a warning to the query
-                    println ("couldnt find friend $friendId")
+                    println("couldnt find friend $friendId")
                 }
             }
         }
-       return result
+        return result
     }
 }
 
@@ -72,12 +70,12 @@ object Fetcher {
 
     /**
      * Entry point to fetch for a single doc. Will internally drill down through the query structure until calling
-     * other fetchers as necessary, until leaf nodes with scalar values are reached
+     * other fetchers as necessary, until leaf nodes with scalar values are reached.
      */
     fun docFetcher(
         docsDao: DocsDao,
         typeDefinition: ObjectTypeDefinition,
-        builder : TypeRuntimeWiring.Builder
+        builder: TypeRuntimeWiring.Builder
     ): DataFetcher<Map<String, Any>?> {
         return DocDataFetcher(docsDao, typeDefinition, builder)
     }
@@ -87,9 +85,12 @@ object Fetcher {
      * through the query structure until calling other fetchers as necessary, until leaf nodes with scalar values
      * are reached
      */
-    fun interfaceFetcher(docsDao: DocsDao,
-                         typeDefinition: ObjectTypeDefinition?): DataFetcher<Map<String, Any>?> {
-        return InterfaceDataFetcher(docsDao)
+    fun interfaceFetcher(
+        docsDao: DocsDao,
+        interfaceName: String,
+        registry: TypeDefinitionRegistry
+    ): DataFetcher<Map<String, Any>?> {
+        return InterfaceDataFetcher(docsDao, interfaceName, registry)
     }
 
     /**
@@ -97,13 +98,18 @@ object Fetcher {
      * through the query structure until calling other fetchers as necessary, until leaf nodes with scalar values
      * are reached
      */
-    fun unionFetcher(docsDao: DocsDao,
-                         typeDefinition: UnionTypeDefinition?): DataFetcher<List<Map<String, Any>?>> {
+    fun unionFetcher(
+        docsDao: DocsDao,
+        typeDefinition: UnionTypeDefinition?
+    ): DataFetcher<List<Map<String, Any>?>> {
         //return DocsDataFetcher(docsDao)
         // hardcoded test data for now
-        return FixedListDataFetcher(listOf(
-            mapOf("#docType" to "Droid", "name" to "RD-D2") as Map<String,Any>,
-            mapOf("#docType" to "Human", "name" to "Luke") as Map<String,Any>))
+        return FixedListDataFetcher(
+            listOf(
+                mapOf("#docType" to "Droid", "name" to "RD-D2") as Map<String, Any>,
+                mapOf("#docType" to "Human", "name" to "Luke") as Map<String, Any>
+            )
+        )
     }
 
     fun docListFetcher(

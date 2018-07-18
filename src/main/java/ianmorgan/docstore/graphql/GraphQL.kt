@@ -66,14 +66,12 @@ object GraphQLFactory {
                                 )
                             )
                         } else if (helper.interfaceDefinitionNames().contains(typeName)) {
-                            // wire up an Interface data fetcher - this is more complicated
-                            // as we need to also understand the interface details (see newTypeWiring
-                            // below
-                            //
-                            // TODO - interfaces need more logic !!
+
                             builder.dataFetcher(
                                 name,
-                                Fetcher.interfaceFetcher(docsDao, null)
+                                Fetcher.interfaceFetcher(docsDao,
+                                    typeName,
+                                    typeDefinitionRegistry)
                             )
                         } else if (helper.unionDefinitionNames().contains(typeName)) {
                             // wire up an Interface data fetcher - this is more complicated
@@ -115,7 +113,7 @@ object GraphQLFactory {
                                 // TODO - interfaces need more logic !!
                                 builder.dataFetcher(
                                     name,
-                                    InterfaceDataFetcher(docsDao)
+                                    InterfaceDataFetcher(docsDao, name, typeDefinitionRegistry)
                                 )
                             } else if (helper.unionDefinitionNames().contains(typeName)) {
                                 // wire up an Interface data fetcher - this is more complicated

@@ -34,13 +34,12 @@ class TypeDefinitionRegistryHelper constructor(registry : TypeDefinitionRegistry
 
 
     /**
-     * List of 'InterfaceTypeDefinition'
+     * List of 'InterfaceTypeDefinition' names
      */
     fun interfaceDefinitionNames() : List<String> {
         val result = ArrayList<String>()
         for (definition in tdr.getTypes(InterfaceTypeDefinition::class.java)) {
                 result.add(definition.name)
-
         }
         return result
     }
@@ -78,6 +77,25 @@ class TypeDefinitionRegistryHelper constructor(registry : TypeDefinitionRegistry
      */
     fun queryDefinition() : ObjectTypeDefinition {
         return tdr.getType("Query", ObjectTypeDefinition::class.java).get()
+    }
+
+    /**
+     * Return the names of the ObjectTypes that implement this interface. So for
+     * the standard starwars schema then 'Character' will return 'Droid' & 'Human'
+     */
+    fun objectsImplementingInterface(interfaceName : String) : List<String> {
+        val result = ArrayList<String>()
+        for (definition in tdr.getTypes(ObjectTypeDefinition::class.java)) {
+            for (implements  in definition.implements) {
+
+                val type = implements as TypeName
+                if (type.name == interfaceName){
+                    result.add (definition.name)
+                }
+
+            }
+        }
+        return result
     }
 }
 
