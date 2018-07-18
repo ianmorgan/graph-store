@@ -23,8 +23,8 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
         return docDaoLookup.keys
     }
 
-    fun daoForDoc(docName: String): DocDao {
-        return docDaoLookup[docName]!!
+    fun daoForDoc(docType: String): DocDao {
+        return docDaoLookup[docType]!!
     }
 
     fun availableInterfaces(): Set<String> {
@@ -44,8 +44,8 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
         val helper = Helper.build(typeDefinitionRegistry)
 
         // wireup a DocDao for each type
-        for (docName in helper.objectDefinitionNames()) {
-            docDaoLookup[docName]= DocDao(typeDefinitionRegistry,docName,
+        for (docType in helper.objectDefinitionNames()) {
+            docDaoLookup[docType]= DocDao(typeDefinitionRegistry,docType,
                 eventStoreClient = eventStoreClient)
         }
 

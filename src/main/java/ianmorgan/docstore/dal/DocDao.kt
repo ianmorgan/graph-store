@@ -14,14 +14,13 @@ import kotlin.reflect.KFunction2
  */
 class DocDao constructor(
     typeDefinitionRegistry: TypeDefinitionRegistry,
-    docName : String,
+    docType : String,
     eventStoreClient: EventStoreClient = InMemoryEventStore()
 ) {
-    private val docName = docName
+    private val docType = docType
     private val es = eventStoreClient
     private lateinit var aggregateKey: String
     private lateinit var fields: Map<String, KClass<Any>>
-    private val helper = Helper.build(typeDefinitionRegistry)
 
 
     init {
@@ -57,7 +56,7 @@ class DocDao constructor(
     }
 
     fun count(): Int {
-        return es.aggregateKeys(docName).size
+        return es.aggregateKeys(docType).size
     }
 
     /**
@@ -71,7 +70,7 @@ class DocDao constructor(
         val fieldName = rootFieldName(fieldNameExpression)
 
         // TODO - production quality would need an indexing strategy
-        for (key in es.aggregateKeys(docName)) {
+        for (key in es.aggregateKeys(docType)) {
             val doc = retrieve(key)!!
             if (matcher(doc[fieldName], value)) {
                 result.add(doc)
@@ -152,7 +151,7 @@ class DocDao constructor(
 
     private fun initAggregateKey(registry: TypeDefinitionRegistry) {
 
-        val typeDefinition  = registry.getType(docName, ObjectTypeDefinition::class.java).get()
+        val typeDefinition  = registry.getType(docType, ObjectTypeDefinition::class.java).get()
 
         // navigate the schema information to find an ID field
         for (field in typeDefinition.fieldDefinitions) {
@@ -170,7 +169,7 @@ class DocDao constructor(
     }
 
     private fun initFields(registry: TypeDefinitionRegistry) {
-        val typeDefinition  = registry.getType(docName, ObjectTypeDefinition::class.java).get()
+        val typeDefinition  = registry.getType(docType, ObjectTypeDefinition::class.java).get()
 
         val working = HashMap<String, KClass<Any>>()
 
@@ -250,9 +249,9 @@ class DocDao constructor(
 
 
     private fun buildUpdateEvent(aggregateId : String, data: Map<String, Any?>): Map<String, Any> {
-        //val docName =
+        //val docType =
         val ev = HashMap<String, Any>()
-        ev["type"] = docName+"Updated"
+        ev["type"] = docType+"Updated"
         ev["id"] = UUID.randomUUID().toString()
         ev["aggregateId"] = aggregateId
         ev["timestamp"] = System.currentTimeMillis()
@@ -263,7 +262,7 @@ class DocDao constructor(
 
     private fun buildDeleteEvent(aggregateId : String): Map<String, Any> {
         val ev = HashMap<String, Any>()
-        ev["type"] = docName+"Deleted"
+        ev["type"] = docType+"Deleted"
         ev["id"] = UUID.randomUUID().toString()
         ev["aggregateId"] = aggregateId
         ev["timestamp"] = System.currentTimeMillis()

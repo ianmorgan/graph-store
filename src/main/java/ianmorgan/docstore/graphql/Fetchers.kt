@@ -18,13 +18,13 @@ import kotlin.collections.ArrayList
 class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDefinition, builder : TypeRuntimeWiring.Builder) :
     DataFetcher<Map<String, Any>?> {
     val dao = docsDao
-    val docName = typeDefinition.name
+    val docType = typeDefinition.name
     val typeDefinition = typeDefinition
     override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
 
-        val idFieldName = dao.daoForDoc(docName).aggregateKey()
+        val idFieldName = dao.daoForDoc(docType).aggregateKey()
         val id = env.getArgument<String>(idFieldName)
-        val data = lookupDocById(docName,id)
+        val data = lookupDocById(docType,id)
 
         val argsHelper = Helper.build(env.selectionSet)
 
@@ -162,13 +162,13 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
 class DocListDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDefinition) :
     DataFetcher<List<Map<String, Any>?>> {
     val dao = docsDao
-    val docName = typeDefinition.name
+    val docType = typeDefinition.name
     val typeDefinition = typeDefinition
     override fun get(env: DataFetchingEnvironment): List<Map<String, Any>?> {
 
         if (env.containsArgument("name")) {
             val name = env.getArgument<String>("name")
-            return dao.daoForDoc(docName).findByField("name", name);
+            return dao.daoForDoc(docType).findByField("name", name);
         }
 
         return emptyList()

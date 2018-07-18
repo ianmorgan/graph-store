@@ -35,8 +35,8 @@ class InterfaceDao constructor(
 
 
     fun retrieve(aggregateId: String): Map<String, Any>? {
-        for (docName in implementingDocs) {
-            val doc = docDaoLookup.get(docName)!!.retrieve(aggregateId)
+        for (docType in implementingDocs) {
+            val doc = docDaoLookup.get(docType)!!.retrieve(aggregateId)
             if (doc != null) {
                 val copy = HashMap<String, Any>()
                 for (entry in doc.entries) {
@@ -51,12 +51,12 @@ class InterfaceDao constructor(
     }
 
     private fun initDaoList(helper: TypeDefinitionRegistryHelper, interfaceName: String) {
-        for (docName in helper.objectDefinitionNames()) {
-            val objectDefinition = helper.objectDefinition(docName)
+        for (docType in helper.objectDefinitionNames()) {
+            val objectDefinition = helper.objectDefinition(docType)
             for (type in objectDefinition.getImplements()) {
                 if (type is TypeName) {
                     if (type.name == interfaceName) {
-                        implementingDocs.add(docName)
+                        implementingDocs.add(docType)
                     }
                 }
             }
