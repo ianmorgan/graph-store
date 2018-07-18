@@ -88,7 +88,7 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         val dataLoader = DataLoader(dao)
         dataLoader.loadDirectory("src/test/resources/starwars")
 
-        val graphQL = GraphQLFactory.build(starWarSchema, dao)
+        //val graphQL = GraphQLFactory.build(starWarSchema, dao)
 
 
         Controller(stateHolder).register(app)

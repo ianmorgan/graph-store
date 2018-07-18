@@ -52,13 +52,14 @@ class FriendsDataFetcher constructor(dao: InterfaceDao) : DataFetcher<List<Map<S
         val source = environment.getSource<Map<String, Any?>>()
 
         if (source.containsKey("friends")) {
+            @Suppress("UNCHECKED_CAST")
             for (friendId in source["friends"] as List<String>) {
                 val friend = dao.retrieve(friendId)
                 if (friend != null) {
                     result.add(friend)
                 } else {
                     // todo - this should be adding a warning to the query
-                    println("couldnt find friend $friendId")
+                    println("couldn't find friend $friendId")
                 }
             }
         }

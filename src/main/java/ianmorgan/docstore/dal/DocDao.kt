@@ -12,6 +12,7 @@ import kotlin.reflect.KFunction2
  * A Dao for saving (as events) and retrieving a single document. The document structure
  * is controlled by the GraphQL schema.
  */
+@Suppress("UNCHECKED_CAST")
 class DocDao constructor(
     typeDefinitionRegistry: TypeDefinitionRegistry,
     docType : String,
@@ -38,10 +39,10 @@ class DocDao constructor(
      * See https://ianmorgan.github.io/doc-store/storage for more detail.
      */
     fun store(doc: Map<String, Any?>) {
-        val id = doc.get(aggregateKey) as String
-        if (id != null) {
+        val id = doc.get(aggregateKey)
+        if (id is String) {
             checkAgainstSchema(doc)
-            es.storeEvent(buildUpdateEvent(id,doc))
+            es.storeEvent(buildUpdateEvent(id, doc))
         } else {
             throw RuntimeException("must have an aggregate id")
         }
@@ -176,15 +177,11 @@ class DocDao constructor(
         // TODO - not sure this is really needed ?
         // everything on the interface must be defined on the ObjectTypeDefinition to be valid GraphQL
         for (interfce in typeDefinition.implements){
-            //println (interfce)
-            //println (interfce.comments)
 
             val t = interfce as TypeName
-            //println(t.name)
 
-            val typeDefinition  = registry.getType(t.name, InterfaceTypeDefinition::class.java).get()
-            working.putAll(fieldsFromInterface(typeDefinition))
-
+            val tDef  = registry.getType(t.name, InterfaceTypeDefinition::class.java).get()
+            working.putAll(fieldsFromInterface(tDef))
         }
 
         working.putAll(fieldsFromType(typeDefinition))

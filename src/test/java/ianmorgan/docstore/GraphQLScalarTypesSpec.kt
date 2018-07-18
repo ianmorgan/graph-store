@@ -19,6 +19,7 @@ object GraphQLScalarTypesSpec : Spek({
     lateinit var theDao: DocsDao
     lateinit var graphQL: GraphQL
 
+    @Suppress("UNCHECKED_CAST")
     describe("Queries returning scalar types") {
 
         beforeGroup {

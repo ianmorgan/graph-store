@@ -14,6 +14,7 @@ object DocReducer {
 
 
             if (type.endsWith("Updated")) {
+                @Suppress("UNCHECKED_CAST")
                 val payload = event["payload"] as Map<String,Any?>
                 working = working
                     .plus(payload)      // merge event
@@ -24,6 +25,7 @@ object DocReducer {
             }
         }
 
+        @Suppress("UNCHECKED_CAST")
         return working as Map<String,Any>
     }
 

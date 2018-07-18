@@ -12,6 +12,7 @@ import java.util.HashMap
  * complete ObjectTypeDefinition and also knows how to resolve data for child nodes, which requires
  * recursive calls to the DAOs.
  */
+@Suppress("UNCHECKED_CAST")
 class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDefinition, builder : TypeRuntimeWiring.Builder) :
     DataFetcher<Map<String, Any>?> {
     val dao = docsDao

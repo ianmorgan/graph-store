@@ -4,7 +4,7 @@ import ianmorgan.github.io.jsonUtils.JsonHelper
 import org.json.JSONArray
 
 /**
- * General interface to an underlying event store holding the updates
+ * General face to an underlying event store holding the updates
  */
 interface EventStoreClient {
 
@@ -72,8 +72,11 @@ class InMemoryEventStore : EventStoreClient {
 
 }
 
+
 class RealEventStore : EventStoreClient {
     val baseURL = "http://event-store:7001/"
+
+    @Suppress("UNCHECKED_CAST")
     override fun events(aggregateId: String): List<Map<String, Any>> {
         // TODO - nicer handing of error conditions
         val response = khttp.get(baseURL + "events?aggregateId=$aggregateId")
@@ -86,6 +89,7 @@ class RealEventStore : EventStoreClient {
         return events
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun aggregateKeys(docType: String): Set<String> {
         // TODO - nicer handing of error conditions
         val response = khttp.get(baseURL + "aggregates")
@@ -93,7 +97,7 @@ class RealEventStore : EventStoreClient {
         val result  = JsonHelper.jsonToMap(response.jsonObject)
         println (result)
 
-        val payload = result["payload"] as Map<String,Any>;
+        val payload = result["payload"] as Map<String,Any>
         val aggragates = payload["aggregates"] as List<String>
         return aggragates.toSet()
     }

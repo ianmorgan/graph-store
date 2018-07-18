@@ -20,7 +20,6 @@ import java.io.FileInputStream
 object GraphQLIntrospectionSpec : Spek({
 
     val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }
-    lateinit var docsDao: DocsDao
     lateinit var graphQL : GraphQL
 
     describe ("To confirm inbuilt graphql-java introspection API working as expected") {
@@ -55,8 +54,5 @@ object GraphQLIntrospectionSpec : Spek({
                 equalTo("{__type={kind=OBJECT, name=Human, fields=[{name=id, description=null, type={name=null}}, {name=name, description=null, type={name=null}}, {name=friends, description=null, type={name=null}}, {name=friendsCount, description=null, type={name=Int}}, {name=appearsIn, description=null, type={name=null}}, {name=homePlanet, description=null, type={name=String}}]}}"))
 
         }
-
-
-
     }
 })

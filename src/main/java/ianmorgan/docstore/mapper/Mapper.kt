@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
  */
 
 /**
- * The interface that default mapper + any custom mapper need to implement
+ * The face that default mapper + any custom mapper need to implement
  *
  *
  */
@@ -74,6 +74,7 @@ interface GraphQLScalarType {
 
 
 object GraphQLMapper {
+    @Suppress("UNCHECKED_CAST")
     val JSON_TYPES = listOf(
         String::class as KClass<Any>,
         Int::class as KClass<Any>,
@@ -111,6 +112,7 @@ object GraphQLMapper {
      * See http://graphql.org/learn/schema
      *
      */
+    @Suppress("UNCHECKED_CAST")
     fun graphQLTypeToJsonType(typeName: String): KClass<Any> {
         return when (typeName) {
             "String" -> String::class as KClass<Any>
@@ -132,6 +134,7 @@ object GraphQLMapper {
      * that will chosen different representations of similar concepts, e..g
      * an Array as opposed to a List or an Int as opposed to a Long.
      */
+    @Suppress("UNCHECKED_CAST")
     fun standardiseType(value : Any) : KClass<Any> {
         when (value) {
             is List<*> -> { return List::class as KClass<Any> }
