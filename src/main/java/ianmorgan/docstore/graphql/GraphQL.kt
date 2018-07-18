@@ -17,7 +17,7 @@ import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
 import ianmorgan.docstore.dal.DocsDao
 
 
-object GraphQLFactory2 {
+object GraphQLFactory {
 
     fun build(schema: String, docsDao: DocsDao): GraphQL {
 

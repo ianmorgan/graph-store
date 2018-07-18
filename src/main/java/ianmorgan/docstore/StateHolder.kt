@@ -3,7 +3,7 @@ package ianmorgan.docstore
 import graphql.GraphQL
 import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.dal.EventStoreClient
-import ianmorgan.docstore.graphql.GraphQLFactory2
+import ianmorgan.docstore.graphql.GraphQLFactory
 import java.io.File
 import java.io.FileInputStream
 
@@ -26,7 +26,7 @@ class StateHolder (eventStoreClient: EventStoreClient) {
             val dao = DocsDao(graphQLSchema, eventStoreClient)
             docsDao = dao
 
-            val ql = GraphQLFactory2.build(graphQLSchema, dao)
+            val ql = GraphQLFactory.build(graphQLSchema, dao)
             graphQL = ql
 
             valid = true

@@ -173,7 +173,7 @@ class DocDao constructor(
 
         val working = HashMap<String, KClass<Any>>()
 
-        // TODO - not sue this is really needed ?
+        // TODO - not sure this is really needed ?
         // everything on the interface must be defined on the ObjectTypeDefinition to be valid GraphQL
         for (interfce in typeDefinition.implements){
             //println (interfce)

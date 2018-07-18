@@ -7,7 +7,7 @@ import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.dal.EventStoreClient
 import ianmorgan.docstore.dal.InMemoryEventStore
 import ianmorgan.docstore.dal.RealEventStore
-import ianmorgan.docstore.graphql.GraphQLFactory2
+import ianmorgan.docstore.graphql.GraphQLFactory
 import io.javalin.Javalin
 import io.javalin.embeddedserver.Location
 import io.javalin.translator.json.JavalinJacksonPlugin
@@ -88,7 +88,7 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         val dataLoader = DataLoader(dao)
         dataLoader.loadDirectory("src/test/resources/starwars")
 
-        val graphQL = GraphQLFactory2.build(starWarSchema, dao)
+        val graphQL = GraphQLFactory.build(starWarSchema, dao)
 
 
         Controller(stateHolder).register(app)
