@@ -82,7 +82,6 @@ class RealEventStore : EventStoreClient {
         val response = khttp.get(baseURL + "events?aggregateId=$aggregateId")
 
         val result  = JsonHelper.jsonToMap(response.jsonObject)
-        println (result)
 
         val payload = result["payload"] as Map<String,Any>;
         val events = payload["events"] as List<Map<String,Any>>
@@ -95,7 +94,6 @@ class RealEventStore : EventStoreClient {
         val response = khttp.get(baseURL + "aggregates")
 
         val result  = JsonHelper.jsonToMap(response.jsonObject)
-        println (result)
 
         val payload = result["payload"] as Map<String,Any>
         val aggragates = payload["aggregates"] as List<String>

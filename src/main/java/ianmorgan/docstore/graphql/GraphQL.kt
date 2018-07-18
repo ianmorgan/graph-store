@@ -193,7 +193,6 @@ object GraphQLFactory {
             val builder = GraphQLObjectType.Builder().name(name)
 
             for (f in definition.fieldDefinitions) {
-                println(f.name)
                 builder.field(
                     newFieldDefinition()
                         .name(f.name)
