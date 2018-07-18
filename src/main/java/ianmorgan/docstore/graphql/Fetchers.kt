@@ -133,11 +133,11 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
     }
 
 
-    private fun lookupDocById(docName : String, id: String): HashMap<String, Any>? {
-        val data = dao.daoForDoc(docName).retrieve(id)
+    private fun lookupDocById(docType : String, id: String): HashMap<String, Any>? {
+        val data = dao.daoForDoc(docType).retrieve(id)
         if (data != null) {
             val result = HashMap(data)
-            result["$docName"] = docName
+            result["#docType"] = docType
             return result
         } else {
             return null;
@@ -284,9 +284,10 @@ object Fetcher {
     fun unionFetcher(docsDao: DocsDao,
                          typeDefinition: UnionTypeDefinition?): DataFetcher<List<Map<String, Any>?>> {
         //return DocsDataFetcher(docsDao)
-
         // hardcoded test data for now
-        return FixedListDataFetcher(listOf(mapOf("name" to "RD-D2") as Map<String,Any>))
+        return FixedListDataFetcher(listOf(
+            mapOf("#docType" to "Droid", "name" to "RD-D2") as Map<String,Any>,
+            mapOf("#docType" to "Human", "name" to "Luke") as Map<String,Any>))
     }
 
     fun docListFetcher(

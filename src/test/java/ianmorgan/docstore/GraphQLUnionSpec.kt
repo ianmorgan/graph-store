@@ -39,7 +39,7 @@ object GraphQLUnionSpec : Spek({
   search(name: "R2-D2") {
     ... on Droid {
       name
-      primaryFunction
+
     }
 
   }
@@ -61,7 +61,7 @@ object GraphQLUnionSpec : Spek({
   }
 }""".trimIndent()
 
-          //  assert.that(result.getData<Any>().toString(), equalTo(expected))
+        //    assert.that(result.getData<Any>().toString(), equalTo(expected))
         }
 
 

@@ -12,6 +12,7 @@ import graphql.schema.TypeResolver
 import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
+import graphql.schema.idl.TypeDefinitionRegistry
 import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
 import ianmorgan.docstore.dal.DocsDao
 
@@ -176,13 +177,7 @@ object GraphQLFactory2 {
         for (name in helper.unionDefinitionNames()) {
             builder.type(
                 newTypeWiring(name)
-                    .typeResolver(
-                        UnionTypeResolve(
-                            helper.unionDefinition(
-                                name
-                            )
-                        )
-                    )
+                    .typeResolver(UnionTypeResolve(typeDefinitionRegistry,name))
                     .build()
             )
         }
@@ -240,25 +235,31 @@ object GraphQLFactory2 {
 
 
     /**
-     * A TypeResolver for an interface which will figure
+     * A TypeResolver for an union which will figure
      * out which doc to use
      */
-    class UnionTypeResolve constructor(unionDefinition: UnionTypeDefinition) : TypeResolver {
-        val definition = unionDefinition
+    class UnionTypeResolve constructor(typeDefinitionRegistry: TypeDefinitionRegistry, unionName : String) : TypeResolver {
+        val typeDefinitionRegistry = typeDefinitionRegistry
+        val unionName = unionName
+        val helper = TypeDefinitionRegistryHelper(typeDefinitionRegistry)
         override fun getType(env: TypeResolutionEnvironment): GraphQLObjectType {
 
-            val name = definition.name
+            val data = env.getObject<Map<String,Any>>()
+            val name = data["#docType"]!! as String
+
+            val definition = helper.objectDefinition(name)
+
             val builder = GraphQLObjectType.Builder().name(name)
-//
-//            for (f in definition) {
-//                println(f.name)
-//                builder.field(
-//                    newFieldDefinition()
-//                        .name(f.name)
-//                        //.description()
-//                        .type(typeFromType(f.type))
-//                )
-//            }
+
+            for (f in definition.fieldDefinitions) {
+                println(f.name)
+                builder.field(
+                    newFieldDefinition()
+                        .name(f.name)
+                        //.description()
+                        .type(typeFromType(f.type))
+                )
+            }
             return builder.build()
         }
 
