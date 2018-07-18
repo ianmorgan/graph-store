@@ -97,6 +97,20 @@ class TypeDefinitionRegistryHelper constructor(registry : TypeDefinitionRegistry
         }
         return result
     }
+
+    /**
+     * Return the names of the ObjectTypes that this union can return
+     */
+    fun objectsInUnion(unionName : String) : List<String> {
+        val unionTypeDefinition = tdr.getType(unionName, UnionTypeDefinition::class.java).get()
+
+        val result = ArrayList<String>()
+        for (member in unionTypeDefinition.memberTypes) {
+            val type = member as TypeName
+            result.add (type.name)
+        }
+        return result
+    }
 }
 
 class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinition) {

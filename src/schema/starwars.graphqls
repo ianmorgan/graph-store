@@ -14,7 +14,7 @@ type Query {
   characters(name : String) : [Character]
 
   # Search by name
-  search(name : String) : [SearchResult]
+  search(name_contains : String) : [SearchResult]
 
 }
 

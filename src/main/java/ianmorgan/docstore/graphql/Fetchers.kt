@@ -100,17 +100,12 @@ object Fetcher {
      */
     fun unionFetcher(
         docsDao: DocsDao,
-        typeDefinition: UnionTypeDefinition?
+        unionName: String,
+        typeDefinition: TypeDefinitionRegistry
     ): DataFetcher<List<Map<String, Any>?>> {
 
-        //return DocsDataFetcher(docsDao)
-        // hardcoded test data for now
-        return FixedListDataFetcher(
-            listOf(
-                mapOf("#docType" to "Droid", "name" to "RD-D2", "primaryFunction" to "Astromech") as Map<String, Any>
-               //mapOf("#docType" to "Human", "name" to "Luke") as Map<String, Any>
-            )
-        )
+        return UnionDataFetcher(docsDao,unionName,typeDefinition)
+
     }
 
     fun docListFetcher(

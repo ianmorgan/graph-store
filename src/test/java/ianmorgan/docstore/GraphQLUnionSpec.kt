@@ -29,17 +29,21 @@ object GraphQLUnionSpec : Spek({
             val dataLoader = DataLoader(docsDao)
             dataLoader.loadDirectory("src/test/resources/starwars")
 
-            graphQL = GraphQLFactory.build(starWarSchema, DocsDao(starWarSchema))
+            graphQL = GraphQLFactory.build(starWarSchema, docsDao)
 
         }
 
         it("should return type data for a Human") {
 
             val query = """{
-  search(name: "R2-D2") {
+  search(name_contains: "d") {
     ... on Droid {
       name,
       primaryFunction
+    }
+    ... on Human {
+       name
+       appearsIn
     }
   }
 }"""
@@ -48,7 +52,7 @@ object GraphQLUnionSpec : Spek({
 
             assert.that(result.errors.isEmpty(), equalTo(true))
 
-            val expected = "{search=[{name=RD-D2, primaryFunction=Astromech}]}"
+            val expected = "{search=[{name=Darth Vader, appearsIn=[NEWHOPE, EMPIRE, JEDI]}, {name=R2-D2, primaryFunction=Astromech}]}"
             assert.that(result.getData<Any>().toString(), equalTo(expected))
         }
 

@@ -55,7 +55,6 @@ object GraphQLFactory {
 
                         if (helper.objectDefinitionNames().contains(typeName)) {
 
-
                             // wire up a regular doc fetcher
                             builder.dataFetcher(
                                 name,
@@ -74,14 +73,10 @@ object GraphQLFactory {
                                     typeDefinitionRegistry)
                             )
                         } else if (helper.unionDefinitionNames().contains(typeName)) {
-                            // wire up an Interface data fetcher - this is more complicated
-                            // as we need to also understand the interface details (see newTypeWiring
-                            // below
-                            //
-                            // TODO - interfaces need more logic !!
+
                             builder.dataFetcher(
                                 name,
-                                Fetcher.unionFetcher(docsDao, helper.unionDefinition(typeName))
+                                Fetcher.unionFetcher(docsDao, typeName, typeDefinitionRegistry)
                             )
                         }
                         else {
@@ -116,14 +111,10 @@ object GraphQLFactory {
                                     InterfaceDataFetcher(docsDao, name, typeDefinitionRegistry)
                                 )
                             } else if (helper.unionDefinitionNames().contains(typeName)) {
-                                // wire up an Interface data fetcher - this is more complicated
-                                // as we need to also understand the interface details (see newTypeWiring
-                                // below
-                                //
-                                // TODO - interfaces need more logic !!
+
                                 builder.dataFetcher(
                                     name,
-                                    Fetcher.unionFetcher(docsDao, helper.unionDefinition(typeName))
+                                    Fetcher.unionFetcher(docsDao, typeName, typeDefinitionRegistry)
                                 )
                             } else {
                                 println("Don't know what to do with query field $name")
