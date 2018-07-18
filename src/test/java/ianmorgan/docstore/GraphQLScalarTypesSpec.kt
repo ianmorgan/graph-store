@@ -4,7 +4,7 @@ import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import graphql.GraphQL
 import ianmorgan.docstore.dal.DocsDao
-import ianmorgan.docstore.graphql.GraphQLFactory2
+import ianmorgan.docstore.graphql.GraphQLFactory
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -45,7 +45,7 @@ object GraphQLScalarTypesSpec : Spek({
                 ) as Map<String, Any>
             )
 
-            graphQL = GraphQLFactory2.build(allScalarTypes, theDao)
+            graphQL = GraphQLFactory.build(allScalarTypes, theDao)
 
         }
 

@@ -4,7 +4,7 @@ import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import graphql.GraphQL
 import ianmorgan.docstore.dal.DocsDao
-import ianmorgan.docstore.graphql.GraphQLFactory2
+import ianmorgan.docstore.graphql.GraphQLFactory
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -48,7 +48,7 @@ object GraphQLBasicQuerySpec : Spek({
                 "friends" to listOf("1000") ))
 
 
-            graphQL = GraphQLFactory2.build(starWarSchema,docsDao)
+            graphQL = GraphQLFactory.build(starWarSchema,docsDao)
 
         }
 

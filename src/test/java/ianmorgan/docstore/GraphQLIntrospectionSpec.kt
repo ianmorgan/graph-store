@@ -4,7 +4,7 @@ import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import graphql.GraphQL
 import ianmorgan.docstore.dal.DocsDao
-import ianmorgan.docstore.graphql.GraphQLFactory2
+import ianmorgan.docstore.graphql.GraphQLFactory
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -26,7 +26,7 @@ object GraphQLIntrospectionSpec : Spek({
     describe ("To confirm inbuilt graphql-java introspection API working as expected") {
 
         beforeGroup {
-            graphQL = GraphQLFactory2.build(starWarSchema,DocsDao(starWarSchema))
+            graphQL = GraphQLFactory.build(starWarSchema,DocsDao(starWarSchema))
 
         }
 
