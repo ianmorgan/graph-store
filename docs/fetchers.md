@@ -22,7 +22,7 @@ This is implemented by a DocDataFetcher.
 
 ### Interface by ID 
 
-A query like the that below simply tries to lookup for each document in the 
+A query like the that below simply tries a lookup for each document in the 
 interface until a result is returned.
 
 ```yaml
@@ -39,5 +39,6 @@ name field matches.
 ```yaml
 humans(name : String!) : [Human]
 ```
+
 This is implemented by a DocListDataFetcher.  A production quality implementation will need some type of 
 index, but the current implementation simple runs through the entire collection in memory. 

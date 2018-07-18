@@ -35,8 +35,6 @@ And the UI flow for the user is something like
 
 
 
-
-
 ## Version two
 
 The next version should be determined 

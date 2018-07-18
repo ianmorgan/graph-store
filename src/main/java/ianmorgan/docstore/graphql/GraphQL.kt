@@ -115,7 +115,7 @@ object GraphQLFactory {
                                 // TODO - interfaces need more logic !!
                                 builder.dataFetcher(
                                     name,
-                                    DocsDataFetcher(docsDao)
+                                    InterfaceDataFetcher(docsDao)
                                 )
                             } else if (helper.unionDefinitionNames().contains(typeName)) {
                                 // wire up an Interface data fetcher - this is more complicated
