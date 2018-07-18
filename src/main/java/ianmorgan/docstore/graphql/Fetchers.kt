@@ -1,7 +1,6 @@
 package ianmorgan.docstore.graphql
 
 import graphql.language.ObjectTypeDefinition
-import graphql.language.UnionTypeDefinition
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.idl.TypeDefinitionRegistry
@@ -42,30 +41,6 @@ class FixedListDataFetcher constructor(data: List<Map<String, Any>?>) : DataFetc
     }
 }
 
-class FriendsDataFetcher constructor(dao: InterfaceDao) : DataFetcher<List<Map<String, Any>?>> {
-    val dao = dao
-    override fun get(environment: DataFetchingEnvironment): List<Map<String, Any>?> {
-        println("In FriendsDataFetcher ")
-
-        val result = ArrayList<Map<String, Any>?>()
-
-        val source = environment.getSource<Map<String, Any?>>()
-
-        if (source.containsKey("friends")) {
-            @Suppress("UNCHECKED_CAST")
-            for (friendId in source["friends"] as List<String>) {
-                val friend = dao.retrieve(friendId)
-                if (friend != null) {
-                    result.add(friend)
-                } else {
-                    // todo - this should be adding a warning to the query
-                    println("couldn't find friend $friendId")
-                }
-            }
-        }
-        return result
-    }
-}
 
 object Fetcher {
 
