@@ -18,9 +18,9 @@ object GraphQLUnionSpec : Spek({
 
     val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }
     lateinit var docsDao: DocsDao
-    lateinit var graphQL : GraphQL
+    lateinit var graphQL: GraphQL
 
-    describe ("Query on union of Human and Droid") {
+    describe("Query on union of Human and Droid") {
 
         beforeGroup {
             // setup GraphQL & DAO with some initial data
@@ -29,19 +29,18 @@ object GraphQLUnionSpec : Spek({
             val dataLoader = DataLoader(docsDao)
             dataLoader.loadDirectory("src/test/resources/starwars")
 
-            graphQL = GraphQLFactory.build(starWarSchema,DocsDao(starWarSchema))
+            graphQL = GraphQLFactory.build(starWarSchema, DocsDao(starWarSchema))
 
         }
 
-        it ("should return type data for a Human") {
+        it("should return type data for a Human") {
 
             val query = """{
   search(name: "R2-D2") {
     ... on Droid {
-      name
-
+      name,
+      primaryFunction
     }
-
   }
 }"""
 
@@ -49,21 +48,9 @@ object GraphQLUnionSpec : Spek({
 
             assert.that(result.errors.isEmpty(), equalTo(true))
 
-            val expected =
-"""{
-  "data": {
-    "search": [
-      {
-        "name": "RD-D2",
-        "primaryFunction": "Astromech"
-      }
-    ]
-  }
-}""".trimIndent()
-
-        //    assert.that(result.getData<Any>().toString(), equalTo(expected))
+            val expected = "{search=[{name=RD-D2, primaryFunction=Astromech}]}"
+            assert.that(result.getData<Any>().toString(), equalTo(expected))
         }
-
 
 
     }

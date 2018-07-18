@@ -20,8 +20,6 @@ class InterfaceDao constructor(
     docDaoLookup: Map<String, DocDao>
 ) {
     private val docDaoLookup = docDaoLookup
-    //val tdr = typeDefinitionRegistry
-    //val interfaceName = interfaceName
     private val implementingDocs = HashSet<String>()
     private val fields = HashSet<String>()
 

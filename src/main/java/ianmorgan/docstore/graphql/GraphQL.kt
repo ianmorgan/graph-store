@@ -161,11 +161,7 @@ object GraphQLFactory {
             builder.type(
                 newTypeWiring(name)
                     .typeResolver(
-                        InterfaceTypeResolve(
-                            helper.interfaceDefinition(
-                                name
-                            )
-                        )
+                        InterfaceTypeResolve(helper.interfaceDefinition(name))
                     )
                     .build()
             )
@@ -175,7 +171,8 @@ object GraphQLFactory {
         for (name in helper.unionDefinitionNames()) {
             builder.type(
                 newTypeWiring(name)
-                    .typeResolver(UnionTypeResolve(typeDefinitionRegistry,name))
+                    .typeResolver(UnionTypeResolve(typeDefinitionRegistry,name)
+                    )
                     .build()
             )
         }
@@ -244,35 +241,10 @@ object GraphQLFactory {
 
             val data = env.getObject<Map<String,Any>>()
             val name = data["#docType"]!! as String
+            val objectType = env.getSchema().getObjectType(name);
 
-            val definition = helper.objectDefinition(name)
+            return objectType;
 
-            val builder = GraphQLObjectType.Builder().name(name)
-
-            for (f in definition.fieldDefinitions) {
-                println(f.name)
-                builder.field(
-                    newFieldDefinition()
-                        .name(f.name)
-                        //.description()
-                        .type(typeFromType(f.type))
-                )
-            }
-            return builder.build()
         }
-
-        // Take the schema type and convert to one of physical
-        // implementation classes
-        private fun typeFromType(type: Type<*>): GraphQLScalarType {
-            if (type is NonNullType) {
-                if (type is TypeName) {
-                    if (type.name == "ID") {
-                        return GraphQLID
-                    }
-                }
-            }
-            return GraphQLString
-        }
-
     }
 }
