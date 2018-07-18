@@ -15,8 +15,8 @@ Basically a DocDao is built for each type in the GraphQL schema and an Interface
 The rules for saving, retrieving and searching each DocDao are then driven from the GraphQL schema. 
 
 This layer of the design essentially leverages a GraphQL schema to build a fairly standard resource style app that 
-is exposed via a conventional REST style API. Probably more usefully, it is also used as the drive a full GraphQL 
-query layer, see [Fetchers](fetchers).
+is exposed via a conventional REST style API. Probably more usefully, it is also used to drive data access for a 
+full GraphQL query layer, see [Fetchers](fetchers).
 
 A schematic of the basic wiring implemented by the DocsDao is below.
 
