@@ -6,7 +6,6 @@ import graphql.schema.DataFetchingEnvironment
 import graphql.schema.idl.TypeDefinitionRegistry
 import graphql.schema.idl.TypeRuntimeWiring
 import ianmorgan.docstore.dal.DocsDao
-import ianmorgan.docstore.dal.InterfaceDao
 
 
 /**
