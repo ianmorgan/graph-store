@@ -1,0 +1,16 @@
+{
+  leftComparison: droid(id: 2001) {
+    ...comparisonFields
+  }
+  rightComparison: human(id: 1000) {
+    ...comparisonFields
+  }
+}
+
+fragment comparisonFields on Character {
+  name
+  appearsIn
+  friends {
+    name
+  }
+}

@@ -51,7 +51,7 @@ class StateHolder (eventStoreClient: EventStoreClient) {
     }
 
     fun graphQL(): GraphQL {
-        if (!isValid()) throw RuntimeException("DocsDao unavailable")
+        if (!isValid()) throw RuntimeException("GraphQL unavailable")
         return graphQL
     }
 
