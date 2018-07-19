@@ -45,7 +45,7 @@ This is implemented by an InterfaceDataFetcher.
 
 ### A collection of documents 
 
-A query like that below is slightly more complicated. It needs to find all documents Human where the 
+A query like that below is slightly more complicated. It needs to find all documents of type 'Human' where the 
 name field matches.
 
 ```yaml
@@ -56,11 +56,10 @@ This is implemented by a DocListDataFetcher.  A production quality implementatio
 index, but the current implementation simple runs through the entire collection in memory.
 
 
- 
 ### Pseudo fields 
 
 As noted, these are purely for internal processing. 
 
 #### #docType
 
-The docType, which is actually the 'type' name in the GraphQL schema. 
+The docType, which is actually the 'type' name in the GraphQL schema, e.g. 'Human'.

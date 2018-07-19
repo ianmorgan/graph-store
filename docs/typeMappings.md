@@ -1,5 +1,7 @@
 # Type Mapping rules 
 
+__** Out of date, needs rewriting **__ 
+
 
 Anything beyond simple mapping to equivalent types requires a way of inferring type information, 
 which includes use of an external schema (like GraphQL), examining the Java classes (the way in which 
