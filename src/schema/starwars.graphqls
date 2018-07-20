@@ -35,7 +35,7 @@ interface Character {
   # The friends of the character, or an empty list if they have none
   friends(first: Int, count: Int): [Character]
 
-  # Build by convention as the count of 'friends' before any pagination has been applied.
+  # Built by convention as the count of 'friends' before any pagination has been applied.
   # so is the total possible 'Characters' available in the node
   friendsCount: Int
 
