@@ -88,7 +88,10 @@ object ControllerSpec : Spek({
                 assert.that(response.statusCode, equalTo(500))
                 assert.that(errors.length(), equalTo(1))
                 assert.that(errors.getJSONObject(0).getString("message"),
-                    equalTo("Unexpected field rubbish in document "))
+                    equalTo("Failed validation!\n" +
+                            " rubbish is not in the schema\n" +
+                            "appearsIn is mandatory\n" +
+                            "name is mandatory"))
             }
 
             it("should extract docType amd Id from the doc") {

@@ -2,8 +2,10 @@ package ianmorgan.docstore.dal
 
 import graphql.language.*
 import graphql.schema.idl.TypeDefinitionRegistry
+import ianmorgan.docstore.checker.MapChecker
+import ianmorgan.docstore.checker.SchemaBuilder
+import ianmorgan.docstore.checker.ValidatorMode
 import ianmorgan.docstore.graphql.Helper
-import ianmorgan.docstore.graphql.ObjectTypeDefinitionHelper
 import ianmorgan.docstore.mapper.GraphQLMapper
 import java.util.*
 import kotlin.reflect.KClass
@@ -21,6 +23,7 @@ class DocDao constructor(
 ) {
     private val docType = docType
     private val es = eventStoreClient
+    private val mapSchema = SchemaBuilder(typeDefinitionRegistry).build(docType);
     private lateinit var aggregateKey: String
     private lateinit var fields: Map<String, KClass<Any>>
 
@@ -38,10 +41,11 @@ class DocDao constructor(
      *
      * See https://ianmorgan.github.io/doc-store/storage for more detail.
      */
-    fun store(doc: Map<String, Any?>) {
+    fun store(doc: Map<String, Any?>, validatorMode : ValidatorMode = ValidatorMode.Create) {
         val id = doc.get(aggregateKey)
         if (id is String) {
-            checkAgainstSchema(doc)
+            checkAgainstSchema(doc,validatorMode)
+
             es.storeEvent(buildUpdateEvent(id, doc))
         } else {
             throw RuntimeException("must have an aggregate id")
@@ -119,24 +123,36 @@ class DocDao constructor(
         }
     }
 
-    private fun checkAgainstSchema(doc: Map<String, Any?>) {
+    private fun checkAgainstSchema(doc: Map<String, Any?>, validatorMode : ValidatorMode ) {
         // simple implementation for now
 
-        for (key in doc.keys) {
-            if (!fields.containsKey(key)) {
-                throw RuntimeException("Unexpected field $key in document ")
-            }
-            // TODO - over simplistic type check
-            val expectedType = fields.get(key)!!
-            val actual = doc.get(key)
-            if (actual != null) {
-                if (!(expectedType == GraphQLMapper.standardiseType(actual))) {
-                    throw RuntimeException("Types don't match for field $key in document")
-                }
-            } else {
-                println("TODO - should be checking something here")
+        // TODO - make MapChecker support validator mode fully
+        if (validatorMode == ValidatorMode.Create) {
+
+            val validations = MapChecker(mapSchema).validate(doc)
+
+            if (!validations.isEmpty()) {
+                val messages = validations.joinToString(separator = "\n")
+                println(messages)
+                throw RuntimeException("Failed validation!\n $messages")
             }
         }
+
+//        for (key in doc.keys) {
+//            if (!fields.containsKey(key)) {
+//                throw RuntimeException("Unexpected field $key in document ")
+//            }
+//            // TODO - over simplistic type check
+//            val expectedType = fields.get(key)!!
+//            val actual = doc.get(key)
+//            if (actual != null) {
+//                if (!(expectedType == GraphQLMapper.standardiseType(actual))) {
+//                    throw RuntimeException("Types don't match for field $key in document")
+//                }
+//            } else {
+//                println("TODO - should be checking something here")
+//            }
+//        }
     }
 
 

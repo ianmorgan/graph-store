@@ -6,12 +6,12 @@ import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.throws
 import graphql.schema.idl.SchemaParser
 import graphql.schema.idl.TypeDefinitionRegistry
+import ianmorgan.docstore.checker.ValidatorMode
 import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.MapHolder
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xdescribe
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
 import kotlin.reflect.KClass
@@ -96,9 +96,10 @@ object DocDaoSpec : Spek({
 
         it("should store a valid doc") {
             val dao = DocDao(typeDefinitionRegistry,"Droid")
-            dao.store(mapOf("id" to "123", "name" to "Mouse Droid"))
+            val doc = mapOf("id" to "123", "name" to "Mouse Droid", "appearsIn" to listOf("EMPIRE"))
+            dao.store(doc)
             val stored = dao.retrieve("123")
-            assert.that(mapOf("id" to "123", "name" to "Mouse Droid"), equalTo(stored))
+            assert.that(doc, equalTo(stored))
         }
 
         it("should throw exception if there is no 'aggregateId' in the doc") {
@@ -110,7 +111,7 @@ object DocDaoSpec : Spek({
             val dao = DocDao(typeDefinitionRegistry,"Droid")
             val doc = mapOf("id" to "123", "badlyNamedField" to "foo")
 
-            fun messageMatcher(ex: RuntimeException) = ex.message.orEmpty().contains("Unexpected field badlyNamedField")
+            fun messageMatcher(ex: RuntimeException) = ex.message.orEmpty().contains("badlyNamedField is not in the schema")
             assert.that({ dao.store(doc) }, throws(Matcher.invoke(::messageMatcher)));
         }
 
@@ -118,15 +119,15 @@ object DocDaoSpec : Spek({
             val dao = DocDao(typeDefinitionRegistry,"Droid")
             val doc = mapOf("id" to "123", "name" to 123)
 
-            fun messageMatcher(ex: RuntimeException) = ex.message.orEmpty().contains("Types don't match for field name")
+            fun messageMatcher(ex: RuntimeException) = ex.message.orEmpty().contains("name : 123 is not a String")
             assert.that({ dao.store(doc) }, throws(Matcher.invoke(::messageMatcher)))
         }
 
         it("should query on document field") {
             val dao = DocDao(typeDefinitionRegistry,"Droid")
-            dao.store(mapOf("id" to "101", "name" to "Mouse Droid"))
-            dao.store(mapOf("id" to "102", "name" to "BB-8"))
-            dao.store(mapOf("id" to "103", "name" to "Interrogation Droid"))
+            dao.store(mapOf("id" to "101", "name" to "Mouse Droid"), ValidatorMode.Skip)
+            dao.store(mapOf("id" to "102", "name" to "BB-8"), ValidatorMode.Skip)
+            dao.store(mapOf("id" to "103", "name" to "Interrogation Droid"), ValidatorMode.Skip)
 
             val stored = dao.findByField(fieldNameExpression = "name", value =  "Mouse Droid")
             assert.that(listOf(mapOf("id" to "101", "name" to "Mouse Droid")), equalTo(stored))
@@ -137,9 +138,9 @@ object DocDaoSpec : Spek({
             val mouse = mapOf("id" to "101", "name" to "Mouse Droid") as Map<String,Any>
             val bb8 = mapOf("id" to "102", "name" to "BB-8") as Map<String,Any>
             val interrogation = mapOf("id" to "103", "name" to "Interrogation Droid") as Map<String,Any>
-            dao.store(mouse)
-            dao.store(bb8)
-            dao.store(interrogation)
+            dao.store(mouse, ValidatorMode.Skip)
+            dao.store(bb8,  ValidatorMode.Skip)
+            dao.store(interrogation,  ValidatorMode.Skip)
 
             assert.that(dao.findByField(fieldNameExpression = "name_contains", value =  "Droid"), equalTo(listOf(mouse,interrogation)))
             assert.that(dao.findByField(fieldNameExpression = "name_contains", value =  "droid"), equalTo(listOf(mouse,interrogation)))

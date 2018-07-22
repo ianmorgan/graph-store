@@ -235,8 +235,10 @@ public class MapChecker {
                 }
             }
         } else {
-            if (!TypeCheckers.check(item, expectedClazz)) {
-                ctx.failures.add(printNesting(ctx.nesting) + " : " + item + " is not a " + expectedClazz.getSimpleName());
+            if (item != null) {
+                if (!TypeCheckers.check(item, expectedClazz)) {
+                    ctx.failures.add(printNesting(ctx.nesting) + " : " + item + " is not a " + expectedClazz.getSimpleName());
+                }
             }
         }
     }
