@@ -1,0 +1,11 @@
+{
+  "docType": "Beatle",
+  "id": "1000",
+  "name": "John",
+  "skills": ["LYRICS","COMPOSER"],
+  "address" : {
+    "street" : "Menlove Avenue",
+    "suburb" : "Liverpool",
+    "county" : "UK"
+  }
+}

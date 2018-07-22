@@ -131,6 +131,25 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
         return result
     }
 
+    /**
+     * Find the name of ID field, or null if there is no ID field
+     */
+    fun idFieldName() : String? {
+        // navigate the schema information to find an ID field
+        for (field in otd.fieldDefinitions) {
+            val rawType = field.type
+            if (rawType is NonNullType) {
+                val type = rawType.type
+                if (type is TypeName) {
+                    if (type.name == "ID") {
+                        return field.name
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 
 
     /**
@@ -187,6 +206,11 @@ object Helper {
     }
 
     fun build(definition : ObjectTypeDefinition) : ObjectTypeDefinitionHelper {
+        return ObjectTypeDefinitionHelper(definition)
+    }
+
+    fun build(registry : TypeDefinitionRegistry, name : String) : ObjectTypeDefinitionHelper {
+        val definition  = registry.getType(name, ObjectTypeDefinition::class.java).get()
         return ObjectTypeDefinitionHelper(definition)
     }
 

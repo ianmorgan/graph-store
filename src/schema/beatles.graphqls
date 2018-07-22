@@ -1,0 +1,39 @@
+# The query type, represents all of the entry points into our object graph
+
+type Query {
+
+  beatle(id: ID!): Beatle
+
+
+}
+
+# Some skills
+enum Skill {
+  SINGER
+  BACKING_SINGER
+  DRUMMER
+  LYRICS
+  COMPOSER
+  GUITARIST
+}
+
+
+# A simple address structure
+type Address {
+  street: String!
+  suburb: String!
+  country: String!
+}
+
+
+# A member of the beatles
+type Beatle  {
+  id: ID!
+  name: String!
+  skills : [Skill]
+  address : Address
+}
+
+
+
+schema{query: Query}

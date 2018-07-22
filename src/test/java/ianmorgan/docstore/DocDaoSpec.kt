@@ -7,9 +7,11 @@ import com.natpryce.hamkrest.throws
 import graphql.schema.idl.SchemaParser
 import graphql.schema.idl.TypeDefinitionRegistry
 import ianmorgan.docstore.dal.DocDao
+import ianmorgan.docstore.dal.MapHolder
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.api.dsl.xdescribe
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
 import kotlin.reflect.KClass
@@ -17,33 +19,59 @@ import kotlin.reflect.KClass
 @RunWith(JUnitPlatform::class)
 object DocDaoSpec : Spek({
 
-    val schema = """
-enum Episode {
-  NEWHOPE
-  EMPIRE
-  JEDI
-}
+    val starWarsSchema = """
+        enum Episode {
+          NEWHOPE
+          EMPIRE
+          JEDI
+        }
 
-interface Character {
-  id: ID!
-  name: String!
-}
+        interface Character {
+          id: ID!
+          name: String!
+        }
 
-type Droid  {
-  id: ID!
-  name: String!
-  friends: [Character]
-  appearsIn: [Episode]!
-  primaryFunction: String
-}
-"""
+        type Droid  {
+          id: ID!
+          name: String!
+          friends: [Character]
+          appearsIn: [Episode]!
+          primaryFunction: String
+        }
+""".trimIndent()
+
+    val beatleSchema = """
+        # Some skills
+        enum Skill {
+          SINGER
+          DRUMMER
+          COMPOSER
+          GUITARIST
+        }
+
+
+        # A simple address structure
+        type Address {
+          street: String!
+          suburb: String!
+        }
+
+
+        # A member of the beatles
+        type Beatle  {
+          id: ID!
+          name: String!
+          skills : [Skill]
+          address : Address
+        }
+    """.trimIndent()
 
     lateinit var typeDefinitionRegistry : TypeDefinitionRegistry
 
     describe("A DAO for a document") {
         beforeGroup {
             val schemaParser = SchemaParser()
-            typeDefinitionRegistry = schemaParser.parse(schema)
+            typeDefinitionRegistry = schemaParser.parse(starWarsSchema)
         }
 
         it("should use the 'ID' field as the aggregate id") {
@@ -121,6 +149,38 @@ type Droid  {
 
 
     }
+
+    describe("A DAO for documents with embedding") {
+        beforeGroup {
+            val schemaParser = SchemaParser()
+            typeDefinitionRegistry = schemaParser.parse(beatleSchema)
+        }
+
+        it("should use the 'ID' field as the aggregate id") {
+            val dao = DocDao(typeDefinitionRegistry  ,"Beatle")
+            assert.that(dao.aggregateKey(), equalTo("id"))
+        }
+
+        it("should include the embedded Address") {
+            val dao = DocDao(typeDefinitionRegistry  ,"Beatle")
+
+            assert.that(dao.fields().size, equalTo(4))
+            assert.that(dao.fields().get("id"), equalTo(String::class as KClass<*>))
+            assert.that(dao.fields().get("name"), equalTo(String::class as KClass<*>))
+            assert.that(dao.fields().get("skills"), equalTo(List::class as KClass<*>))
+            assert.that(dao.fields().get("address"), equalTo(MapHolder::class as KClass<*>))
+
+            //val a = dao.fields().get("address") as Map<String,Any>
+            //println(a)
+//            assert.that(dao.fields().get("primaryFunction"), equalTo(String::class as KClass<*>))
+        }
+
+
+
+
+
+    }
+
 
 })
 

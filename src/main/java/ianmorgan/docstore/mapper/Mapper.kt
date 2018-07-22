@@ -121,10 +121,21 @@ object GraphQLMapper {
             "Float" -> Double::class as KClass<Any>
             "Boolean" -> Boolean::class as KClass<Any>
             else -> {
-                //throw RuntimeException("Don't know about $typeName")
-                println ("WARNING - Don't know about $typeName");
-                String::class as KClass<Any>
+                throw RuntimeException("Don't know about $typeName")
             }
+        }
+    }
+
+    /**
+     * Simple test for a scalar type
+     */
+    fun isScalarType (typeName: String) : Boolean {
+        try {
+            graphQLTypeToJsonType(typeName)
+            return true
+        }
+        catch (ex: RuntimeException){
+            return false
         }
     }
 
