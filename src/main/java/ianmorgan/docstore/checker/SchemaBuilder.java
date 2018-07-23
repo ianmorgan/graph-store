@@ -45,7 +45,7 @@ public class SchemaBuilder {
                     // this represents a list of enumeration, which we will represent
                     // a list
 
-                    // todo - what if its not an emuration
+                    // todo - what if its not an enumeration
                     working.put(field.getName(), new ListChecker(String.class));
                 }
                 if (rawType instanceof TypeName) {
@@ -54,10 +54,9 @@ public class SchemaBuilder {
                         Object javaType = graphQLTypeToJsonType(tName.getName());
                         working.put(field.getName(), javaType);
                     } else {
-                        // todo - will need to check for interfaces as well ?
-                        //val embeddedTypeDefinition = Helper.build(registry).objectDefinition(rawType.name)
-                        //val map = fieldsFromType(embeddedTypeDefinition,registry) as Map<String,Any>
-                        //        working[field.name] = MapHolder(map)::class as KClass<Any>
+
+                        Map<Object, Object> schema = this.build(tName.getName());
+                        working.put(field.getName(),new MapChecker(schema));
                     }
                 }
             }

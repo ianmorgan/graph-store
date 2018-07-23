@@ -6,8 +6,8 @@ import graphql.GraphQL
 import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.graphql.GraphQLFactory
 import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xdescribe
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
 import java.io.FileInputStream
@@ -25,7 +25,7 @@ object EmbeddedDocsSpec : Spek({
     lateinit var docsDao: DocsDao
     lateinit var graphQL : GraphQL
 
-    xdescribe ("GraphQL queries over the embedded docs") {
+    describe ("GraphQL queries over the embedded docs") {
 
         beforeGroup {
             // setup GraphQL & DAO with some initial data
@@ -38,16 +38,16 @@ object EmbeddedDocsSpec : Spek({
 
         }
 
-        it ("should query for a Droid by id") {
+        it ("should query for a Beatle by id") {
 
             val query = """{
-                    droid(id: "2001") {name,appearsIn,primaryFunction,friends { name }}}
+                    beatle(id: "1000") {name,skills,address{street,suburb,country}}}
 """
             val result = graphQL.execute(query)
 
             assert.that(result.errors.isEmpty(), equalTo(true))
             assert.that(result.getData<Any>().toString(),
-                equalTo("{droid={name=R2-D2, appearsIn=[NEWHOPE, EMPIRE, JEDI], primaryFunction=Astromech, friends=[{name=Luke Skywalker}]}}"))
+                equalTo("{beatle={name=John, skills=[LYRICS, COMPOSER], address={street=Menlove Avenue, suburb=Liverpool, country=UK}}}"))
         }
 
     }

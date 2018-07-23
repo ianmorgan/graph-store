@@ -6,6 +6,6 @@
   "address" : {
     "street" : "Menlove Avenue",
     "suburb" : "Liverpool",
-    "county" : "UK"
+    "country" : "UK"
   }
 }
