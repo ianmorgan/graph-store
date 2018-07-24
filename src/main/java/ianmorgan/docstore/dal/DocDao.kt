@@ -1,6 +1,9 @@
 package ianmorgan.docstore.dal
 
-import graphql.language.*
+import graphql.language.ListType
+import graphql.language.NonNullType
+import graphql.language.ObjectTypeDefinition
+import graphql.language.TypeName
 import graphql.schema.idl.TypeDefinitionRegistry
 import ianmorgan.docstore.checker.MapChecker
 import ianmorgan.docstore.checker.SchemaBuilder
@@ -18,12 +21,12 @@ import kotlin.reflect.KFunction2
 @Suppress("UNCHECKED_CAST")
 class DocDao constructor(
     typeDefinitionRegistry: TypeDefinitionRegistry,
-    docType : String,
+    docType: String,
     eventStoreClient: EventStoreClient = InMemoryEventStore()
-) {
+) : ReaderDao {
     private val docType = docType
     private val es = eventStoreClient
-    private val mapSchema = SchemaBuilder(typeDefinitionRegistry).build(docType);
+    private val mapSchema = SchemaBuilder(typeDefinitionRegistry).build(docType)
     private lateinit var aggregateKey: String
     private lateinit var fields: Map<String, KClass<Any>>
 
@@ -31,7 +34,6 @@ class DocDao constructor(
     init {
         initAggregateKey(typeDefinitionRegistry)
         initFields(typeDefinitionRegistry)
-
     }
 
 
@@ -41,10 +43,10 @@ class DocDao constructor(
      *
      * See https://ianmorgan.github.io/doc-store/storage for more detail.
      */
-    fun store(doc: Map<String, Any?>, validatorMode : ValidatorMode = ValidatorMode.Create) {
+    fun store(doc: Map<String, Any?>, validatorMode: ValidatorMode = ValidatorMode.Create) {
         val id = doc.get(aggregateKey)
         if (id is String) {
-            checkAgainstSchema(doc,validatorMode)
+            checkAgainstSchema(doc, validatorMode)
 
             es.storeEvent(buildUpdateEvent(id, doc))
         } else {
@@ -52,7 +54,7 @@ class DocDao constructor(
         }
     }
 
-    fun retrieve(aggregateId: String): Map<String, Any>? {
+    override fun retrieve(aggregateId: String): Map<String, Any>? {
         val events = es.events(aggregateId)
         if (!events.isEmpty()) {
             return DocReducer.reduceEvents(events)
@@ -123,7 +125,7 @@ class DocDao constructor(
         }
     }
 
-    private fun checkAgainstSchema(doc: Map<String, Any?>, validatorMode : ValidatorMode ) {
+    private fun checkAgainstSchema(doc: Map<String, Any?>, validatorMode: ValidatorMode) {
         // simple implementation for now
 
         // TODO - make MapChecker support validator mode fully
@@ -167,29 +169,28 @@ class DocDao constructor(
 
 
     private fun initAggregateKey(registry: TypeDefinitionRegistry) {
-        val helper = Helper.build(registry,docType)
-        if (helper.idFieldName() != null){
+        val helper = Helper.build(registry, docType)
+        if (helper.idFieldName() != null) {
             aggregateKey = helper.idFieldName()!!
-        }
-        else {
+        } else {
             throw RuntimeException("Cannot find an ID field to use as the aggregateId")
         }
     }
 
     private fun initFields(registry: TypeDefinitionRegistry) {
-        val typeDefinition  = registry.getType(docType, ObjectTypeDefinition::class.java).get()
+        val typeDefinition = registry.getType(docType, ObjectTypeDefinition::class.java).get()
         val working = HashMap<String, KClass<Any>>()
 
 
-        working.putAll(fieldsFromType(typeDefinition,registry))
+        working.putAll(fieldsFromType(typeDefinition, registry))
         fields = working
     }
 
     private fun fieldsFromType(
         typeDefinition: ObjectTypeDefinition,
         registry: TypeDefinitionRegistry
-    ) : Map<String, KClass<Any>> {
-        val working : MutableMap<String, KClass<Any>> = mutableMapOf()
+    ): Map<String, KClass<Any>> {
+        val working: MutableMap<String, KClass<Any>> = mutableMapOf()
 
         for (field in typeDefinition.fieldDefinitions) {
             val rawType = field.type
@@ -203,19 +204,17 @@ class DocDao constructor(
                     // a list
                     working[field.name] = List::class as KClass<Any>
                 }
-            }
-            else {
+            } else {
                 if (rawType is ListType) {
                     working[field.name] = List::class as KClass<Any>
                 }
                 if (rawType is TypeName) {
-                    if (GraphQLMapper.isScalarType(rawType.name)){
+                    if (GraphQLMapper.isScalarType(rawType.name)) {
                         working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
-                    }
-                    else {
+                    } else {
                         // todo - will need to check for interfaces as well ?
                         val embeddedTypeDefinition = Helper.build(registry).objectDefinition(rawType.name)
-                        val map = fieldsFromType(embeddedTypeDefinition,registry) as Map<String,Any>
+                        val map = fieldsFromType(embeddedTypeDefinition, registry) as Map<String, Any>
                         working[field.name] = MapHolder(map)::class as KClass<Any>
                     }
                 }
@@ -225,11 +224,10 @@ class DocDao constructor(
     }
 
 
-
-    private fun buildUpdateEvent(aggregateId : String, data: Map<String, Any?>): Map<String, Any> {
+    private fun buildUpdateEvent(aggregateId: String, data: Map<String, Any?>): Map<String, Any> {
         //val docType =
         val ev = HashMap<String, Any>()
-        ev["type"] = docType+"Updated"
+        ev["type"] = docType + "Updated"
         ev["id"] = UUID.randomUUID().toString()
         ev["aggregateId"] = aggregateId
         ev["timestamp"] = System.currentTimeMillis()
@@ -238,9 +236,9 @@ class DocDao constructor(
         return ev
     }
 
-    private fun buildDeleteEvent(aggregateId : String): Map<String, Any> {
+    private fun buildDeleteEvent(aggregateId: String): Map<String, Any> {
         val ev = HashMap<String, Any>()
-        ev["type"] = docType+"Deleted"
+        ev["type"] = docType + "Deleted"
         ev["id"] = UUID.randomUUID().toString()
         ev["aggregateId"] = aggregateId
         ev["timestamp"] = System.currentTimeMillis()
@@ -249,10 +247,10 @@ class DocDao constructor(
     }
 }
 
-class MapHolder constructor(theMap : Map<String,Any>) {
+class MapHolder constructor(theMap: Map<String, Any>) {
     private val map = theMap;
 
-    fun theMap() : Map<String,Any> {
+    fun theMap(): Map<String, Any> {
         return map
     }
 }
