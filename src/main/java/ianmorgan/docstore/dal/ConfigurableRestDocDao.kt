@@ -41,7 +41,7 @@ class ConfigurableRestDocDao constructor(baseUrl : String, resultMapperScript : 
     }
 
     private fun loadFromEndpoint(aggregateId: String) : Map<String,Any> {
-        val response = khttp.get(url = baseUrl + "starships/" + aggregateId + "/")
+        val response = khttp.get(url = baseUrl + aggregateId )
         if (response.statusCode == 200) {
             val rawShipData = response.jsonObject.toMap()
             return rawShipData
