@@ -5,7 +5,6 @@ import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import graphql.schema.idl.SchemaParser
 import ianmorgan.docstore.dal.ConfigurableRestDocDao
-import ianmorgan.docstore.dal.StarshipDocDao
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -20,8 +19,19 @@ object RestDocDaoSpec : Spek({
             val schemaParser = SchemaParser()
         }
 
-        it("should use the 'ID' field as the aggregate id") {
-            val dao = ConfigurableRestDocDao()
+        it("should return millenium falcon") {
+            val mapper = """
+                import ianmorgan.docstore.mapper.MapperHelper;
+
+                def helper = new MapperHelper(raw)
+                helper.copyIfExists('name')
+                helper.copyIfExists('manufacturer')
+                helper.copyIfExists('model')
+                helper.copyIfExists('length','lengthInMetres')
+                helper.copyIfExists('cost_in_credits','costInCredits')
+                return helper.output() """.trimIndent()
+
+            val dao = ConfigurableRestDocDao(baseUrl = "https://swapi.co/api/", resultMapperScript = mapper)
 
             val result = dao.retrieve("10")
             val expected = mapOf ("name" to "Millennium Falcon",
