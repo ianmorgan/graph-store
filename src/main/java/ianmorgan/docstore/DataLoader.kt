@@ -1,5 +1,6 @@
 package ianmorgan.docstore
 
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.DocsDao
 import org.json.JSONObject
 import java.io.File
@@ -20,7 +21,7 @@ class DataLoader constructor(docsDao : DocsDao) {
 
                 // find the matching dao
                 val docType = json.getString("docType")
-                val dao = docsDao.daoForDoc(docType)
+                val dao = docsDao.daoForDoc(docType) as DocDao
 
                 // data to load
                 val data = json.toMap()

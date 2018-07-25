@@ -3,6 +3,7 @@ package ianmorgan.docstore.graphql
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.idl.TypeDefinitionRegistry
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.DocsDao
 
 /**
@@ -27,7 +28,7 @@ class UnionDataFetcher constructor(
 
         for (doc in daos.availableDocs()) {
             if (unionType.contains(doc)) {
-                val data = daos.daoForDoc(doc).findByField("name_contains",name)
+                val data = (daos.daoForDoc(doc) as DocDao).findByField("name_contains",name)
                 if (data != null) {
                     for (item in data){
                         val working = HashMap(item)

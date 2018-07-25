@@ -10,7 +10,7 @@ import java.io.FileInputStream
  * but the client doesn't need to know this.
  */
 class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreClient = InMemoryEventStore()) {
-    private val docDaoLookup = HashMap<String, DocDao>()
+    private val docDaoLookup = HashMap<String, ReaderDao>()
     private val interfaceDaoLookup = HashMap<String, InterfaceDao>()
     private val eventStoreClient = eventStoreClient
     private val schema = graphQLSchema
@@ -23,7 +23,7 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
         return docDaoLookup.keys
     }
 
-    fun daoForDoc(docType: String): DocDao {
+    fun daoForDoc(docType: String): ReaderDao {
         return docDaoLookup[docType]!!
     }
 

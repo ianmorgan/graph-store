@@ -3,6 +3,7 @@ package ianmorgan.docstore
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import graphql.GraphQL
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.graphql.GraphQLFactory
 import org.jetbrains.spek.api.Spek
@@ -25,7 +26,7 @@ object GraphQLScalarTypesSpec : Spek({
         beforeGroup {
             // setup GraphQL & DAO with some initial data
             theDao = DocsDao(allScalarTypes)
-            val allTypesDao = theDao.daoForDoc("AllTypes")
+            val allTypesDao = theDao.daoForDoc("AllTypes") as DocDao
             allTypesDao.store(
                 mapOf(
                     "id" to "everything",
@@ -37,7 +38,7 @@ object GraphQLScalarTypesSpec : Spek({
                 )
             )
 
-            val allNullVariants = theDao.daoForDoc("AllNullVariants")
+            val allNullVariants = theDao.daoForDoc("AllNullVariants") as DocDao
             allNullVariants.store(
                 mapOf(
                     "id" to "allvariants",

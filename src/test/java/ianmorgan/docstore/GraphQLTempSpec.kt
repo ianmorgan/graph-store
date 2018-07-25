@@ -3,6 +3,7 @@ package ianmorgan.docstore
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import graphql.GraphQL
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.graphql.GraphQLFactory
 import org.jetbrains.spek.api.Spek
@@ -25,7 +26,7 @@ object GraphQLTempSpec : Spek({
             // setup GraphQL & DAO with some initial data
             // see https://github.com/graphql/graphql-js/blob/master/src/__tests__/starWarsData.js
             docsDao = DocsDao(starWarSchema)
-            val droidDao = docsDao.daoForDoc("Droid")
+            val droidDao = docsDao.daoForDoc("Droid") as DocDao
             droidDao.store(mapOf("id" to "2001",
                 "name" to "R2-D2",
                 "appearsIn" to listOf("NEWHOPE","EMPIRE","JEDI"),
@@ -34,7 +35,7 @@ object GraphQLTempSpec : Spek({
                 "name" to "C-3PO",
                 "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI"),
                 "primaryFunction" to "Protocol Droid"))
-            val humanDao = docsDao.daoForDoc("Human")
+            val humanDao = docsDao.daoForDoc("Human") as DocDao
             humanDao.store( mapOf(  "id" to "1000",
                 "name" to "Luke Skywalker",
                 "appearsIn" to listOf("NEWHOPE", "EMPIRE", "JEDI"),

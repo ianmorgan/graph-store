@@ -3,6 +3,7 @@ package ianmorgan.docstore
 import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.DocsDao
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -21,7 +22,7 @@ object InterfaceDaoSpec : Spek({
 
         beforeGroup {
             docsDao = DocsDao.fromSchema(starWarSchema)
-            val droidDao = docsDao.daoForDoc("Droid")
+            val droidDao = docsDao.daoForDoc("Droid") as DocDao
             droidDao.store(
                 mapOf(
                     "id" to "2001",
@@ -30,7 +31,7 @@ object InterfaceDaoSpec : Spek({
                     "primaryFunction" to "Astromech"
                 )
             )
-            val humanDao = docsDao.daoForDoc("Human")
+            val humanDao = docsDao.daoForDoc("Human") as DocDao
             humanDao.store(
                 mapOf(
                     "id" to "1000",

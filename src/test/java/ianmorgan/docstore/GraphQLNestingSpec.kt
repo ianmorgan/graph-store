@@ -3,6 +3,7 @@ package ianmorgan.docstore
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
 import graphql.GraphQL
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.graphql.GraphQLFactory
 import org.jetbrains.spek.api.Spek
@@ -27,7 +28,7 @@ object GraphQLNestingSpec : Spek({
         beforeGroup {
             // setup GraphQL & DAO with some initial data
             theDao = DocsDao(schema)
-            val dao = theDao.daoForDoc("Directory")
+            val dao = theDao.daoForDoc("Directory") as DocDao
             dao.store(
                 mapOf(
                     "handle" to "root",

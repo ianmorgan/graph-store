@@ -12,6 +12,7 @@ import groovy.lang.GroovyShell
  */
 class ConfigurableRestDocDao constructor(baseUrl : String, resultMapperScript : String? = null): ReaderDao {
 
+    val aggregateKey = "id"
     val baseUrl = baseUrl
     val resultMapperScript = resultMapperScript
     val lookup: MutableMap<String, Map<String, Any>> = HashMap()
@@ -35,9 +36,10 @@ class ConfigurableRestDocDao constructor(baseUrl : String, resultMapperScript : 
         else {
             return rawData
         }
+    }
 
-
-
+    override fun aggregateKey(): String {
+        return aggregateKey;
     }
 
     private fun loadFromEndpoint(aggregateId: String) : Map<String,Any> {

@@ -1,5 +1,6 @@
 package ianmorgan.docstore
 
+import ianmorgan.docstore.dal.DocDao
 import io.javalin.ApiBuilder
 import io.javalin.ApiBuilder.path
 import io.javalin.Context
@@ -68,8 +69,10 @@ class Controller constructor(stateHolder: StateHolder) {
                         val docType = ctx.param("type")!!
                         val json = JSONObject(ctx.body())
                         val dao = stateHolder.docsDao().daoForDoc(docType)
-                        dao.store(json.toMap())
-                        ctx.result("{}")
+                        if (dao is DocDao) {
+                            dao.store(json.toMap())
+                            ctx.result("{}")
+                        }
                     }
 
                     // rest style - aggregateId in URL
@@ -80,12 +83,14 @@ class Controller constructor(stateHolder: StateHolder) {
                             val json = JSONObject(ctx.body())
                             val dao = stateHolder.docsDao().daoForDoc(docType)
 
-                            // aggregateId from URL
-                            val aggregateId = ctx.param("aggregateId")!!
-                            json.put(dao.aggregateKey(), aggregateId)
+                            if (dao is DocDao){
+                                // aggregateId from URL
+                                val aggregateId = ctx.param("aggregateId")!!
+                                json.put(dao.aggregateKey(), aggregateId)
 
-                            dao.store(json.toMap())
-                            ctx.result("{}")
+                                dao.store(json.toMap())
+                                ctx.result("{}")
+                            }
                         }
 
                         ApiBuilder.get() { ctx ->
@@ -100,7 +105,9 @@ class Controller constructor(stateHolder: StateHolder) {
                             val docType = ctx.param("type")!!
                             val aggregateId = ctx.param("aggregateId")!!
                             val dao = stateHolder.docsDao().daoForDoc(docType)
-                            dao.delete(aggregateId)
+                            if (dao is DocDao) {
+                                dao.delete(aggregateId)
+                            }
                         }
                     }
                 }
@@ -111,8 +118,10 @@ class Controller constructor(stateHolder: StateHolder) {
                     val docType = payload["docType"] as String
                     payload.remove("docType")
                     val dao = stateHolder.docsDao().daoForDoc(docType)
-                    dao.store(payload)
-                    ctx.result("{}")
+                    if (dao is DocDao) {
+                        dao.store(payload)
+                        ctx.result("{}")
+                    }
                 }
             }
 

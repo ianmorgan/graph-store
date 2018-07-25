@@ -17,7 +17,7 @@ import ianmorgan.docstore.graphql.TypeDefinitionRegistryHelper
 class InterfaceDao constructor(
     interfaceName: String,
     typeDefinitionRegistry: TypeDefinitionRegistry,
-    docDaoLookup: Map<String, DocDao>
+    docDaoLookup: Map<String, ReaderDao>
 ) {
     private val docDaoLookup = docDaoLookup
     private val implementingDocs = HashSet<String>()

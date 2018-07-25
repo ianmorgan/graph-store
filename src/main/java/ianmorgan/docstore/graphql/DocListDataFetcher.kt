@@ -3,6 +3,7 @@ package ianmorgan.docstore.graphql
 import graphql.language.ObjectTypeDefinition
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.DocsDao
 
 /**
@@ -19,7 +20,7 @@ class DocListDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTyp
 
         if (env.containsArgument("name")) {
             val name = env.getArgument<String>("name")
-            return dao.daoForDoc(docType).findByField("name", name);
+            return (dao.daoForDoc(docType) as DocDao).findByField("name", name);
         }
 
         return emptyList()

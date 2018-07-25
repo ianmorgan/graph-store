@@ -2,6 +2,7 @@ package ianmorgan.docstore
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
+import ianmorgan.docstore.dal.DocDao
 import ianmorgan.docstore.dal.DocsDao
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -22,8 +23,8 @@ object DataLoaderSpec : Spek({
             val dataLoader = DataLoader(dao)
 
             dataLoader.loadDirectory("src/test/resources/starwars")
-            assert.that(dao.daoForDoc("Human").count(), equalTo(5))
-            assert.that(dao.daoForDoc("Droid").count(), equalTo(2))
+            assert.that((dao.daoForDoc("Human") as DocDao).count(), equalTo(5))
+            assert.that((dao.daoForDoc("Droid") as DocDao).count(), equalTo(2))
         }
     }
 })

@@ -95,7 +95,7 @@ class DocDao constructor(
      * Expose the field name to be used as the aggregate key. This is
      * the "ID" field in GraphQL.
      */
-    fun aggregateKey(): String {
+    override fun aggregateKey(): String {
         return aggregateKey
     }
 
