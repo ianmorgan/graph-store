@@ -44,7 +44,7 @@
             <form method="POST" action="/graphql">
 
                 <textarea rows="20" cols="128" name="payload">
-    {droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends{name}}}
+    {droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends{name},starships{name,manufacturer}}}
                 </textarea>
                 <input type="submit" value="Run Query"></input>
             </form>
