@@ -22,7 +22,7 @@ object StateHolderSpec : Spek({
     describe ("the StateHolder singleton ") {
 
         it ("should build with a valid schema") {
-            val result = stateHolder.build(starWarSchema)
+            val result = stateHolder.build(starWarSchema, HashMap())
             assert.that(stateHolder.isValid() , equalTo(true))
             assert.that(result, equalTo(true))
             assert.that(stateHolder.exception() , absent())
@@ -30,7 +30,7 @@ object StateHolderSpec : Spek({
         }
 
         it ("should have 'invalid' state if a bad schema") {
-            val result = stateHolder.build("a rubbish schema")
+            val result = stateHolder.build("a rubbish schema",HashMap())
             assert.that(stateHolder.isValid() , equalTo(false))
             assert.that(result, equalTo(false))
             assert.that(stateHolder.exception(), present())

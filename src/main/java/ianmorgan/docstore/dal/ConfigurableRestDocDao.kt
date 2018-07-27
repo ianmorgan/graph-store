@@ -25,12 +25,15 @@ class ConfigurableRestDocDao constructor(baseUrl : String, resultMapperScript : 
         return mapped;
     }
 
+
     private fun runMapper(rawData : Map<String,Any>) : Map<String,Any> {
         if (resultMapperScript != null){
             val  binding = Binding()
             binding.setVariable("raw", rawData);
             val  shell =  GroovyShell(binding);
             val  value = shell.evaluate(resultMapperScript)
+
+            @Suppress("UNCHECKED_CAST")
             return value as Map<String,Any>
         }
         else {

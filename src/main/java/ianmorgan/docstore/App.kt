@@ -1,13 +1,8 @@
 package ianmorgan.docstore
 
-import com.fasterxml.jackson.core.PrettyPrinter
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+
 import com.fasterxml.jackson.databind.ObjectMapper
-import ianmorgan.docstore.dal.DocsDao
-import ianmorgan.docstore.dal.EventStoreClient
-import ianmorgan.docstore.dal.InMemoryEventStore
-import ianmorgan.docstore.dal.RealEventStore
-import ianmorgan.docstore.graphql.GraphQLFactory
+import ianmorgan.docstore.dal.*
 import io.javalin.Javalin
 import io.javalin.embeddedserver.Location
 import io.javalin.translator.json.JavalinJacksonPlugin
@@ -45,7 +40,7 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         }
 
         if (cmd.hasOption("E")) {
-            println("Using  a real event store")
+            println("Using a real event store")
             eventStoreClient = RealEventStore()
         }
 
@@ -76,17 +71,19 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         }
 
         // setup the  main controller
+        val externalDaos = HashMap<String,ReaderDao>()
+        externalDaos.put("Starship", starshipDao())
         val starWarSchema =
-            FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
-        val dao = DocsDao(starWarSchema, eventStoreClient)
+            FileInputStream("src/schema/starwars_ex.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
+        val dao = DocsDao(starWarSchema, eventStoreClient, externalDaos)
         theDao = dao
 
         // starting to wireup real state holder
         val stateHolder = StateHolder(eventStoreClient)
-        stateHolder.build(starWarSchema)
+        stateHolder.build(starWarSchema, externalDaos)
 
-        val dataLoader = DataLoader(dao)
-        dataLoader.loadDirectory("src/test/resources/starwars")
+        val dataLoader = DataLoader(stateHolder.docsDao)
+        dataLoader.loadDirectory("src/test/resources/starwars_ex")
 
         //val graphQL = GraphQLFactory.build(starWarSchema, dao)
 
@@ -103,7 +100,21 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
 
     }
 
-    fun theDao(): DocsDao {
-        return theDao
+    private fun starshipDao () : ConfigurableRestDocDao {
+        val mapper = """
+                import ianmorgan.docstore.mapper.MapperHelper;
+
+                def helper = new MapperHelper(raw)
+                helper.copyIfExists('name')
+                helper.copyIfExists('manufacturer')
+                helper.copyIfExists('model')
+                helper.copyIfExists('length','lengthInMetres')
+                helper.copyIfExists('cost_in_credits','costInCredits')
+                return helper.output() """.trimIndent()
+
+        val dao = ConfigurableRestDocDao(baseUrl = "https://swapi.co/api/starships/", resultMapperScript = mapper)
+        return dao;
     }
+
+
 }

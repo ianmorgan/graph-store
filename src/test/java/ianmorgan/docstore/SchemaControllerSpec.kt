@@ -35,7 +35,7 @@ object SchemaControllerSpec : Spek({
                 val response = khttp.get(url = baseUrl + "schema" )
                 assert.that(response.statusCode, equalTo(200))
                 assert.that(response.headers["content-type"], equalTo("text/plain;charset=utf-8"))
-                assert.that(response.text, startsWith("# The query type, represents all of the entry points into our object graph"))
+                assert.that(response.text, startsWith("# This is an extension of the base starwars schema that supports external datasets"))
             }
         }
 

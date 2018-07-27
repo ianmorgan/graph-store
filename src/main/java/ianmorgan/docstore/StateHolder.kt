@@ -3,6 +3,7 @@ package ianmorgan.docstore
 import graphql.GraphQL
 import ianmorgan.docstore.dal.DocsDao
 import ianmorgan.docstore.dal.EventStoreClient
+import ianmorgan.docstore.dal.ReaderDao
 import ianmorgan.docstore.graphql.GraphQLFactory
 import java.io.File
 import java.io.FileInputStream
@@ -18,12 +19,16 @@ class StateHolder (eventStoreClient: EventStoreClient) {
     var valid = false
     var exception: RuntimeException? = null
 
+    fun rebuild(graphQLSchema: String) : Boolean {
+        return build(graphQLSchema,docsDao.externalDaos())
+    }
+
     /**
      * Rebuild using the provided schema
      */
-    fun build(graphQLSchema: String) : Boolean {
+    fun build(graphQLSchema: String, externalDaos: Map<String, ReaderDao>) : Boolean {
         try {
-            val dao = DocsDao(graphQLSchema, eventStoreClient)
+            val dao = DocsDao(graphQLSchema, eventStoreClient, externalDaos)
             docsDao = dao
 
             val ql = GraphQLFactory.build(graphQLSchema, dao)
@@ -40,9 +45,9 @@ class StateHolder (eventStoreClient: EventStoreClient) {
         }
     }
 
-    fun build(schemaFile: File) : Boolean {
+    fun build(schemaFile: File, externalDaos: HashMap<String, ReaderDao>) : Boolean {
         val schemaString = FileInputStream(schemaFile).bufferedReader().use { it.readText() }
-        return build(schemaString)
+        return build(schemaString, externalDaos)
     }
 
     fun docsDao(): DocsDao {

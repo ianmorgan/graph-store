@@ -1,0 +1,90 @@
+# This is an extension of the base starwars schema that supports external datasets
+
+
+
+# The query type, represents all of the entry points into our object graph
+type Query {
+
+  droid(id: ID!): Droid
+
+  human(id: ID!): Human
+  humans(name : String!) : [Human]
+
+  character(id: ID!): Character
+
+  starship(id: ID!): Starship
+
+  # Find characters by name
+  characters(name : String) : [Character]
+
+  # Search by name
+  search(name_contains : String) : [SearchResult]
+
+}
+
+
+# The episodes in the Star Wars trilogy
+enum Episode {
+  NEWHOPE
+  EMPIRE
+  JEDI
+}
+
+
+# A character from the Star Wars universe
+interface Character {
+  id: ID!
+  name: String!
+
+  # The friends of the character, or an empty list if they have none
+  friends(first: Int, count: Int): [Character]
+
+  # Built by convention as the count of 'friends' before any pagination has been applied.
+  # so is the total possible 'Characters' available in the node
+  friendsCount: Int
+
+  # The movies this character appears in
+  appearsIn: [Episode]!
+}
+
+
+# A humanoid creature from the Star Wars universe
+type Human implements Character {
+
+  id: ID!
+  name: String!
+  friends(first: Int, count: Int): [Character]
+  friendsCount: Int
+
+  appearsIn: [Episode]!
+
+  homePlanet: String
+}
+
+
+
+# An autonomous mechanical character in the Star Wars universe
+type Droid implements Character {
+
+  id: ID!
+  name: String!
+  friends(first: Int, count: Int): [Character]
+  friendsCount: Int
+
+  appearsIn: [Episode]!
+
+  primaryFunction: String
+
+}
+
+type Starship {
+    name: String!
+    manufacturer : String
+    model : String
+    lengthInMetres : String
+    costInCredits : String
+}
+
+union SearchResult = Human | Droid
+
+schema{query: Query}

@@ -1,0 +1,17 @@
+{
+  "docType": "Human",
+  "id": "1002",
+  "name": "Han Solo",
+  "friends": [
+    "1001",
+    "1003",
+    "2001"
+  ],
+  "appearsIn": [
+    "NEWHOPE",
+    "EMPIRE",
+    "JEDI"
+  ]
+}
+
+

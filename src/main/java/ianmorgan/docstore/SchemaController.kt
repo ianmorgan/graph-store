@@ -23,7 +23,7 @@ class SchemaController constructor(stateHolder: StateHolder) {
                 val schema = extractPayload(ctx)
                 val result = HashMap<Any,Any>()
 
-                if (!stateHolder.build(schema)){
+                if (!stateHolder.rebuild(schema)){
 
                     val error =
                         mapOf("message" to "Problem parsing the GraphQL schema",

@@ -9,8 +9,13 @@ import java.io.FileInputStream
  * A Dao to query documents. The real implementation uses an event store,
  * but the client doesn't need to know this.
  */
-class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreClient = InMemoryEventStore()) {
-    private val docDaoLookup = HashMap<String, ReaderDao>()
+class DocsDao constructor(graphQLSchema: String,
+                          eventStoreClient: EventStoreClient = InMemoryEventStore(),
+                          externalDaos : Map<String,ReaderDao> = HashMap()
+) {
+    private val externalDaos = externalDaos
+    private val availableDocs = HashSet(externalDaos.keys)
+    private val docDaoLookup = HashMap(externalDaos)
     private val interfaceDaoLookup = HashMap<String, InterfaceDao>()
     private val eventStoreClient = eventStoreClient
     private val schema = graphQLSchema
@@ -19,12 +24,25 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
         initFromSchema(graphQLSchema)
     }
 
+    /**
+     * All available docs, regardless as to whether they are externally mapped (i.e
+     * a DAO has been provided linked to say an external REST api or stored as events
+     * in the event store that match the GraphQL schema)
+     */
     fun availableDocs(): Set<String> {
-        return docDaoLookup.keys
+        return availableDocs
     }
 
+
+    fun externalDaos(): Map<String,ReaderDao> {
+        return externalDaos
+    }
+
+
     fun daoForDoc(docType: String): ReaderDao {
-        return docDaoLookup[docType]!!
+        if (docDaoLookup.containsKey(docType)) return docDaoLookup[docType]!!
+        if (externalDaos.containsKey(docType)) return externalDaos[docType]!!
+        throw RuntimeException("No Dao for $docType")
     }
 
     fun availableInterfaces(): Set<String> {
@@ -45,12 +63,16 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
 
         // wireup a DocDao for each type
         for (docType in helper.objectDefinitionNames()) {
-            val objectTypeHelper = Helper.build(typeDefinitionRegistry,docType)
-            if (objectTypeHelper.idFieldName() != null) {
-                docDaoLookup[docType] = DocDao(
-                    typeDefinitionRegistry, docType,
-                    eventStoreClient = eventStoreClient
-                )
+            // only create a DAO if one hasn't been injected already
+            if (!externalDaos.containsKey(docType)) {
+                val objectTypeHelper = Helper.build(typeDefinitionRegistry, docType)
+                if (objectTypeHelper.idFieldName() != null) {
+                    docDaoLookup[docType] = DocDao(
+                        typeDefinitionRegistry, docType,
+                        eventStoreClient = eventStoreClient
+                    )
+                    availableDocs.add(docType)
+                }
             }
         }
 
@@ -60,8 +82,6 @@ class DocsDao constructor(graphQLSchema: String, eventStoreClient: EventStoreCli
                 InterfaceDao(interfaceName, typeDefinitionRegistry, docDaoLookup)
             )
         }
-
-
     }
 
     companion object {
