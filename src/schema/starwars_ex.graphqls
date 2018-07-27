@@ -75,6 +75,9 @@ type Droid implements Character {
 
   primaryFunction: String
 
+  # The starships this Droid can fly or manage
+  starships: [Starship]
+
 }
 
 type Starship {

@@ -12,5 +12,6 @@
     "EMPIRE",
     "JEDI"
   ],
-  "primaryFunction" : "Astromech"
+  "primaryFunction" : "Astromech",
+  "starships" : ["12"]
 }
