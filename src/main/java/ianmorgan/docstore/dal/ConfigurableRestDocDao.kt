@@ -10,11 +10,12 @@ import groovy.lang.GroovyShell
  * A production quality implementation may need to consider cache expiry rules or
  * alternative solutions such as converting this to a set of events
  */
-class ConfigurableRestDocDao constructor(baseUrl : String, resultMapperScript : String? = null): ReaderDao {
+class ConfigurableRestDocDao constructor(configuration : Map<String,Any>  = HashMap()): ReaderDao {
 
     val aggregateKey = "id"
-    val baseUrl = baseUrl
-    val resultMapperScript = resultMapperScript
+    val resultMapperScript : String? = configuration["resultMapperScript"] as String
+    val baseUrl : String = configuration["baseUrl"] as String
+
     val lookup: MutableMap<String, Map<String, Any>> = HashMap()
     var initialised = false
     override fun retrieve(aggregateId: String): Map<String, Any> {

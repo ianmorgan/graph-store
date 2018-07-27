@@ -140,21 +140,6 @@ class DocDao constructor(
             }
         }
 
-//        for (key in doc.keys) {
-//            if (!fields.containsKey(key)) {
-//                throw RuntimeException("Unexpected field $key in document ")
-//            }
-//            // TODO - over simplistic type check
-//            val expectedType = fields.get(key)!!
-//            val actual = doc.get(key)
-//            if (actual != null) {
-//                if (!(expectedType == GraphQLMapper.standardiseType(actual))) {
-//                    throw RuntimeException("Types don't match for field $key in document")
-//                }
-//            } else {
-//                println("TODO - should be checking something here")
-//            }
-//        }
     }
 
 
@@ -225,13 +210,12 @@ class DocDao constructor(
 
 
     private fun buildUpdateEvent(aggregateId: String, data: Map<String, Any?>): Map<String, Any> {
-        //val docType =
         val ev = HashMap<String, Any>()
         ev["type"] = docType + "Updated"
         ev["id"] = UUID.randomUUID().toString()
         ev["aggregateId"] = aggregateId
         ev["timestamp"] = System.currentTimeMillis()
-        ev["creator"] = "doc-store"
+        ev["creator"] = "graph-store"
         ev["payload"] = data
         return ev
     }
@@ -242,7 +226,7 @@ class DocDao constructor(
         ev["id"] = UUID.randomUUID().toString()
         ev["aggregateId"] = aggregateId
         ev["timestamp"] = System.currentTimeMillis()
-        ev["creator"] = "doc-store"
+        ev["creator"] = "graph-store"
         return ev
     }
 }

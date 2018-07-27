@@ -31,7 +31,11 @@ object RestDocDaoSpec : Spek({
                 helper.copyIfExists('cost_in_credits','costInCredits')
                 return helper.output() """.trimIndent()
 
-            val dao = ConfigurableRestDocDao(baseUrl = "https://swapi.co/api/starships/", resultMapperScript = mapper)
+            val config = mapOf("baseUrl" to "https://swapi.co/api/starships/",
+                "resultMapperScript" to mapper)
+
+
+            val dao = ConfigurableRestDocDao(configuration = config)
 
             val result = dao.retrieve("10")
             val expected = mapOf ("name" to "Millennium Falcon",

@@ -112,7 +112,9 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
                 helper.copyIfExists('cost_in_credits','costInCredits')
                 return helper.output() """.trimIndent()
 
-        val dao = ConfigurableRestDocDao(baseUrl = "https://swapi.co/api/starships/", resultMapperScript = mapper)
+        val config = mapOf("baseUrl" to "https://swapi.co/api/starships/", "resultMapperScript" to mapper)
+
+        val dao = ConfigurableRestDocDao( configuration = config)
         return dao;
     }
 

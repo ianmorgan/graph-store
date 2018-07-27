@@ -26,6 +26,12 @@ interface EventStoreClient {
      */
     fun events(aggregateId: String): List<Map<String, Any>>
 
+    /**
+     * Retrieve all events of given type(s)
+     */
+    fun eventsForType(types : Set<String>): List<Map<String, Any>>
+
+
 
     fun aggregateKeys(docType : String) : Set<String>
 
@@ -37,6 +43,8 @@ interface EventStoreClient {
 class InMemoryEventStore : EventStoreClient {
 
     private val repo: MutableMap<String, MutableList<Map<String, Any>>> = HashMap()
+    private val allEvents : MutableList<Map<String, Any>> = ArrayList()
+
 
     override fun events(aggregateId: String): List<Map<String, Any>> {
         var eventsForDoc = repo[aggregateId]
@@ -47,6 +55,18 @@ class InMemoryEventStore : EventStoreClient {
         }
     }
 
+    override fun eventsForType(types: Set<String>): List<Map<String, Any>> {
+        val result = ArrayList<Map<String, Any>>()
+        for (e in allEvents){
+            val type = e["type"]!! as String
+            if (type in types){
+                result.add(e)
+            }
+        }
+        return result
+    }
+
+
     override fun storeEvent(eventPayload: Map<String, Any>) {
         val aggregateId = eventPayload["aggregateId"] as String
         var eventsForDoc = repo[aggregateId]
@@ -55,6 +75,7 @@ class InMemoryEventStore : EventStoreClient {
             repo[aggregateId] = eventsForDoc
         }
         eventsForDoc.add(eventPayload)
+        allEvents.add(eventPayload)
     }
 
     override fun aggregateKeys(docType : String): Set<String> {
@@ -74,6 +95,10 @@ class InMemoryEventStore : EventStoreClient {
 
 
 class RealEventStore : EventStoreClient {
+    override fun eventsForType(types: Set<String>): List<Map<String, Any>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     val baseURL = "http://event-store:7001/"
 
     @Suppress("UNCHECKED_CAST")
