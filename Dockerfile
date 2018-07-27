@@ -5,6 +5,8 @@ EXPOSE 7002
 
 RUN mkdir -p /home/app/
 RUN mkdir -p /home/app/src/test/resources/starwars
+RUN mkdir -p /home/app/src/test/resources/starwars_ex
+
 RUN mkdir -p /home/app/src/schema
 WORKDIR /home/app
 
@@ -20,6 +22,7 @@ COPY ./stash/doc-store-deps.jar /home/app/doc-store-deps.jar
 # the actual application code, which will change each time.
 COPY ./src/schema/* /home/app/src/schema/
 COPY ./src/test/resources/starwars/* /home/app/src/test/resources/starwars/
+COPY ./src/test/resources/starwars_ex/* /home/app/src/test/resources/starwars_ex/
 COPY ./build/libs/doc-store-app.jar /home/app/doc-store-app.jar
 
 
