@@ -86,7 +86,7 @@ dependencies {
 
 }
 
-mainClassName = "ianmorgan.docstore.AppKt"
+mainClassName = "ianmorgan.graphstore.AppKt"
 
 
 compileKotlin {

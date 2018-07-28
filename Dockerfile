@@ -13,7 +13,7 @@ WORKDIR /home/app
 # work around to corrupt file run.sh when buidling docker containers on windows. Something to do
 # with character encoding
 RUN echo "#!/bin/bash" > /home/app/runIt.sh
-RUN echo "java -Xmx64m -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGC -cp /home/app/doc-store-app.jar:/home/app/doc-store-deps.jar ianmorgan.docstore.AppKt" >> /home/app/runIt.sh
+RUN echo "java -Xmx64m -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGC -cp /home/app/doc-store-app.jar:/home/app/doc-store-deps.jar ianmorgan.graphstore.AppKt" >> /home/app/runIt.sh
 RUN chmod +x /home/app/runIt.sh
 
 # hopefully this will stay the same between docker builds
