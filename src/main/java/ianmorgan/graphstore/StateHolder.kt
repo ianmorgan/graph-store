@@ -75,5 +75,9 @@ class StateHolder (eventStoreClient: EventStoreClient) {
         return exception
     }
 
+    fun eventStore () : EventStoreClient {
+        return eventStoreClient
+    }
+
 
 }

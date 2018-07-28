@@ -142,6 +142,19 @@ class Controller constructor(stateHolder: StateHolder) {
                 }
             }
 
+            path("events") {
+
+                    // rest style - aggregateId in URL
+
+                        ApiBuilder.get() { ctx ->
+
+                            val events = stateHolder
+                                .eventStore()
+                                .eventsForType(setOf("ExternalDaoRegistered","ExternalDaoConfigured"))
+                            ctx.json(mapOf("data" to events))
+                        }
+            }
+
             ApiBuilder.get("/") { ctx ->
                 ctx.redirect("/index.html")
             }
