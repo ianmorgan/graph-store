@@ -39,7 +39,7 @@ object ExternalDaoRegistrySpec : Spek({
 
             // does it work ?
             val result = dao.retrieve("10")
-            val expected = mapOf ("name" to "Millennium Falcon"
+            val expected = mapOf ("id" to "10", "name" to "Millennium Falcon"
             ) as Map<String,Any>
 
             com.natpryce.hamkrest.assertion.assert.that(result, equalTo(expected))

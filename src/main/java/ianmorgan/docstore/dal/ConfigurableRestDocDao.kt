@@ -23,11 +23,12 @@ class ConfigurableRestDocDao constructor(configuration : Map<String,Any>  = Hash
         val raw = loadFromEndpoint(aggregateId)
 
         val mapped = runMapper(raw)
+        mapped["id"] = aggregateId
         return mapped;
     }
 
 
-    private fun runMapper(rawData : Map<String,Any>) : Map<String,Any> {
+    private fun runMapper(rawData : Map<String,Any>) : MutableMap<String,Any> {
         if (resultMapperScript != null){
             val  binding = Binding()
             binding.setVariable("raw", rawData);
@@ -35,10 +36,10 @@ class ConfigurableRestDocDao constructor(configuration : Map<String,Any>  = Hash
             val  value = shell.evaluate(resultMapperScript)
 
             @Suppress("UNCHECKED_CAST")
-            return value as Map<String,Any>
+            return value as MutableMap<String, Any>
         }
         else {
-            return rawData
+            return HashMap(rawData)
         }
     }
 

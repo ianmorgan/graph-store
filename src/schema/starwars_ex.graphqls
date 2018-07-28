@@ -81,6 +81,7 @@ type Droid implements Character {
 }
 
 type Starship {
+    id: ID!
     name: String!
     manufacturer : String
     model : String

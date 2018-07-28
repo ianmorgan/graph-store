@@ -6,8 +6,10 @@ import java.io.File
 import java.io.FileInputStream
 
 /**
- * A Dao to query documents. The real implementation uses an event store,
- * but the client doesn't need to know this.
+ * Entry point to get hold of DAOs, now a combination of those driven from a GraphQL
+ * schema plus those linked to external resources such as REST endpoints.
+ *
+ * Wiring of dependencies is now a bit convoluted - this is a candidate for some redesign.
  */
 class DocsDao constructor(graphQLSchema: String,
                           eventStoreClient: EventStoreClient = InMemoryEventStore(),

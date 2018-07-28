@@ -70,9 +70,13 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
             enableStaticFiles("/www", Location.CLASSPATH)
         }
 
-        // setup the  main controller
-        val externalDaos = HashMap<String,ReaderDao>()
-        externalDaos.put("Starship", starshipDao())
+        //  wireup external DAOS
+        val externalDaoRegistry = ExternalDaoRegistry(eventStoreClient)
+        registerStarshipDao(externalDaoRegistry)
+        externalDaoRegistry.rebuildDaos()
+        val externalDaos = externalDaoRegistry.allDaos()
+
+        // wireup schema
         val starWarSchema =
             FileInputStream("src/schema/starwars_ex.graphqls").bufferedReader().use { it.readText() }  // defaults to UTF-8
         val dao = DocsDao(starWarSchema, eventStoreClient, externalDaos)
@@ -85,7 +89,6 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         val dataLoader = DataLoader(stateHolder.docsDao)
         dataLoader.loadDirectory("src/test/resources/starwars_ex")
 
-        //val graphQL = GraphQLFactory.build(starWarSchema, dao)
 
 
         Controller(stateHolder).register(app)
@@ -93,14 +96,13 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         app.start()
         println("Ready :)")
 
-
         //JavalinJacksonPlugin.configure()
 
         return app
 
     }
 
-    private fun starshipDao () : ConfigurableRestDocDao {
+    private fun registerStarshipDao (registry: ExternalDaoRegistry)  {
         val mapper = """
                 import ianmorgan.docstore.mapper.MapperHelper;
 
@@ -114,8 +116,9 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
 
         val config = mapOf("baseUrl" to "https://swapi.co/api/starships/", "resultMapperScript" to mapper)
 
-        val dao = ConfigurableRestDocDao( configuration = config)
-        return dao;
+
+        registry.registerDao("Starship")
+        registry.configureDao("Starship",config)
     }
 
 

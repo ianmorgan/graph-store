@@ -38,7 +38,8 @@ object RestDocDaoSpec : Spek({
             val dao = ConfigurableRestDocDao(configuration = config)
 
             val result = dao.retrieve("10")
-            val expected = mapOf ("name" to "Millennium Falcon",
+            val expected = mapOf ("id" to "10",
+                "name" to "Millennium Falcon",
                 "manufacturer" to "Corellian Engineering Corporation",
                 "model" to "YT-1300 light freighter",
                 "lengthInMetres" to "34.37",

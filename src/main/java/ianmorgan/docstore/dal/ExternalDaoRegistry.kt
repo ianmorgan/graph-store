@@ -51,12 +51,15 @@ class ExternalDaoRegistry(eventStore: EventStoreClient = InMemoryEventStore()){
             }
             daos[docType] = ConfigurableRestDocDao( configuration = config as Map<String,Any>)
 
-
         }
     }
 
     fun daoForDoc(docType : String) : ReaderDao {
         return daos[docType]!!
+    }
+
+    fun allDaos() : HashMap<String,ReaderDao>{
+        return daos
     }
 
     private fun buildRegisterEvent(docType: String, implementingClass : String): Map<String, Any> {
