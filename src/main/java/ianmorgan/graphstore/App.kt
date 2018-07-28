@@ -89,10 +89,9 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         val dataLoader = DataLoader(stateHolder.docsDao)
         dataLoader.loadDirectory("src/test/resources/starwars_ex")
 
-
-
         Controller(stateHolder).register(app)
         SchemaController(stateHolder).register(app)
+        AdminController(stateHolder).register(app)
         app.start()
         println("Ready :)")
 
