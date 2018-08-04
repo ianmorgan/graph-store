@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<html lang="en-US">
+<head>
+
+    <script src="https://unpkg.com/hyperapp"></script>
+
+    <title>hyperapp test </title>
+
+
+</head>
+<body>
+</body>
+
+<script>
+
+const state = {
+count: 0
+}
+
+const actions = {
+down: value => state => ({ count: state.count - value }),
+up: value => state => ({ count: state.count + value })
+}
+
+var h = window.hyperapp.h
+
+const view = (state, actions) =>
+  h("div", {}, [
+    h("h1", {}, state.count),
+    h("button", { onclick: () => actions.down(1) }, "-"),
+    h("button", { onclick: () => actions.up(1) }, "+")
+  ])
+
+console.log ("ready to go")
+var result = window.hyperapp.app(state, actions, view, document.body)
+console.log (result)
+    </script>
+
+
+</html>
