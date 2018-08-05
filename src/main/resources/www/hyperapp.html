@@ -15,12 +15,37 @@
 <script>
 
 const state = {
-count: 0
+count: 0,
+name : "?"
 }
 
+var j = ""
+
+  fetch('http://localhost:7002/docs/Droid/1001')
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(myJson) {
+    console.log(myJson.data.name);
+  });
+
+
+console.log(j);
+
 const actions = {
-down: value => state => ({ count: state.count - value }),
-up: value => state => ({ count: state.count + value })
+down: (value) => state => ({ count: state.count - value }),
+up: (value) => state => ({ count: state.count + value }),
+fetch: (id) =>  async (state, actions) => {
+    console.log ("here we are");
+    console.log (id);
+    actions.doit (
+        await fetch(`http://localhost:7002/docs/Droid/${id}`)
+            .then(data => data.json())
+            .then(json => json.data.name)
+    )
+},
+doit : name => ( {name} )
+
 }
 
 var h = window.hyperapp.h
@@ -28,8 +53,12 @@ var h = window.hyperapp.h
 const view = (state, actions) =>
   h("div", {}, [
     h("h1", {}, state.count),
+    h("h1", {}, state.name),
     h("button", { onclick: () => actions.down(1) }, "-"),
-    h("button", { onclick: () => actions.up(1) }, "+")
+    h("button", { onclick: () => actions.up(1) }, "+"),
+    h("button", { onclick: () => actions.fetch(1001) }, "fetch"),
+    h("input", { name: "droid" , value: "1001" })
+
   ])
 
 console.log ("ready to go")
