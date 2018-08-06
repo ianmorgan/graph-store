@@ -7,7 +7,6 @@
 
     <title>hyperapp test </title>
 
-
 </head>
 <body>
 </body>
@@ -15,12 +14,13 @@
 <script>
 
 const state = {
-count: 0,
-name : "?"
+    count: 0,
+    name : "?",
+    searchId : ""
 }
 
-var j = ""
 
+/* long hand form for fetching data */
   fetch('http://localhost:7002/docs/Droid/1001')
   .then(function(response) {
     return response.json();
@@ -29,23 +29,26 @@ var j = ""
     console.log(myJson.data.name);
   });
 
+/* short hand form, much simpler  */
 
-console.log(j);
+  fetch('http://localhost:7002/docs/Droid/2001')
+  .then(response => response.json())
+  .then(myJson => console.log(myJson.data.name))
+
 
 const actions = {
-down: (value) => state => ({ count: state.count - value }),
-up: (value) => state => ({ count: state.count + value }),
-fetch: (id) =>  async (state, actions) => {
-    console.log ("here we are");
-    console.log (id);
-    actions.doit (
-        await fetch(`http://localhost:7002/docs/Droid/${id}`)
-            .then(data => data.json())
-            .then(json => json.data.name)
-    )
-},
-doit : name => ( {name} )
-
+    down: (value) => state => ({ count: state.count - value }),
+    up: (value) => state => ({ count: state.count + value }),
+    fetch: () =>  async (state, actions) => {
+        actions.fetchIt (
+            await fetch(`http://localhost:7002/docs/Droid/${state.searchId}`)
+                .then(data => data.json())
+                .then(json => json.data.name)
+        )
+    },
+    fetchIt : name => ( {name} ),
+    setSearchId: (key) => state => ( { searchId :  state.searchId + key } ),
+    clearSearch: () => ( { searchId :  "", name: "?" } )
 }
 
 var h = window.hyperapp.h
@@ -54,17 +57,18 @@ const view = (state, actions) =>
   h("div", {}, [
     h("h1", {}, state.count),
     h("h1", {}, state.name),
+    h("h1", {}, state.searchId),
     h("button", { onclick: () => actions.down(1) }, "-"),
     h("button", { onclick: () => actions.up(1) }, "+"),
-    h("button", { onclick: () => actions.fetch(1001) }, "fetch"),
-    h("input", { name: "droid" , value: "1001" })
-
+    h("button", { onclick: () => actions.fetch() }, "fetch"),
+    h("input", { name: "droid" ,
+                 oninput: (value) => actions.setSearchId(value.data),
+                 value: state.searchId}),
+    h("button", { onclick: () => actions.clearSearch() }, "Clear")
   ])
 
-console.log ("ready to go")
-var result = window.hyperapp.app(state, actions, view, document.body)
-console.log (result)
-    </script>
+  var result = window.hyperapp.app(state, actions, view, document.body)
+</script>
 
 
 </html>
