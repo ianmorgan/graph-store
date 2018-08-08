@@ -40,7 +40,7 @@ const actions = {
     up: (value) => state => ({ count: state.count + value }),
     fetch: () =>  async (state, actions) => {
         actions.fetchIt (
-            await fetch(`http://localhost:7002/docs/Droid/${state.searchId}`)
+            await fetch(`docs/Droid/${state.searchId}`, { mode: "cors" })
                 .then(data => data.json())
                 .then(json => json.data.name)
         )
