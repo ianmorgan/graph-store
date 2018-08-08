@@ -4,7 +4,6 @@
 <head>
 
     <script src="https://unpkg.com/hyperapp"></script>
-
     <title>hyperapp test </title>
 
 </head>
@@ -21,7 +20,7 @@ const state = {
 
 
 /* long hand form for fetching data */
-  fetch('http://localhost:7002/docs/Droid/1001')
+  fetch('/docs/Droid/1001')
   .then(function(response) {
     return response.json();
   })

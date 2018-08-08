@@ -2,6 +2,9 @@ package ianmorgan.graphstore.graphql
 
 import graphql.language.*
 import graphql.schema.DataFetchingFieldSelectionSet
+import graphql.schema.GraphQLFieldDefinition
+import graphql.schema.GraphQLNonNull
+import graphql.schema.GraphQLObjectType
 import graphql.schema.idl.TypeDefinitionRegistry
 
 /**
@@ -113,6 +116,23 @@ class TypeDefinitionRegistryHelper constructor(registry : TypeDefinitionRegistry
     }
 }
 
+class GraphQLFieldDefinitionHelper constructor(fieldDefinition : GraphQLFieldDefinition) {
+    val definition = fieldDefinition
+
+    fun foo() : String? {
+        val t = definition.type
+        if (t is GraphQLNonNull){
+            val w = t.wrappedType
+            if (w is GraphQLObjectType ) {
+
+                return w.name
+            }
+        }
+        return "??"
+    }
+
+}
+
 class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinition) {
     val otd = typeDefinition
 
@@ -216,5 +236,9 @@ object Helper {
 
     fun build(set : DataFetchingFieldSelectionSet) : DataFetchingFieldSelectionSetHelper {
         return DataFetchingFieldSelectionSetHelper(set)
+    }
+
+    fun build (fieldDefintion: GraphQLFieldDefinition) : GraphQLFieldDefinitionHelper {
+        return GraphQLFieldDefinitionHelper(fieldDefintion)
     }
 }

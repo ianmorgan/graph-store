@@ -1,6 +1,8 @@
 package ianmorgan.graphstore
 
 
+import graphql.introspection.Introspection.__Schema
+import ianmorgan.graphstore.graphql.Helper
 import io.javalin.ApiBuilder
 import io.javalin.Context
 import io.javalin.Javalin
@@ -55,21 +57,39 @@ class AdminController constructor(stateHolder: StateHolder) {
                         for (doc in stateHolder.docsDao().availableDocs()){
                             val dao = stateHolder.docsDao().daoForDoc(doc)
                             result.add (mapOf ("name" to doc,
-                                "implemetation" to dao::class.java.canonicalName!!,
+                                "implementation" to dao::class.java.canonicalName!!,
                                 "type" to "doc"))
                         }
 
                         for (doc in stateHolder.docsDao().availableInterfaces()){
                             val dao = stateHolder.docsDao().daoForInterface(doc)
                             result.add (mapOf ("name" to doc,
-                                "implemetation" to dao::class.java.canonicalName!!,
+                                "implementation" to dao::class.java.canonicalName!!,
                                 "type" to "interface"))
                         }
+
+
+                        println (__Schema.description)
+
+                        val f = __Schema.fieldDefinitions
+
+                        for (f in __Schema.fieldDefinitions){
+                            result.add (mapOf ("name" to f.name,
+                                "implementation" to f::class.java.canonicalName!!,
+                                "type" to "field"))
+                        }
+
+                        val t = __Schema.getFieldDefinition("types")
+                        println (t.name)
+
+                        val helper = Helper.build(t)
+
+
+                        println(helper.foo())
 
                         ctx.json(mapOf("data" to result))
                     }
                 }
-
             }
 
             ApiBuilder.get("/") { ctx ->

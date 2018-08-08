@@ -5,7 +5,17 @@ Setup [DDD style aggregates](https://martinfowler.com/bliki/DDD_Aggregate.html) 
 Store aggregate state to an event-store using REST, and query using both GraphQL 
 and traditional REST. More advanced applications can use [CQRS](https://www.martinfowler.com/bliki/CQRS.html)
 principle to build custom data integrations and views by simply reducing 
-the underlying event stream. See the [Online Store Evolution](onlineStoreEvolution) for some more 
+the underlying event stream. 
+
+This solution is aimed at bring the more traditional CRUD style rapid development stacks 
+(Ruby on Rails et al) into a more modern environment 
+
+There is an <a href="https://hackernoon.com/graphql-and-ddd-the-missing-link-4e992a26b711">article</a> on
+            why GraphQL is nice implementation tool for DDD. And this
+            <a href="https://www.infoq.com/presentations/graphql-sdl">presentation</a> walks through a real world
+            project that used GraphQL as the contract between UI and backend developers.
+
+See the [Online Store Evolution](onlineStoreEvolution) for some more 
 detail.
  
  
