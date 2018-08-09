@@ -53,7 +53,7 @@ In this case the JSON must be within a "payload" element of the <FORM>
 ### DocType and ID in payload, not URL
 
 Both  http://graphstore.app/docs/Droid & http://graphstore.app/docs are also supported. In this case
-the JSON payload must contain the key "aggregateId"  and "docType", e.g. 
+the JSON payload must contain the key "aggregateId" and "docType", e.g. 
 
 ```bash
 curl -H "Content-Type: application/json" -X POST  http://graphstore.app/docs -d '{ "docType": "Droid", "aggregateId" : "2001", "name": "R2-D2" }'

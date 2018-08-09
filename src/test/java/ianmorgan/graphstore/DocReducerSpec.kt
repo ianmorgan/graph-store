@@ -20,7 +20,7 @@ object DocReducerSpec : Spek({
             val event = mapOf<String,Any>("name" to "Luke")
 
             // verify
-            val result = DocReducer.reduceEvents(listOf(Helper.buildEvent(event)))
+            val result = DocReducer.reduceEvents("Doc",listOf(Helper.buildEvent(event)))
             assert.that(result, equalTo(event))
         }
 
@@ -33,7 +33,7 @@ object DocReducerSpec : Spek({
             val expected =  mapOf<String,Any>("name" to "Luke Skywalker",
                 "homePlanet" to "Tatooine",
                 "appearsIn" to listOf("NEWHOPE"))
-            val result = DocReducer.reduceEvents(Helper.buildEvents(listOf(ev1, ev2)))
+            val result = DocReducer.reduceEvents("Doc",Helper.buildEvents(listOf(ev1, ev2)))
             assert.that(result, equalTo(expected))
         }
 
@@ -44,7 +44,7 @@ object DocReducerSpec : Spek({
 
             // verify
             val expected =  mapOf<String,Any>("name" to "Luke Skywalker")
-            val result = DocReducer.reduceEvents(Helper.buildEvents(listOf(ev1, ev2)))
+            val result = DocReducer.reduceEvents("Doc",Helper.buildEvents(listOf(ev1, ev2)))
             assert.that(result, equalTo(expected))
         }
 

@@ -55,11 +55,7 @@ class DocDao constructor(
     }
 
     override fun retrieve(aggregateId: String): Map<String, Any>? {
-        val events = es.events(aggregateId)
-        if (!events.isEmpty()) {
-            return DocReducer.reduceEvents(events)
-        }
-        return null
+        return DocReducer.reduceEvents(docType, es.events(aggregateId))
     }
 
     fun count(): Int {
