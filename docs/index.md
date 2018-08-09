@@ -23,11 +23,24 @@ The inbuilt query model is quite basic. The intention is that as more complex qu
 required other services will monitor the event stream(s) and aggregate data to build dedicated views 
 using the appropriate technology.
 
-To get working quickly, follow the getting started [Getting Started](#getting-started) guide below. For more 
-detail see [Data Access](daos), [Type Mappings](typeMappings) and [Standards](standards).
+To get working quickly, follow the getting started [Getting Started](#getting-started) guide below. 
+
+For more detail: 
+
+* [Command Line Options](commandLineOptions)
+* [Data Access](daos)
+* [Docker](docker)
+* [External Data](externalData)
+* [(GraphQL)Fetchers](fetchers)
+* [Type Mappings](typeMappings) 
+* [REST API](restAPI)
+* [Standards](standards)
+* [Updates and Validations](updatesAndValidations)
+
+The [Online Store Evolution](onlineStoreEvolution) walks through a basic example that gradually 
+builds additional behaviour around a simple schema. 
 
 Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/graph-store). 
-
 
 
 

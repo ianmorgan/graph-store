@@ -68,7 +68,10 @@
             <h1 id="rest">Example Rest Interface</h1>
 
             <h2>Query</h2>
-            <p>Individual types can be accessed via a more traditional resource style API</p>
+            <p>Individual types can be accessed via a more traditional resource style API. Using this API
+            data is returned in a simpler form, a key difference being that for any linked document
+                just raw ID will be returned, whereas via GraphQL it will be expanded automatically into its
+            document</p>
 
             <a href="/docs/Droid/2001">R2-D2</a>
 
@@ -82,7 +85,8 @@
 </pre></div></div>
 
 
-            <p>All forms accept either JSON in the body or as a FORM submission
+            <p>The first form in the 'correct' REST style, the other two are really for
+                convenience.  All forms accept either JSON in the body or as a FORM submission
             with the JSON in a field named "payload"
 
             Note that API is designed to work with document fragments,

@@ -1,5 +1,8 @@
 # Evolving a system around its Data
 
+__WIP__, to be completed.
+
+
 One problem with the evolution of software is finding central abstractions that 
 grow without breaking. Often the core data abstractions are the most stable and commonly understood, which is a 
 point Domain Driven Design (DDD) makes. Architectural patterns come and go (monoliths, backend MVC , browser  MVC, 
