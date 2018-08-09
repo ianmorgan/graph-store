@@ -1,5 +1,7 @@
-package ianmorgan.graphstore
+package ianmorgan.graphstore.controller
 
+import ianmorgan.graphstore.StateHolder
+import ianmorgan.graphstore.checker.ValidatorMode
 import ianmorgan.graphstore.dal.DocDao
 import io.javalin.ApiBuilder
 import io.javalin.ApiBuilder.path
@@ -42,7 +44,7 @@ class Controller constructor(stateHolder: StateHolder) {
             }
 
             ApiBuilder.post("/graphql") { ctx ->
-                val query = extractPayload(ctx, listOf("query", "payload"))
+                val query = Helper.build(ctx).extractPayload(listOf("query", "payload"))
 
                 val executionResult = stateHolder.graphQL().execute(query)
                 if (executionResult.errors.isEmpty()){
@@ -56,10 +58,6 @@ class Controller constructor(stateHolder: StateHolder) {
 
             }
 
-
-//            ApiBuilder.post("/doc/:type") {
-//
-//            }
 
 
             path("docs") {
@@ -80,6 +78,7 @@ class Controller constructor(stateHolder: StateHolder) {
 
                         ApiBuilder.post() { ctx ->
                             val docType = ctx.param("type")!!
+                            val mode = Helper.build(ctx).extractParam("validatorMode") ?: "Create"
                             val json = JSONObject(ctx.body())
                             val dao = stateHolder.docsDao().daoForDoc(docType)
 
@@ -88,7 +87,7 @@ class Controller constructor(stateHolder: StateHolder) {
                                 val aggregateId = ctx.param("aggregateId")!!
                                 json.put(dao.aggregateKey(), aggregateId)
 
-                                dao.store(json.toMap())
+                                dao.store(json.toMap(), ValidatorMode.valueOf(mode))
                                 ctx.result("{}")
                             }
                         }
@@ -115,11 +114,12 @@ class Controller constructor(stateHolder: StateHolder) {
                     val json = extractJson(ctx)
                     val payload = json.toMap()
 
+                    val mode = Helper.build(ctx).extractParam("validatorMode") ?: "Create"
                     val docType = payload["docType"] as String
                     payload.remove("docType")
                     val dao = stateHolder.docsDao().daoForDoc(docType)
                     if (dao is DocDao) {
-                        dao.store(payload)
+                        dao.store(payload, ValidatorMode.valueOf(mode))
                         ctx.result("{}")
                     }
                 }
@@ -158,10 +158,7 @@ class Controller constructor(stateHolder: StateHolder) {
             ApiBuilder.get("/") { ctx ->
                 ctx.redirect("/index.html")
             }
-
-
         }
-
 
     }
 
@@ -173,12 +170,5 @@ class Controller constructor(stateHolder: StateHolder) {
 
     }
 
-    private fun extractPayload(ctx: Context, formFields: List<String> = listOf("payload")): String {
-        for (field in formFields) {
-            if (ctx.formParamMap().containsKey(field)) {
-                return ctx.formParam(field)!!
-            }
-        }
-        return ctx.body()
-    }
+
 }

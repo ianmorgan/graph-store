@@ -1,7 +1,8 @@
-package ianmorgan.graphstore
+package ianmorgan.graphstore.controller
 
 
 import graphql.introspection.Introspection.__Schema
+import ianmorgan.graphstore.StateHolder
 import ianmorgan.graphstore.graphql.Helper
 import io.javalin.ApiBuilder
 import io.javalin.Context

@@ -102,6 +102,7 @@ object DocDaoSpec : Spek({
             assert.that(doc, equalTo(stored))
         }
 
+
         it("should throw exception if there is no 'aggregateId' in the doc") {
             val dao = DocDao(typeDefinitionRegistry,"Droid")
             assert.that({ dao.store(mapOf("name" to "Mouse Droid")) }, throws<RuntimeException>())

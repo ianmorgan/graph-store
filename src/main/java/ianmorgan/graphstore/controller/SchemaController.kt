@@ -1,6 +1,7 @@
-package ianmorgan.graphstore
+package ianmorgan.graphstore.controller
 
 
+import ianmorgan.graphstore.StateHolder
 import io.javalin.ApiBuilder
 import io.javalin.Context
 import io.javalin.Javalin
@@ -20,7 +21,7 @@ class SchemaController constructor(stateHolder: StateHolder) {
             }
 
             ApiBuilder.post("/schema") { ctx ->
-                val schema = extractPayload(ctx)
+                val schema = Helper.build(ctx).extractPayload()
                 val result = HashMap<Any,Any>()
 
                 if (!stateHolder.rebuild(schema)){
@@ -37,13 +38,4 @@ class SchemaController constructor(stateHolder: StateHolder) {
         }
     }
 
-    private fun extractPayload(ctx: Context): String {
-        if (ctx.formParamMap().containsKey("payload")){
-            return ctx.formParam("payload")!!
-        }
-        if (ctx.formParamMap().containsKey("schema")){
-            return ctx.formParam("schema")!!
-        }
-        return ctx.body()
-    }
 }

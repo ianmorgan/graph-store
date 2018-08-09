@@ -30,13 +30,7 @@
     </script>
 
     <script>
-        $(document).ready(function(){
-    $("#doit").click(function(){
-        //$(this).hide();
-        //alert ("hello world");
-        //$.post( "docs/Droid/1234", { name: "John", time: "2pm" } );
-    });
-});
+
     </script>
 
 </head>
@@ -61,6 +55,13 @@
             <h2 id="about">Update Doc</h2>
 
             <form method="POST" action="/docs">
+                Validation Mode: <select name="validatorMode">
+                    <option value="Create">Create</option>
+                    <option value="Skip">Skip</option>
+                <option value="Wibble">wibble</option>
+
+            </select>
+
 
                 <textarea rows="20" cols="128" name="payload">
 { &quot;id&quot; : &quot;2002&quot;,  &quot;docType&quot; : &quot;Droid&quot;, &quot;name&quot;: &quot;R5-D4&quot;,&quot;appearsIn&quot;: [&quot;NEWHOPE&quot;] }

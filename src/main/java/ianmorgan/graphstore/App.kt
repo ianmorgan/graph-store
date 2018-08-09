@@ -2,6 +2,9 @@ package ianmorgan.graphstore
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import ianmorgan.graphstore.controller.AdminController
+import ianmorgan.graphstore.controller.Controller
+import ianmorgan.graphstore.controller.SchemaController
 import ianmorgan.graphstore.dal.*
 import io.javalin.Javalin
 import io.javalin.embeddedserver.Location
