@@ -8,7 +8,7 @@ Step 1. For each type, interface and union defined in the schema a TypeResolver 
 which fields are expected. This process is quite simple, though it feels a little unnecessary as the information is 
 readily available in the schema which has just been parsed. Presumably this is a trade off in the internal API design, 
 which is flexible enough to drive directly through Java without an actual schema file 
-(_or I have just miss understood the API_). 
+(_or I have just misunderstood the API_). 
 
 Step 2. To return actual data, a "Fetcher" is required (so essentially for each query a fetcher must be wired up). 
 Fetchers are somewhat more complicated and different patterns are required for types, unions and interfaces, though they all 

@@ -15,10 +15,9 @@ There is an <a href="https://hackernoon.com/graphql-and-ddd-the-missing-link-4e9
             <a href="https://www.infoq.com/presentations/graphql-sdl">presentation</a> walks through a real world
             project that used GraphQL as the contract between UI and backend developers.
 
-See the [Online Store Evolution](onlineStoreEvolution) for some more 
-detail.
- 
- 
+The [Online Store Evolution](onlineStoreEvolution) walks through a basic example that gradually 
+builds additional behaviour around a simple schema. 
+
 The inbuilt query model is quite basic. The intention is that as more complex query models are 
 required other services will monitor the event stream(s) and aggregate data to build dedicated views 
 using the appropriate technology.
@@ -37,8 +36,7 @@ For more detail:
 * [Standards](standards)
 * [Updates and Validations](updatesAndValidations)
 
-The [Online Store Evolution](onlineStoreEvolution) walks through a basic example that gradually 
-builds additional behaviour around a simple schema. 
+
 
 Work and new features are tracked in [Trello](https://trello.com/b/5lXXr7jc/graph-store). 
 
@@ -64,7 +62,7 @@ To run with [command line options](commandLineOptions)
 To run under Docker 
 
 ```bash
-docker run -d -p 7002:7002 ianmorgan/doc-store
+docker run -d -p 7002:7002 ianmorgan/graph-store
 ```
 
 As there are dependencies on other services, its better to use a docker compose file. There is 
