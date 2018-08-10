@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://ianmorgan.github.io/assets/css/style.css?v=8bf51261ae87acf76a120a5f502b963e9964a468" media="screen" type="text/css">
+    <link rel="stylesheet" href="https://ianmorgan.github.io//assets/css/print.css" media="print" type="text/css">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+    <title>Graph Store - Error</title>
+
+    <style>
+        .alert-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+
+        .alert-secondary {
+    color: #383d41;
+    background-color: #e2e3e5;
+    border-color: #d6d8db;
+}
+
+        .alert {
+            margin: 5px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-family:Courier, monospace;
+        }
+    </style>
+
+</head>
+
+<body>
+<header>
+    <div class="inner">
+        <a href="http://github.com/ianmorgan/graph-store">
+            <h1>Graph Store</h1>
+        </a>
+    </div>
+</header>
+
+
+<div id="content-wrapper">
+    <div class="inner clearfix">
+        <section id="main-content">
+            <h1 id="about">Error</h1>
+
+            <p>Sorry, there was a problem.</p>
+
+            {{#errors}}
+            <div  class="alert alert-danger">{{message}}</div>
+            <div class="alert alert-secondary"><span style="font-weight:bold">Location: </span>{{locations}}</div>
+            <div class="alert alert-secondary"><span style="font-weight:bold">Stack Trace: </span>{{stackTrace}}</div>
+            </br>
+            {{/errors}}
+
+
+        </section>
+    </div>
+</div>
+
+
+</body>
+</html>

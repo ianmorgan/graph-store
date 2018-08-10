@@ -2,10 +2,10 @@
 
 ## Introduction 
 All the types in the GraphQL schema are also available as traditional REST style API. So taking the 
-basic [Star Wars](https://github.com/ianmorgan/graph-store/blob/master/src/schema/starwars.graphqls) then Droid, Human 
-and Character are all available via a REST API. Character is read-only as it is an Interface, whereas Droid and Human 
-can be modified. As there is currently no support for mutations via the GraphQL API, the only ways to get data into the 
-system is to either use the REST API or write directly to underlying event stream.
+basic [Star Wars](https://github.com/ianmorgan/graph-store/blob/master/src/schema/starwars.graphqls) schema, 
+then Droid, Human and Character are all available via a REST API. Character is read-only as it is an Interface, 
+whereas Droid and Human can be modified. As there is currently no support for mutations via the GraphQL API, the only 
+ways to get data into the system is to either use the REST API or write directly to underlying event stream.
 
 By convention internally these resources are referred to as 'docs' as they follow the same basic document metaphor
 used by document centric databases such as MongoDB. 
@@ -14,9 +14,9 @@ used by document centric databases such as MongoDB.
 
 This is classic REST, e.g. 
 
-http://graphstore.app/docs/Droid/2001
+[http://graphstore.app/docs/Droid/2001](http://graphstore.app/docs/Droid/2001)
 
-or with curl
+or with curl:
 
 ```bash
 curl -H "Accept: application/json" http://graphstore.app/docs/Droid/2001
@@ -52,12 +52,14 @@ In this case the JSON must be within a "payload" element of the <FORM>
 
 ### DocType and ID in payload, not URL
 
-Both  http://graphstore.app/docs/Droid & http://graphstore.app/docs are also supported. In this case
+Both  http://graphstore.app/docs/Droid & http://graphstore.app/docs URL forms are also supported. In this case
 the JSON payload must contain the key "aggregateId" and "docType", e.g. 
 
 ```bash
 curl -H "Content-Type: application/json" -X POST  http://graphstore.app/docs -d '{ "docType": "Droid", "aggregateId" : "2001", "name": "R2-D2" }'
 ```
+
+These additional keys are obviously removed from the payload before writing to the event store.
 
 ### Validation Mode 
 

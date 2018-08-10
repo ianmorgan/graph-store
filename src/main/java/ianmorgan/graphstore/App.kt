@@ -2,6 +2,7 @@ package ianmorgan.graphstore
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.mustachejava.DefaultMustacheFactory
 import ianmorgan.graphstore.controller.AdminController
 import ianmorgan.graphstore.controller.Controller
 import ianmorgan.graphstore.controller.SchemaController
@@ -9,9 +10,11 @@ import ianmorgan.graphstore.dal.*
 import io.javalin.Javalin
 import io.javalin.embeddedserver.Location
 import io.javalin.translator.json.JavalinJacksonPlugin
+import io.javalin.translator.template.JavalinMustachePlugin
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
+import java.io.File
 import java.io.FileInputStream
 
 
@@ -26,6 +29,10 @@ fun main(args: Array<String>) {
 
     val parser = DefaultParser()
     val cmd = parser.parse(options, args)
+
+    val mf = DefaultMustacheFactory(File("src/main/resources/views"))
+    JavalinMustachePlugin.configure(mf)
+
 
     JavalinApp(7002, cmd).init()
 }

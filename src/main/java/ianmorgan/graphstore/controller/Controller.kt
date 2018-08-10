@@ -8,6 +8,7 @@ import io.javalin.ApiBuilder.path
 import io.javalin.Context
 import io.javalin.Javalin
 import org.json.JSONObject
+import java.io.FileInputStream
 
 
 class Controller constructor(stateHolder: StateHolder) {
@@ -21,7 +22,14 @@ class Controller constructor(stateHolder: StateHolder) {
                 "message" to e.message,
                 "stackTrace" to e.stackTrace.joinToString("\n")
             )
-            ctx.json(mapOf("errors" to listOf(payload)))
+
+            if (Helper.build(ctx).isHTMLResponseExpected()){
+                val html = FileInputStream("src/main/resources/views/errorPage.html").bufferedReader().use { it.readText() }
+                ctx.html(html)
+            }
+            else {
+                ctx.json(mapOf("errors" to listOf(payload)))
+            }
         }
 
 
@@ -38,7 +46,15 @@ class Controller constructor(stateHolder: StateHolder) {
                     }
                     else {
                         val result = mapOf("errors" to executionResult.errors);
-                        ctx.json(result)
+                        //ctx.json(result)
+
+                        if (Helper.build(ctx).isHTMLResponseExpected()){
+                            val html = FileInputStream("src/main/resources/views/errorPage.html").bufferedReader().use { it.readText() }
+                            ctx.html(html)
+                        }
+                        else {
+                            ctx.json(result)
+                        }
                     }
                 }
             }
@@ -53,7 +69,11 @@ class Controller constructor(stateHolder: StateHolder) {
                 }
                 else {
                     val result = mapOf("errors" to executionResult.errors);
-                    ctx.json(result)
+                    //ctx.json(result)
+
+                    Helper.build(ctx).renderErrorPage(result)
+
+
                 }
 
             }
