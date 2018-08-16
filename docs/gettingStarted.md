@@ -27,20 +27,12 @@ More detail on building and running under Docker is [here](docker)._
 
 ## What URL? 
 
-By default the service starts on port 7002, so running natively the base url is below (this is assumed in the 
-examples below)
+By default the service starts on port 7002, so running natively the base url is: <code>http://localhost:7002</code> 
 
-<code>http://localhost:7002</code> 
+The convention under Docker Compose will be: <code>http://graph-store:7002</code>, but depending 
+upon how Docker is setup it may also be available on localhost 
 
-The convention under Docker compose will be
-
-<code>http://graph-store:7002</code>
-
-but depending upon how docker is setup it may also be available on localhost 
-
-The running test instance is at 
-
-<code>https://graphstore.app</code>
+The running test instance is at: <code>https://graphstore.app</code>
 
 ## Setting up a Schema
 
@@ -48,7 +40,8 @@ The first step is to register a schema associated with one or more documents. Th
 format. The examples here are all based on the [Star Wars](https://github.com/apollographql/starwars-server/blob/master/data/swapiSchema.js) 
 schema from the GraphQL demos.
 
-By default the service will start with a version of the star wars schema, and this can be viewed with 
+By default the service will start with a version of the star wars schema with some default data. 
+This can be viewed with 
 
 ```bash
 curl -X GET http://localhost:7002/schema
@@ -127,7 +120,7 @@ document in JSON could be:
 Generally each document can be considered similar to a [DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html).
 Its not an exacting mapping, see [Comparison to DDD](comparisonToDDD). 
 
-Also, its a little bit like a very simple document database, see [Comparison to MongoDB](comparisonToMongo.md)
+Also, its a little bit like a very simple document database, see [Comparison to MongoDB](comparisonToMongo)
 
 ## Storing data 
 
