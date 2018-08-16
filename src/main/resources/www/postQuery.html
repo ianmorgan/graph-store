@@ -42,9 +42,13 @@
 
             <form method="POST" action="/graphql">
 
-                <textarea rows="20" cols="128" name="payload">
+                <input type="submit" value="Run Query"></input>
+                <textarea rows="15" cols="128" name="payload">
     {droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends{name},starships{name,manufacturer}}}
                 </textarea>
+                Response Type:<select name="responseType">
+                <option value="json">JSON</option>
+                <option value="html" selected="selected">HTML</option></select></br>
                 <input type="submit" value="Run Query"></input>
             </form>
 

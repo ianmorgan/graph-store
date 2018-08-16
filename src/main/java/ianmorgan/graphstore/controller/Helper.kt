@@ -55,13 +55,11 @@ class CtxHelper constructor(context : Context){
 
             // can never be HTML if JSON specified as an accept type
             for (type in acceptTypes) {
-                println(type)
                 if (type == "application/json") return false;
             }
 
             // have explicitly asked for HTML encoding
             for (type in acceptTypes) {
-                println(type)
                 if (type == "html/text") return true;
             }
         }
@@ -69,6 +67,8 @@ class CtxHelper constructor(context : Context){
 
         // final test - was the original request from a form submission ?
         if ("application/x-www-form-urlencoded" == ctx.request().getHeader("content-type")) {
+            if ("html".equals(ctx.formParam("responseType"))) return true
+            if ("json".equals(ctx.formParam("responseType"))) return false
             return true;
         }
 
