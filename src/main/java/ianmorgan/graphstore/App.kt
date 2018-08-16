@@ -2,6 +2,7 @@ package ianmorgan.graphstore
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.github.mustachejava.DefaultMustacheFactory
 import ianmorgan.graphstore.controller.AdminController
 import ianmorgan.graphstore.controller.Controller
@@ -53,7 +54,7 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
 
         val mapper = ObjectMapper()
         //.writerWithDefaultPrettyPrinter()
-        //mapper.s(DefaultPrettyPrinter())
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         JavalinJacksonPlugin.configure(mapper)
 
         // Mustache template handling.

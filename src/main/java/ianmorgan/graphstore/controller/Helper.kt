@@ -4,6 +4,7 @@ import graphql.validation.ValidationError
 import groovy.lang.Binding
 import groovy.lang.GroovyShell
 import io.javalin.Context
+import io.javalin.translator.json.JavalinJacksonPlugin
 import java.io.FileInputStream
 
 class CtxHelper constructor(context : Context){
@@ -42,8 +43,6 @@ class CtxHelper constructor(context : Context){
 
     fun isHTMLResponseExpected() : Boolean {
 
-        //return false;
-
         // explicit with query param
         if ("html".equals(ctx.queryParam("responseType"))) return true
         if ("json".equals(ctx.queryParam("responseType"))) return false
@@ -69,6 +68,7 @@ class CtxHelper constructor(context : Context){
         if ("application/x-www-form-urlencoded" == ctx.request().getHeader("content-type")) {
             if ("html".equals(ctx.formParam("responseType"))) return true
             if ("json".equals(ctx.formParam("responseType"))) return false
+            // defaults to HTML for <FORM>
             return true;
         }
 
@@ -77,8 +77,10 @@ class CtxHelper constructor(context : Context){
         return false;
     }
 
+    /**
+     * Renders errors nicely in either HTML or JSON format
+     */
     fun renderErrorPage(data : Map<String,Any>) {
-
 
         if (Helper.build(ctx).isHTMLResponseExpected()){
             val presentableErrors = ArrayList<Map<String,Any>>()
@@ -112,7 +114,17 @@ class CtxHelper constructor(context : Context){
         }
     }
 
+    fun renderResultsPage(data : Map<String,Any>) {
+        if (Helper.build(ctx).isHTMLResponseExpected()) {
+            val json = JavalinJacksonPlugin.toJson(data)
+            ctx.renderMustache("/resultsPage.html", mapOf("json" to  json))
+        } else {
+            ctx.json(data)
+        }
+    }
 }
+
+
 object Helper{
 
     fun build(ctx : Context) : CtxHelper {

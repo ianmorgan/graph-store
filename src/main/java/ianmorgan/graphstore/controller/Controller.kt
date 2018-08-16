@@ -65,15 +65,11 @@ class Controller constructor(stateHolder: StateHolder) {
                 val executionResult = stateHolder.graphQL().execute(query)
                 if (executionResult.errors.isEmpty()){
                     val result = mapOf("data" to executionResult.getData<Any>());
-                    ctx.json(result)
+                    Helper.build(ctx).renderResultsPage(result)
                 }
                 else {
                     val result = mapOf("errors" to executionResult.errors);
-                    //ctx.json(result)
-
                     Helper.build(ctx).renderErrorPage(result)
-
-
                 }
 
             }
