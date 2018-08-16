@@ -27,6 +27,21 @@ Only GET, POST and DELETE are used.
 POST is for any operation that will modify data (apart from DELETE) and non-modifying operations that require 
 JSON data (generally either because of the size or complexity of the required parameters).
 
+## Working with multiple types of agent  
+
+For ease of development with different agents (browsers, CURL and HTTP libraries) the APIs are quite flexible 
+in the ways in which they process requests, for example data 
+can be posted in a form param or as the request body, and use of both GET and POST forms is supported 
+where practical. 
+
+Responses are automatically wrapped in an HTML page if it can be inferred that the original request was from
+a browser. 
+
+When using HTTP client libraries at a minimum set the content-type and accepts header to ensure consistent behaviour.
+
+For more detail, refer to the [source code](https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/graphstore/controller/Helper.kt)
+
+
 ## Returning data 
 
 ### 200 response
@@ -55,7 +70,6 @@ This is the convention for including an agreed error code with the message.
 * "stackTrace" : "<<dump of internal call stack as a single multi-line string>>"
 
 Convention for returning the internal stack trace if useful. 
-
 
 ## Client processing 
 

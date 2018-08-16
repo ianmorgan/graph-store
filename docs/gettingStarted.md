@@ -30,17 +30,17 @@ More detail on building and running under Docker is [here](docker)._
 By default the service starts on port 7002, so running natively the base url is below (this is assumed in the 
 examples below)
 
-http://localhost:7002 
+<code>http://localhost:7002</code> 
 
 The convention under Docker compose will be
 
-http://graph-store:7002
+<code>http://graph-store:7002</code>
 
 but depending upon how docker is setup it may also be available on localhost 
 
 The running test instance is at 
 
-https://graphstore.app
+<code>https://graphstore.app</code>
 
 ## Setting up a Schema
 
@@ -140,7 +140,7 @@ curl -H "Content-Type: application/json" -X POST  http://localhost:7002/docs/Dro
 
 The service performs a basic schema check of the submitted JSON doc and confirms that structure and 
 data types match the GraphQL schema, but it does not validate mandatory fields nor any relationship between 
-types. 
+fields. 
 
 To update, simply pass a fragment. If a field should be removed, set its value to null. 
 
@@ -171,8 +171,8 @@ returns
 
 Of course, the whole point of GraphQL is to make issuing queries easier. 
 
-   <a href="/graphql?query={droid(id: &quot;2001&quot;){name,primaryFunction,appearsIn,friends{name},starships{name,manufacturer}}}">R2-D2</a>
-            <p> There is a simple <a href="/postQuery.html">HTML form</a> for basic testing.</p>
+```bash
+curl -X POST -H "Content-Type: application/json" http://localhost:7002/graphql -d '{droid(id: "2001"){name,primaryFunction,appearsIn,friends{name},starships{name,manufacturer}}}'
+``` 
 
- 
-
+Any valid GraphQL query can be passed. 

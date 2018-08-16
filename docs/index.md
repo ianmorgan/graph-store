@@ -22,7 +22,7 @@ The inbuilt query model is quite basic. The intention is that as more complex qu
 required other services will monitor the event stream(s) and aggregate data to build dedicated views 
 using the appropriate technology.
 
-To get working quickly, follow the getting started [Getting Started](getting-started) guide. 
+To get working quickly, follow the getting started [Getting Started](gettingStarted) guide. 
 
 For more detail: 
 
