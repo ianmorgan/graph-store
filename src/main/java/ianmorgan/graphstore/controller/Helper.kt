@@ -1,5 +1,6 @@
 package ianmorgan.graphstore.controller
 
+import graphql.validation.ValidationError
 import groovy.lang.Binding
 import groovy.lang.GroovyShell
 import io.javalin.Context
@@ -76,13 +77,38 @@ class CtxHelper constructor(context : Context){
         return false;
     }
 
-    fun renderErrorPage(error : Map<String,Any>) {
+    fun renderErrorPage(data : Map<String,Any>) {
+
 
         if (Helper.build(ctx).isHTMLResponseExpected()){
-            ctx.renderMustache("/errorPage.html", error)
+            val presentableErrors = ArrayList<Map<String,Any>>()
+
+            val rawErrors = data.get("errors") as List<Any>
+            for (rawError in rawErrors){
+                val presentableError = HashMap<String,Any>()
+                if (rawError is ValidationError) {
+                    presentableError["message"] = rawError.message
+                    if (rawError.locations.isNotEmpty()) {
+                        presentableError["hasLocations"] = true
+                        presentableError["locations"] = rawError.locations
+                    }
+                }
+                if (rawError is Map<*,*>){
+                    presentableError["message"] = rawError["message"] as String
+                    if (rawError.containsKey("stackTrace")){
+                        presentableError["hasStackTrace"] = true
+                        presentableError["stackTrace"] = rawError["stackTrace"] as Any
+                    }
+                }
+
+                presentableErrors.add(presentableError)
+
+            }
+
+            ctx.renderMustache("/errorPage.html", mapOf("errors" to  presentableErrors))
         }
         else {
-            ctx.json(error)
+            ctx.json(data)
         }
     }
 

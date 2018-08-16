@@ -30,9 +30,6 @@ fun main(args: Array<String>) {
     val parser = DefaultParser()
     val cmd = parser.parse(options, args)
 
-    val mf = DefaultMustacheFactory(File("src/main/resources/views"))
-    JavalinMustachePlugin.configure(mf)
-
 
     JavalinApp(7002, cmd).init()
 }
@@ -59,6 +56,9 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         //mapper.s(DefaultPrettyPrinter())
         JavalinJacksonPlugin.configure(mapper)
 
+        // Mustache template handling.
+        val mf = DefaultMustacheFactory("views")
+        JavalinMustachePlugin.configure(mf)
 
         val app = Javalin.create().apply {
             port(port)
@@ -104,8 +104,6 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         AdminController(stateHolder).register(app)
         app.start()
         println("Ready :)")
-
-        //JavalinJacksonPlugin.configure()
 
         return app
 

@@ -57,8 +57,12 @@
 
             {{#errors}}
             <div  class="alert alert-danger">{{message}}</div>
-            <div class="alert alert-secondary"><span style="font-weight:bold">Location: </span>{{locations}}</div>
+            {{#hasLocations}}
+                <div class="alert alert-secondary"><span style="font-weight:bold">Location: </span>{{locations}}</div>
+            {{/hasLocations}}
+            {{#hasStackTrace}}
             <div class="alert alert-secondary"><span style="font-weight:bold">Stack Trace: </span>{{stackTrace}}</div>
+            {{/hasStackTrace}}
             </br>
             {{/errors}}
 
