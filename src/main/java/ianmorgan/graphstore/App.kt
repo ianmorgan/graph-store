@@ -53,8 +53,8 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
         }
 
         val mapper = ObjectMapper()
-        //.writerWithDefaultPrettyPrinter()
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        //mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         JavalinJacksonPlugin.configure(mapper)
 
         // Mustache template handling.
