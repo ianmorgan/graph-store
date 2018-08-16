@@ -27,6 +27,8 @@ To get working quickly, follow the getting started [Getting Started](gettingStar
 For more detail: 
 
 * [Command Line Options](commandLineOptions)
+* [Comparison to DDD](comparisonToDDD)
+* [Comparison to MongoDB](comparisonToMongo)
 * [Data Access](daos)
 * [Docker](docker)
 * [External Data](externalData)

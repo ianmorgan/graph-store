@@ -2,7 +2,7 @@
 
 ## Running 
 
-To run locally with an in memory event-store and default star wars schema
+To run locally with an in memory event-store and the default star wars schema
 
 ```bash
 ./gradlew run
@@ -125,7 +125,9 @@ document in JSON could be:
 ```
 
 Generally each document can be considered similar to a [DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html).
-Its not an exacting mapping, see [Relationship to DDD](relationshipToDDD). 
+Its not an exacting mapping, see [Comparison to DDD](comparisonToDDD). 
+
+Also, its a little bit like a very simple document database, see [Comparison to MongoDB](comparisonToMongo.md)
 
 ## Storing data 
 
