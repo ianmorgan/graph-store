@@ -2,7 +2,6 @@ package ianmorgan.graphstore.dal
 
 object DocReducer {
 
-
     fun reduceEvents (docType: String, events :  List<Map<String, Any>>) : Map<String,Any>?{
         // Simple reduce using inbuilt Kotlin methods for now
         // will not cover the more complicated scenarios

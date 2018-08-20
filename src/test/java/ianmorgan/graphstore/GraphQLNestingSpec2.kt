@@ -7,6 +7,7 @@ import ianmorgan.graphstore.dal.DocsDao
 import ianmorgan.graphstore.graphql.GraphQLFactory
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
+import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.xit
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
@@ -37,7 +38,7 @@ object GraphQLNestingSpec2 : Spek({
         xit("should return friends of friends ") {
             // testing query, but no nesting
             val query = """
-                {droid(id: "2001"){name,friends{name,friends{name}}}}
+                {droid(id: "2001"){name,friends{name,friends(first: 2){name}}}}
 """
             val result = graphQL.execute(query)
             val expected = """
@@ -61,12 +62,11 @@ object GraphQLNestingSpec2 : Spek({
             """.trimIndent()
 
             assert.that(result.errors.isEmpty(), equalTo(true))
-            //  assert.that(
-            //      result.getData<Any>().toString(),
-            //      equalTo(expected)
-            //  )
+            assert.that(
+                  result.getData<Any>().toString(),
+                  equalTo(expected)
+              )
         }
-
 
     }
 })

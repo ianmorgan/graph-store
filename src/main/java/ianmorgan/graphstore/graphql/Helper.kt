@@ -1,10 +1,7 @@
 package ianmorgan.graphstore.graphql
 
 import graphql.language.*
-import graphql.schema.DataFetchingFieldSelectionSet
-import graphql.schema.GraphQLFieldDefinition
-import graphql.schema.GraphQLNonNull
-import graphql.schema.GraphQLObjectType
+import graphql.schema.*
 import graphql.schema.idl.TypeDefinitionRegistry
 
 /**
@@ -205,6 +202,7 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
 
 }
 
+
 class DataFetchingFieldSelectionSetHelper constructor(selectionSet : DataFetchingFieldSelectionSet){
     val selectionSet = selectionSet
 
@@ -216,6 +214,8 @@ class DataFetchingFieldSelectionSetHelper constructor(selectionSet : DataFetchin
         }
         return null;
     }
+
+
 }
 
 

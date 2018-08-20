@@ -47,7 +47,6 @@ class DocDao constructor(
         val id = doc.get(aggregateKey)
         if (id is String) {
             checkAgainstSchema(doc, validatorMode)
-
             es.storeEvent(buildUpdateEvent(id, doc))
         } else {
             throw RuntimeException("must have an aggregate id")

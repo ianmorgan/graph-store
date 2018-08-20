@@ -26,6 +26,15 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
 
         val argsHelper = Helper.build(env.selectionSet)
 
+        val args = env.selectionSet.arguments
+
+        println (args.keys)
+
+        val defs = env.selectionSet.definitions
+
+        println (defs.keys)
+
+
         if (data != null) {
             val helper = Helper.build(typeDefinition)
             for (f in helper.listTypeFieldNames()) {
@@ -33,10 +42,10 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
                 val typeName = helper.typeForField(f)
 
                 // is this an embedded doc
-                fetchEmbeddedDoc(typeName, data, f,argsHelper)
+                fetchEmbeddedDoc(typeName, data, f,argsHelper, args)
 
                 // is this an embedded interface
-                fetchEmebbedInterface(typeName, data, f, argsHelper)
+                fetchEmbeddedInterface(typeName, data, f, argsHelper, args)
 
             }
 
@@ -57,7 +66,8 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         typeName: String?,
         data: HashMap<String, Any>,
         field: String,
-        fieldSetHelper : DataFetchingFieldSelectionSetHelper
+        fieldSetHelper : DataFetchingFieldSelectionSetHelper,
+        args : Map<String,Map<String,Any>>
     ) {
         if (dao.availableDocs().contains(typeName)) {
             var ids = data.getOrDefault(field, emptyList<String>()) as List<String>
@@ -76,11 +86,12 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         }
     }
 
-    private fun fetchEmebbedInterface(
+    private fun fetchEmbeddedInterface(
         typeName: String?,
         data: HashMap<String, Any>,
         field: String,
-        fieldSetHelper : DataFetchingFieldSelectionSetHelper
+        fieldSetHelper : DataFetchingFieldSelectionSetHelper,
+        args : Map<String,Map<String,Any>>
 
     ) {
         if (dao.availableInterfaces().contains(typeName)) {
@@ -92,9 +103,9 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
 
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
-                val x = lookupInterfaceById(typeName!!, theId)
-                if (x != null) {
-                    expanded.add(x)
+                val ex = lookupInterfaceById(typeName!!, theId)
+                if (ex != null) {
+                    expanded.add(ex)
                 }
             }
             data.put(field, expanded)
