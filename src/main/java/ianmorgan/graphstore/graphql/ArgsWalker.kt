@@ -41,7 +41,7 @@ class ArgsWalker constructor(path : String, args : Map<String,Map<String,Any>>, 
     }
 
     /**
-     * Walk down into the node
+     * Walk down into the (child) node.
      *
      * @param path - The path, can be with or without the trailing slash (same basic
      *               rules as directory listing in bash), e.g. "friends" or "friends/"
@@ -59,5 +59,25 @@ class ArgsWalker constructor(path : String, args : Map<String,Map<String,Any>>, 
 
         return ArgsWalker(standardPath, working, this)
     }
+
+
+    /**
+     *
+     */
+    fun children() : List<ArgsWalker> {
+        val working = ArrayList<ArgsWalker>()
+        val nodes = HashSet<String>()
+        for (key in args.keys){
+            if (key.contains("/") ){
+                val path = key.split("/")[0]
+                if (!nodes.contains(path)) {
+                    working.add(this.walkPath(path));
+                    nodes.add(path)
+                }
+            }
+        }
+        return working;
+    }
+
 
 }

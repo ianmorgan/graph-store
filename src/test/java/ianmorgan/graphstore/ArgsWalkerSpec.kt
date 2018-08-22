@@ -2,6 +2,8 @@ package ianmorgan.graphstore
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
+import com.natpryce.hamkrest.absent
+
 import ianmorgan.graphstore.graphql.ArgsWalker
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -15,7 +17,9 @@ object ArgsWalkerSpec : Spek({
     val example = mapOf(
         "name" to emptyMap<String, Any>(),
         "friends" to mapOf("length" to 10),
-        "friends/name" to emptyMap()
+        "friends/name" to emptyMap(),
+        "starships" to emptyMap(),
+        "starships/model" to emptyMap()
     )
 
     describe("walking the query args") {
@@ -35,9 +39,16 @@ object ArgsWalkerSpec : Spek({
 
             assert.that(root.args(), equalTo(example))
             assert.that(root.path(), equalTo("/"))
+            assert.that(root.parent(), absent())
+        }
 
-            // how to do a null check using hamcrest
-            //assert.that(root.parent(), nothing)
+        it("should list children") {
+            val root = ArgsWalker("/", example)
+            val children = root.children()
+
+            assert.that(children.size, equalTo(2))
+            assert.that(children[0].path(), equalTo("friends"))
+            assert.that(children[1].path(), equalTo("starships"))
         }
 
     }

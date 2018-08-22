@@ -27,6 +27,7 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         val argsHelper = Helper.build(env.selectionSet)
 
         val args = env.selectionSet.arguments
+        val walker = ArgsWalker("/",args)
 
         println (args.keys)
 
@@ -42,10 +43,10 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
                 val typeName = helper.typeForField(f)
 
                 // is this an embedded doc
-                fetchEmbeddedDoc(typeName, data, f,argsHelper, args)
+                fetchEmbeddedDoc(typeName, data, f, walker)
 
                 // is this an embedded interface
-                fetchEmbeddedInterface(typeName, data, f, argsHelper, args)
+                fetchEmbeddedInterface(typeName, data, f, walker)
 
             }
 
@@ -62,22 +63,37 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         return data
     }
 
+    /**
+     * Fetch embedded docs, i.e. given a set of one or more ids expand those by fetching
+     * the actual data via its DAO.
+     *
+     * As an example using the starwars_ex schema, the query
+     * "{droid(id: "2001"){name,starships{name,manufacturer}}}"
+     *
+     * will initially return an array of ids for starships and this would
+     * replace them with actual data.
+     *
+     * @param docType The docType, as used by the DAO layer. This is also the same as the 'type' name
+     *                in the GraphQL schema, e.g. 'Droid'
+     * @param data    A HashMap with the data. This will be updated with the retrieved doc(s)
+     * @param field   The field to be replaced with the actual data
+     *
+     */
     private fun fetchEmbeddedDoc(
-        typeName: String?,
+        docType: String?,
         data: HashMap<String, Any>,
         field: String,
-        fieldSetHelper : DataFetchingFieldSelectionSetHelper,
-        args : Map<String,Map<String,Any>>
+        walker : ArgsWalker
     ) {
-        if (dao.availableDocs().contains(typeName)) {
+        if (dao.availableDocs().contains(docType)) {
             var ids = data.getOrDefault(field, emptyList<String>()) as List<String>
             data.put("$" + field + "Raw" ,ids)  // preserve the raw values
 
-            val filtered  = applyPaginationFilters(fieldSetHelper, field, ids)
+            val filtered  = applyPaginationFilters(field, ids, walker)
 
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
-                val x = lookupDocById(typeName!!, theId)
+                val x = lookupDocById(docType!!, theId)
                 if (x != null) {
                     expanded.add(x)
                 }
@@ -90,8 +106,7 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         typeName: String?,
         data: HashMap<String, Any>,
         field: String,
-        fieldSetHelper : DataFetchingFieldSelectionSetHelper,
-        args : Map<String,Map<String,Any>>
+        walker : ArgsWalker
 
     ) {
         if (dao.availableInterfaces().contains(typeName)) {
@@ -99,7 +114,7 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
             data.put("$" + field + "Raw" ,ids)  // preserve the raw values
 
             // process argument to the collections
-            val filtered = applyPaginationFilters(fieldSetHelper, field, ids)
+            val filtered = applyPaginationFilters(field, ids, walker)
 
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
@@ -114,12 +129,13 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
     }
 
     private fun applyPaginationFilters(
-        fieldSetHelper: DataFetchingFieldSelectionSetHelper,
         field: String,
-        ids: List<String>
+        ids: List<String>,
+        walker : ArgsWalker
     ): List<String> {
         var result = ids
-        val args = fieldSetHelper.argsForField(field)
+        //val args = fieldSetHelper.argsForField(field)
+        val args = walker.args()[field]
         if (args != null) {
             if (args.containsKey("first")) {
                 val first = args.get("first") as Int
