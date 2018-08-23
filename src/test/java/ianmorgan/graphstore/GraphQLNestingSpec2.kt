@@ -18,7 +18,7 @@ import java.io.FileInputStream
 @RunWith(JUnitPlatform::class)
 object GraphQLNestingSpec2 : Spek({
 
-    val starWarSchema = FileInputStream("src/schema/starwars.graphqls").bufferedReader().use { it.readText() }
+    val starWarSchema = FileInputStream("src/schema/starwars_ex.graphqls").bufferedReader().use { it.readText() }
     lateinit var docsDao: DocsDao
     lateinit var graphQL: GraphQL
 
@@ -38,7 +38,8 @@ object GraphQLNestingSpec2 : Spek({
         xit("should return friends of friends ") {
             // testing query, but no nesting
             val query = """
-                {droid(id: "2001"){name,friends{name,friends(first: 2){name}}}}
+                {droid(id: "2001"){name,starships{name,model},friends{name,friends(first: 2){name}}}}
+
 """
             val result = graphQL.execute(query)
             val expected = """

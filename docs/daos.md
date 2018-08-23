@@ -1,7 +1,7 @@
-# Data Access 
+# Data Access (DAO)
 
-The basics of document storage are managed by a number of generic data access layer (referred to as Data Access Objects or DAO)
- in the implementation code.
+The basics of document storage are managed by a number of generic data access layer 
+(referred to as Data Access Objects or DAO) in the implementation code.
 
 Individual documents are controlled by the 
 [DocDao](https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/graphstore/DocDao.kt), 

@@ -5,6 +5,7 @@ import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.idl.TypeRuntimeWiring
 import ianmorgan.graphstore.dal.DocsDao
+import org.json.JSONObject
 import java.util.HashMap
 
 /**
@@ -30,6 +31,8 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         val walker = ArgsWalker("/",args)
 
         println (args.keys)
+
+        println (JSONObject(args).toString(2))
 
         val defs = env.selectionSet.definitions
 
@@ -77,6 +80,7 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
      *                in the GraphQL schema, e.g. 'Droid'
      * @param data    A HashMap with the data. This will be updated with the retrieved doc(s)
      * @param field   The field to be replaced with the actual data
+     * @param walker  The ArgsWalker, used to recursively extract the fields & args passed to the query.
      *
      */
     private fun fetchEmbeddedDoc(
@@ -102,18 +106,33 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         }
     }
 
+    /**
+     * Fetch embedded interface, i.e. given a set of one or more ids expand those by fetching
+     * the actual data via its DAO.
+     *
+     * As an example using the starwars_ex schema, the query
+     * "{droid(id: "2001"){name,friends{name}}}"
+     *
+     * will initially return an array of ids for friends and this would
+     * replace them with actual data.
+     *
+     * @param docType The docType, as used by the DAO layer. This is also the same as the 'type' name
+     *                in the GraphQL schema, e.g. 'Droid'
+     * @param data    A HashMap with the data. This will be updated with the retrieved doc(s)
+     * @param field   The field to be replaced with the actual data
+     * @param walker  The ArgsWalker, used to recursively extract the fields & args passed to the query.
+     *
+     */
     private fun fetchEmbeddedInterface(
         typeName: String?,
         data: HashMap<String, Any>,
         field: String,
         walker : ArgsWalker
-
     ) {
         if (dao.availableInterfaces().contains(typeName)) {
             val ids = data.getOrDefault(field, emptyList<String>()) as List<String>
             data.put("$" + field + "Raw" ,ids)  // preserve the raw values
 
-            // process argument to the collections
             val filtered = applyPaginationFilters(field, ids, walker)
 
             val expanded = ArrayList<Map<String, Any>>()
@@ -124,6 +143,22 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
                 }
             }
             data.put(field, expanded)
+
+            val children = walker.children()
+            val helper = Helper.build(typeDefinition)
+//            for (child in children){
+//
+//                val f = child.path()// todo - need to return the end of the path
+//
+//
+//                val typeName = helper.typeForField(f)
+//
+//                // is this an embedded doc
+//                //fetchEmbeddedDoc(typeName, data, f, child)
+//
+//                // is this an embedded interface
+//                fetchEmbeddedInterface(typeName, data, f, child)
+//            }
 
         }
     }

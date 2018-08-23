@@ -29,10 +29,12 @@ For more detail:
 * [Command Line Options](commandLineOptions)
 * [Comparison to DDD](comparisonToDDD)
 * [Comparison to MongoDB](comparisonToMongo)
-* [Data Access](daos)
+* [Data Access (DAO)](daos)
 * [Docker](docker)
 * [External Data](externalData)
 * [(GraphQL)Fetchers](fetchers)
+* [Query Processing Steps](queryProcessingSteps)
+
 * [Type Mappings](typeMappings) 
 * [REST API](restAPI)
 * [Standards](standards)
