@@ -10,15 +10,15 @@ The query:
 
 Will be processed as follows: 
 
-A [DocDataFetcher[(https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/graphstore/graphql/DocDataFetcher.kt)] 
+A [DocDataFetcher](https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/graphstore/graphql/DocDataFetcher.kt)] 
 for Droid will have been wired automatically by convention based on the 
 return type of Droid in the GraphQL schema. When processing the query, GraphQL Java will call the
-standard get() method which is passed the GraphQL Java 
+standard <code>get()</code> method which is passed the GraphQL Java 
 'DataFetchingEnvironment' object. This has enough information to understand that this is a simple 
 lookup by ID. 
 
 GraphQL will also provide the following map of query args, which is basically the query converted to 
-a Map. It has all the information apart from the entry to the query, 'droid(id: "2001")' 
+a Map. It has all the information apart from the entry to the query, <pre>'droid(id: "2001")'</pre> 
 
 ```json
 {
