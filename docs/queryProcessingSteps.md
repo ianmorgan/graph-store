@@ -4,14 +4,16 @@ To process a query, the [Data Access(DAO)](daos) and [(GraphQL)Fetchers](fetcher
  
 The query: 
 
-```json
+```
 {droid(id: "2001"){name,starships{name,model},friends{name,friends(first: 2){name}}}}
 ``` 
 
 Will be processed as follows: 
 
-A 'DocDataFetcher' for Droid will have been wired automatically by convention based on the 
-return type of Droid and  will call the standard get() method which is passed the GraphQLJave 
+A [DocDataFetcher[(https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/graphstore/graphql/DocDataFetcher.kt)] 
+for Droid will have been wired automatically by convention based on the 
+return type of Droid in the GraphQL schema. When processing the query, GraphQL Java will call the
+standard get() method which is passed the GraphQL Java 
 'DataFetchingEnvironment' object. This has enough information to understand that this is a simple 
 lookup by ID. 
 
@@ -49,12 +51,12 @@ query args instead. The steps in summary are:
 * find the docs we need to expand out by looking for the unique nodes in the args, in this case 'starships' and 'friends'
 * for each of these rebuild a simpler set of args that represent the doc in question
 * retrieve data and merge into the original map, replacing the IDs with real data
-* recurse as necessary, e.g. friends of friends needs this.
+* recurse as necessary, e.g. finding friends of friends .
 
 The [ArgsWalker](https://github.com/ianmorgan/graph-store/blob/master/src/main/java/ianmorgan/graphstore/graphql/ArgsWalker.kt)
 encapsulates the rules necessary to 'walk' though the args - its really quite similar to walking a directory tree.
 
-To retrieve data for the 'starships', using the ArgsWalker the 'starship' node is rewritten as 
+To retrieve data for the 'starships', using the ArgsWalker the node is rewritten as 
 ```json
 {
   "name": {},
@@ -62,7 +64,7 @@ To retrieve data for the 'starships', using the ArgsWalker the 'starship' node i
 }
 ```
 
-And a call is made to Starship DAO for each starship ID. After this , the data looks like 
+And a call is made to the Starship DAO for each starship ID. After this, the data looks like 
 
 ```json
 {
@@ -109,8 +111,8 @@ friends. So the data now looks like.
  }
 ```
 
-To retrieve the friends of friends futher calls are required. Using the ArgsWalker, the args below are build. Note 
-that in this case a root node ("/") has been added as there parameters to be passed into the query. 
+To retrieve the friends of friends futher calls are required. Using the ArgsWalker, the args below are built. Note 
+that in this case a root node ("/") has been added as there are parameters to be passed into the query. 
 
 ```json
 {

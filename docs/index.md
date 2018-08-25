@@ -34,7 +34,6 @@ For more detail:
 * [External Data](externalData)
 * [(GraphQL)Fetchers](fetchers)
 * [Query Processing Steps](queryProcessingSteps)
-
 * [Type Mappings](typeMappings) 
 * [REST API](restAPI)
 * [Standards](standards)
