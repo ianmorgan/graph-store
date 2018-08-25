@@ -45,11 +45,16 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
 
                 val typeName = helper.typeForField(f)
 
-                // is this an embedded doc
-                fetchEmbeddedDoc(typeName, data, f, walker)
+                if (walker.hasChild(f)) {
 
-                // is this an embedded interface
-                fetchEmbeddedInterface(typeName, data, f, walker)
+                    val child = walker.walkPath(f)
+
+                    // is this an embedded doc
+                    fetchEmbeddedDoc(typeName, data, f, child)
+
+                    // is this an embedded interface
+                    fetchEmbeddedInterface(typeName, data, f, child)
+                }
 
             }
 
@@ -95,15 +100,56 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
 
             val filtered  = applyPaginationFilters(field, ids, walker)
 
+
+
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
                 val x = lookupDocById(docType!!, theId)
                 if (x != null) {
+                    if (walker.children().isNotEmpty()){
+                        println (" ** LOOK FOR SOME CHILDREN ** ")
+                        for (child in walker.children()) {
+                            fetchEmbeddedInterface2(x, child)
+                        }
+                    }
                     expanded.add(x)
                 }
             }
             data.put(field, expanded)
         }
+    }
+
+    private fun fetchEmbeddedInterface2(data: HashMap<String, Any>, walker: ArgsWalker) {
+        val field = walker.path()
+        val ids = data[field] as List<String>?
+        if (ids != null){
+            println ("fetching ids " + ids)
+            data.put("$" + field + "Raw" ,ids)  // preserve the raw values
+
+            val filtered = applyPaginationFilters(field, ids, walker)
+
+
+            val helper = Helper.build(typeDefinition)
+            val docType = helper.typeForField(field)
+
+
+            val expanded = ArrayList<Map<String, Any>>()
+            for (theId in filtered) {
+                val x = lookupInterfaceById(docType!!, theId)
+                if (x != null) {
+//                    if (walker.children().isNotEmpty()){
+//                        println (" ** LOOK FOR SOME CHILDREN ** ")
+//                        for (child in walker.children()) {
+//                            fetchEmbeddedInterface2(x, child)
+//                        }
+//                    }
+                    expanded.add(x)
+                }
+            }
+            data[field] = expanded
+
+        }
+
     }
 
     /**
@@ -138,7 +184,15 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
                 val ex = lookupInterfaceById(typeName!!, theId)
+
+                if (walker.children().isNotEmpty()){
+                    println (" ** LOOK FOR SOME CHILDREN ** ")
+
+                }
                 if (ex != null) {
+                    for (child in walker.children()) {
+                        fetchEmbeddedInterface2(ex, child)
+                    }
                     expanded.add(ex)
                 }
             }
@@ -170,7 +224,7 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
     ): List<String> {
         var result = ids
         //val args = fieldSetHelper.argsForField(field)
-        val args = walker.args()[field]
+        val args = walker.args()["/"]
         if (args != null) {
             if (args.containsKey("first")) {
                 val first = args.get("first") as Int

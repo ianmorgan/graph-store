@@ -5,10 +5,8 @@ import graphql.Scalars.GraphQLID
 import graphql.Scalars.GraphQLString
 import graphql.TypeResolutionEnvironment
 import graphql.language.*
+import graphql.schema.*
 import graphql.schema.GraphQLFieldDefinition.newFieldDefinition
-import graphql.schema.GraphQLObjectType
-import graphql.schema.GraphQLScalarType
-import graphql.schema.TypeResolver
 import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
@@ -168,11 +166,14 @@ object GraphQLFactory {
             )
         }
 
+
         // build the complete GraphQL object
         val wiring = builder.build()
         val schemaGenerator = SchemaGenerator()
         val graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, wiring)
         val graphQL = GraphQL.newGraphQL(graphQLSchema).build()
+
+
         return graphQL
     }
 
@@ -197,7 +198,7 @@ object GraphQLFactory {
                     newFieldDefinition()
                         .name(f.name)
                         //.description()
-                        .type(typeFromType(f.type))
+                        .type(typeFromType(f.type,this))
                 )
             }
             return builder.build()
@@ -205,13 +206,52 @@ object GraphQLFactory {
 
         // Take the schema type and convert to one of physical
         // implementation classes
-        private fun typeFromType(type: Type<*>): GraphQLScalarType {
+        private fun typeFromType(type: Type<*>, res: InterfaceTypeResolve): GraphQLOutputType {
             if (type is NonNullType) {
-                if (type is TypeName) {
-                    if (type.name == "ID") {
+                val t = type.type
+                if (t is TypeName) {
+                    if (t.name == "ID") {
                         return GraphQLID
                     }
+
                 }
+                if (t is ListType) {
+                    val tt = t.type
+                    println (tt)
+//                if (t is TypeName) {
+//                    if (t.name == "ID") {
+//                        return GraphQLID
+//                    }
+//                }
+                    return GraphQLList(GraphQLString)
+                }
+            }
+            if (type is ListType){
+                val t = type.type
+                println (t)
+                if (t is TypeName){
+                    println ("its an interface!")
+
+                    if (t.name == "Character") {
+                        var x = GraphQLInterfaceType.Builder()
+                            .name("Character")
+                            .description("wibble")
+                            .typeResolver(res)
+                            .build()
+
+                        // todo - need to wiring in an interface handler
+                        return GraphQLList(x)
+                    }
+                }
+//                if (t is TypeName) {
+//                    if (t.name == "ID") {
+//                        return GraphQLID
+//                    }
+//                }
+                return GraphQLList (GraphQLString)
+            }
+            else {
+
             }
             return GraphQLString
         }

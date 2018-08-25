@@ -48,6 +48,9 @@ class ArgsWalker constructor(path : String, args : Map<String,Map<String,Any>>, 
      */
     fun walkPath(path : String) : ArgsWalker {
         val standardPath = if (path.endsWith("/")) path else "$path/"
+        val trimmedPath = standardPath.substring(0,standardPath.length-1)
+
+
 
         val working = LinkedHashMap<String,Map<String,Any>>()
         for (key in args.keys){
@@ -55,6 +58,12 @@ class ArgsWalker constructor(path : String, args : Map<String,Map<String,Any>>, 
                 val trimmed = key.substring(standardPath.length)
                 working.put(trimmed,args.get(key)!!);
             }
+        }
+
+        // Add the "/" root node
+        val root = args[trimmedPath]
+        if (root != null && root.isNotEmpty()){
+            working["/"] = root
         }
 
         return ArgsWalker(standardPath, working, this)
@@ -77,6 +86,15 @@ class ArgsWalker constructor(path : String, args : Map<String,Map<String,Any>>, 
             }
         }
         return working;
+    }
+
+    fun hasChild(path : String): Boolean {
+        for (child in children()){
+            if (child.path() == path){
+                return true;
+            }
+        }
+        return false
     }
 
 

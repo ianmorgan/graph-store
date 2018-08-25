@@ -29,7 +29,7 @@ object ArgsWalkerSpec : Spek({
             val root = ArgsWalker("/", example)
             val friends = root.walkPath("friends")
 
-            assert.that(friends.args(), equalTo(mapOf("name" to emptyMap<String, Any>())))
+            assert.that(friends.args(), equalTo(mapOf("/" to  mapOf("length" to 10), "name" to emptyMap()) as Map<String, Map<String, Any>>))
             assert.that(friends.path(), equalTo("friends"))
             assert.that(friends.parent(), equalTo(root))
         }

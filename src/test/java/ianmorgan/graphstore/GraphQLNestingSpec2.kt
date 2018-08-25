@@ -38,12 +38,12 @@ object GraphQLNestingSpec2 : Spek({
         it("should return friends of friends ") {
             // testing query, but no nesting
             val query = """
-                {droid(id: "2001"){name,starships{name,model},friends{name,friends(first: 2){name}}}}
+                {droid(id: "2001"){name,starships{name,model},friends(count:2){name,friends(first: 2){name}}}}
+            """.trimIndent()
 
-"""
             val result = graphQL.execute(query)
             val expected = """
-               {droid={name=R2-D2, starships=[], friends=[{name=Leia Organa, friends=[{name=Luke Skywalker}, {name=Han Solo}, {name=C-3PO}, {name=R2-D2}]}]}}
+                {droid={name=R2-D2, starships=[], friends=[{name=Luke Skywalker, friends=[{name=C-3PO}, {name=R2-D2}]}, {name=Han Solo, friends=[{name=R2-D2}]}]}}
             """.trimIndent()
 
             assert.that(result.errors.isEmpty(), equalTo(true))
