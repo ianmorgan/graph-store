@@ -41,7 +41,7 @@ class InterfaceDataFetcher constructor(
     }
 
     /**
-     * Entrypint when called by GraphQLJava API.
+     * Entry point when called by GraphQLJava API.
      */
     override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
         val id = env.getArgument<String>("id")

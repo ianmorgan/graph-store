@@ -64,6 +64,8 @@ To retrieve data for the 'starships', using the ArgsWalker the node is rewritten
 }
 ```
 
+And node() is <code>starship</code> (which is the information needed to call the correct fetcher)
+
 And a call is made to the Starship DAO for each starship ID. After this, the data looks like 
 
 ```json
