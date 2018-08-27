@@ -102,8 +102,5 @@ object GraphQLNestingSpec : Spek({
                 equalTo("{dir={name=dir1, files=[a, b, c], children=[]}}")
             )
         }
-
-
-
     }
 })
