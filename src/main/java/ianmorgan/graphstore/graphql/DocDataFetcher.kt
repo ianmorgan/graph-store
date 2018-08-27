@@ -59,16 +59,69 @@ class DocDataFetcher constructor(
                     val child = walker.walkPath(field)
 
                     // try as an embedded doc
-                    fetchEmbeddedDoc(typeName, data, field, child)
+                    fetchEmbeddedDocOld(typeName, data, field, child)
 
                     // try as an embedded interface
-                    fetchEmbeddedInterface2(data, child)
+                    //fetchEmbeddedInterface(data, child)
                 }
+            }
+
+            for (child in walker.children()) {
+                // try as an embedded interface
+                fetchEmbeddedInterface(data, child)
             }
 
             applyCountPseudoField(data)
         }
         return data
+    }
+
+
+    /**
+     * Entrypoint when called recursively inside a query (i.e. for nested data). For simplicity of
+     * wiring these bypass the GraphQLJava api and simply pass on the query args (see ArgsWalker),
+     * which has all the information in the original query.
+     */
+    fun get(walker: ArgsWalker) : Map<String, Any>? {
+        val id = walker.args()["/"]!!["id"] as String
+
+        // find by ID
+        val data = lookupDocById(docType, id)
+
+        if (data != null) {
+            //val walker = ArgsWalker(env.selectionSet.arguments)
+           // val helper = Helper.build(typeDefinition)
+
+            // Recurse and find embedded lists
+//            for (field in helper.listTypeFieldNames()) {
+//
+//                val typeName = helper.typeForField(field)
+//
+//                if (walker.hasChild(field)) {
+//
+//                    val child = walker.walkPath(field)
+//
+//                    // try as an embedded doc
+//                    //fetchEmbeddedDocOld(typeName, data, field, child)
+//
+//                    // try as an embedded interface
+//                    //fetchEmbeddedInterface(data, child)
+//                }
+//            }
+
+            for (child in walker.children()) {
+                // try as an embedded interface
+                fetchEmbeddedInterface(data, child)
+
+                // try as a doc
+                fetchEmbeddedDoc(data, child)
+            }
+
+            applyCountPseudoField(data)
+        }
+        return data
+
+
     }
 
     private fun applyCountPseudoField(data: HashMap<String, Any>) {
@@ -82,16 +135,6 @@ class DocDataFetcher constructor(
         }
     }
 
-    private fun applyCountPseudoField(data: HashMap<String, Any>, rawIds:List<String>) {
-        // note that the order in which steps are run is important here
-        for (f in typeDefinition.fieldDefinitions) {
-            if (f.name.endsWith("Count")) {
-//                val rawField = "$" + f.name.replace("Count", "") + "Raw"
-//                val ids = data.getOrDefault(rawField, emptyList<String>()) as List<String>
-                data[f.name] = rawIds.size
-            }
-        }
-    }
 
     /**
      * Fetch embedded docs, i.e. given a set of one or more ids expand those by fetching
@@ -110,7 +153,7 @@ class DocDataFetcher constructor(
      * @param walker  The ArgsWalker, used to recursively extract the fields & args passed to the query.
      *
      */
-    private fun fetchEmbeddedDoc(
+    private fun fetchEmbeddedDocOld(
         docType: String?,
         data: HashMap<String, Any>,
         field: String,
@@ -126,15 +169,14 @@ class DocDataFetcher constructor(
 
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
-                val x = lookupDocById(docType!!, theId)
-                if (x != null) {
+                val ex = lookupDocById(docType!!, theId)
+                if (ex != null) {
                     if (walker.children().isNotEmpty()) {
-                        println(" ** LOOK FOR SOME CHILDREN ** ")
                         for (child in walker.children()) {
-                            fetchEmbeddedInterface2(x, child)
+                            fetchEmbeddedInterface(ex, child)
                         }
                     }
-                    expanded.add(x)
+                    expanded.add(ex)
                 }
             }
             data.put(field, expanded)
@@ -158,7 +200,7 @@ class DocDataFetcher constructor(
      *                (see https://ianmorgan.github.io/graph-store/queryProcessingSteps)
      *
      */
-    private fun fetchEmbeddedInterface2(data: HashMap<String, Any>, walker: ArgsWalker) {
+    private fun fetchEmbeddedInterface(data: HashMap<String, Any>, walker: ArgsWalker) {
         val field = walker.node()
         val helper = Helper.build(typeDefinition)
         val docType = helper.typeForField(field)
@@ -180,13 +222,17 @@ class DocDataFetcher constructor(
             val expanded = ArrayList<Map<String, Any>>()
 
             for (theId in filtered) {
-                val ex = interfaceDataFetcher.get(mapOf("id" to theId))
+                // rewrite the args as we want to retrieve just this ID
+                val nodeWalker = walker.replaceNodeArgs(mapOf("id" to theId))
+
+                val ex = interfaceDataFetcher.get(nodeWalker)
+
                 if (ex != null) {
                     val working = HashMap(ex)
 
                     if (walker.children().isNotEmpty()) {
                         for (child in walker.children()) {
-                            fetchEmbeddedInterface2(working, child)
+                            fetchEmbeddedInterface(working, child)
                         }
                     }
 
@@ -198,7 +244,55 @@ class DocDataFetcher constructor(
             applyCountPseudoField(data)
 
         }
+    }
 
+    private fun fetchEmbeddedDoc(data: HashMap<String, Any>, walker: ArgsWalker) {
+        val field = walker.node()
+        val helper = Helper.build(typeDefinition)
+        val docType = helper.typeForField(field)
+
+        // do nothing - this isn't a doc
+        if (!dao.availableDocs().contains(docType)) {
+            return
+        }
+
+        val ids = data[field] as List<String>?
+        if (ids != null) {
+            data.put("$" + field + "Raw", ids)  // preserve the raw values
+            val filtered = applyPaginationFilters(field, ids, walker)
+
+            val helper = Helper.build(typeDefinition)
+            val helper2 = Helper.build(registry)
+            val docType = helper.typeForField(field)
+            val otd = helper2.objectDefinition(docType!!)
+
+            val interfaceDataFetcher = DocDataFetcher(dao, otd, registry)
+
+            val expanded = ArrayList<Map<String, Any>>()
+
+            for (theId in filtered) {
+                // rewrite the args as we want to retrieve just this ID
+                val nodeWalker = walker.replaceNodeArgs(mapOf("id" to theId))
+
+                val ex = interfaceDataFetcher.get(nodeWalker)
+
+                if (ex != null) {
+                    val working = HashMap(ex)
+
+                    if (walker.children().isNotEmpty()) {
+                        for (child in walker.children()) {
+                            fetchEmbeddedInterface(working, child)
+                        }
+                    }
+
+                    expanded.add(working)
+                }
+            }
+
+            data[field] = expanded
+            applyCountPseudoField(data)
+
+        }
     }
 
 

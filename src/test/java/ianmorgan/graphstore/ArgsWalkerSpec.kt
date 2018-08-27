@@ -72,6 +72,21 @@ object ArgsWalkerSpec : Spek({
             assert.that(children[1].node(), equalTo("starships"))
         }
 
+        it("should replace node args") {
+            val root = ArgsWalker(example)
+            val friends = root.walkPath("friends")
+
+            val aFriend = friends.replaceNodeArgs(mapOf<String,Any>("length" to 10))
+            assert.that(aFriend.hasNodeArgs(),equalTo(true))
+            assert.that(aFriend.args()["/"], equalTo(mapOf<String,Any>("length" to 10)))
+
+            // these should stay unaltered
+            assert.that(aFriend.fullPath(), equalTo(friends.fullPath()))
+            assert.that(aFriend.parent(), equalTo(friends.parent()))
+            assert.that(aFriend.node(), equalTo(friends.node()))
+
+        }
+
     }
 
 })

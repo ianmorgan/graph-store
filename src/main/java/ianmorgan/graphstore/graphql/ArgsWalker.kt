@@ -119,5 +119,24 @@ class ArgsWalker constructor(node : String, args : Map<String,Map<String,Any>>, 
         return node == "root/"
     }
 
+    /**
+     * Is there a set of node specific args under "/" key?
+     */
+    fun hasNodeArgs() : Boolean {
+        if (args.containsKey("/") && args["/"]!!.isNotEmpty()) {
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Update the args associated with the node, but keep everything else the same
+     */
+    fun replaceNodeArgs(rootArgs: Map<String, Any>): ArgsWalker {
+        val updated = HashMap(args)
+        updated["/"] = rootArgs
+        return ArgsWalker(this.node(),updated,this.parent)
+    }
+
 
 }

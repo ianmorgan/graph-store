@@ -22,7 +22,7 @@ class InterfaceDataFetcher constructor(
      * wiring these bypass the GraphQLJava api and simply pass on the query args (see ArgsWalker),
      * which has all the information in the original query.
      */
-    fun get(params: Map<String,Any>): Map<String, Any>? {
+    fun get(params: Map<String, Any>): Map<String, Any>? {
         val id = params["id"] as String
 
         val helper = Helper.build(registry)
@@ -40,24 +40,17 @@ class InterfaceDataFetcher constructor(
         return null;
     }
 
+    fun get(walker: ArgsWalker): Map<String, Any>? {
+        return get(walker.args()["/"]!!)
+    }
+
+
     /**
      * Entry point when called by GraphQLJava API.
      */
     override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
+
         val id = env.getArgument<String>("id")
-
-        val helper = Helper.build(registry)
-        val implementingTypes = helper.objectsImplementingInterface(interfaceName);
-
-        for (doc in daos.availableDocs()) {
-            if (implementingTypes.contains(doc)) {
-                val data = daos.daoForDoc(doc).retrieve(id)
-                if (data != null) {
-                    data.put("#docType", doc)
-                    return data
-                }
-            }
-        }
-        return null;
+        return get(mapOf("id" to id))
     }
 }
