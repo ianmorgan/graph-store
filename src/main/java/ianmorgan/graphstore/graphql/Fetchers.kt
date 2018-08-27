@@ -50,9 +50,9 @@ object Fetcher {
     fun docFetcher(
         docsDao: DocsDao,
         typeDefinition: ObjectTypeDefinition,
-        builder: TypeRuntimeWiring.Builder
+        registry: TypeDefinitionRegistry
     ): DataFetcher<Map<String, Any>?> {
-        return DocDataFetcher(docsDao, typeDefinition, builder)
+        return DocDataFetcher(docsDao, typeDefinition, registry)
     }
 
     /**

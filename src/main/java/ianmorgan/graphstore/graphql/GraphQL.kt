@@ -59,7 +59,7 @@ object GraphQLFactory {
                                 Fetcher.docFetcher(
                                     docsDao,
                                     helper.objectDefinition(typeName),
-                                    builder
+                                    typeDefinitionRegistry
                                 )
                             )
                         } else if (helper.interfaceDefinitionNames().contains(typeName)) {
@@ -203,6 +203,16 @@ object GraphQLFactory {
             }
             return builder.build()
         }
+
+//        override fun getType(env: TypeResolutionEnvironment): GraphQLObjectType {
+//
+//            val data = env.getObject<Map<String,Any>>()
+//            val name = data["#docType"]!! as String
+//            val objectType = env.getSchema().getObjectType(name);
+//
+//            return objectType;
+//
+//        }
 
         // Take the schema type and convert to one of physical
         // implementation classes

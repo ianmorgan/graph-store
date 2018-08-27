@@ -3,6 +3,7 @@ package ianmorgan.graphstore.graphql
 import graphql.language.ObjectTypeDefinition
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
+import graphql.schema.idl.TypeDefinitionRegistry
 import graphql.schema.idl.TypeRuntimeWiring
 import ianmorgan.graphstore.dal.DocsDao
 import org.json.JSONObject
@@ -14,11 +15,12 @@ import java.util.HashMap
  * recursive calls to the DAOs.
  */
 @Suppress("UNCHECKED_CAST")
-class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDefinition, builder : TypeRuntimeWiring.Builder) :
+class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDefinition, registry: TypeDefinitionRegistry  ) :
     DataFetcher<Map<String, Any>?> {
     val dao = docsDao
     val docType = typeDefinition.name
     val typeDefinition = typeDefinition
+    val registry = registry
     override fun get(env: DataFetchingEnvironment): Map<String, Any>? {
 
         val idFieldName = dao.daoForDoc(docType).aggregateKey()
@@ -97,6 +99,8 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         if (dao.availableDocs().contains(docType)) {
             var ids = data.getOrDefault(field, emptyList<String>()) as List<String>
             data.put("$" + field + "Raw" ,ids)  // preserve the raw values
+            data.put("#docType", docType!!)
+
 
             val filtered  = applyPaginationFilters(field, ids, walker)
 
@@ -132,10 +136,12 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
             val helper = Helper.build(typeDefinition)
             val docType = helper.typeForField(field)
 
+            val interfaceDataFetcher = InterfaceDataFetcher(dao,docType!!,registry)
+
 
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
-                val x = lookupInterfaceById(docType!!, theId)
+                val x = interfaceDataFetcher.get(mapOf("id" to theId))
                 if (x != null) {
 //                    if (walker.children().isNotEmpty()){
 //                        println (" ** LOOK FOR SOME CHILDREN ** ")
@@ -176,6 +182,9 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
         walker : ArgsWalker
     ) {
         if (dao.availableInterfaces().contains(typeName)) {
+
+            val interfaceDataFetcher = InterfaceDataFetcher(dao,typeName!!,registry)
+
             val ids = data.getOrDefault(field, emptyList<String>()) as List<String>
             data.put("$" + field + "Raw" ,ids)  // preserve the raw values
 
@@ -183,17 +192,18 @@ class DocDataFetcher constructor(docsDao: DocsDao, typeDefinition: ObjectTypeDef
 
             val expanded = ArrayList<Map<String, Any>>()
             for (theId in filtered) {
-                val ex = lookupInterfaceById(typeName!!, theId)
+                val ex = interfaceDataFetcher.get(mapOf("id" to theId))
 
                 if (walker.children().isNotEmpty()){
                     println (" ** LOOK FOR SOME CHILDREN ** ")
 
                 }
                 if (ex != null) {
+                    val working = HashMap(ex)
                     for (child in walker.children()) {
-                        fetchEmbeddedInterface2(ex, child)
+                        fetchEmbeddedInterface2(working, child)
                     }
-                    expanded.add(ex)
+                    expanded.add(working)
                 }
             }
             data.put(field, expanded)
