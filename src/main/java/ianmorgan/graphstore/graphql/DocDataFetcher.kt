@@ -64,20 +64,33 @@ class DocDataFetcher constructor(
                     // try as an embedded interface
                     fetchEmbeddedInterface2(data, child)
                 }
-
             }
 
-            // todo - generalise this a little more as a way of dealing with "pseudo" fields
-            // note that the order in which steps are run is important here
-            for (f in typeDefinition.fieldDefinitions) {
-                if (f.name.endsWith("Count")) {
-                    val rawField = "$" + f.name.replace("Count", "") + "Raw"
-                    val ids = data.getOrDefault(rawField, emptyList<String>()) as List<String>
-                    data[f.name] = ids.size
-                }
-            }
+            applyCountPseudoField(data)
         }
         return data
+    }
+
+    private fun applyCountPseudoField(data: HashMap<String, Any>) {
+        // note that the order in which steps are run is important here
+        for (f in typeDefinition.fieldDefinitions) {
+            if (f.name.endsWith("Count")) {
+                val rawField = "$" + f.name.replace("Count", "") + "Raw"
+                val ids = data.getOrDefault(rawField, emptyList<String>()) as List<String>
+                data[f.name] = ids.size
+            }
+        }
+    }
+
+    private fun applyCountPseudoField(data: HashMap<String, Any>, rawIds:List<String>) {
+        // note that the order in which steps are run is important here
+        for (f in typeDefinition.fieldDefinitions) {
+            if (f.name.endsWith("Count")) {
+//                val rawField = "$" + f.name.replace("Count", "") + "Raw"
+//                val ids = data.getOrDefault(rawField, emptyList<String>()) as List<String>
+                data[f.name] = rawIds.size
+            }
+        }
     }
 
     /**
@@ -147,8 +160,6 @@ class DocDataFetcher constructor(
      */
     private fun fetchEmbeddedInterface2(data: HashMap<String, Any>, walker: ArgsWalker) {
         val field = walker.node()
-
-            println (">>node is $field ")
         val helper = Helper.build(typeDefinition)
         val docType = helper.typeForField(field)
 
@@ -160,7 +171,6 @@ class DocDataFetcher constructor(
         val ids = data[field] as List<String>?
         if (ids != null) {
             data.put("$" + field + "Raw", ids)  // preserve the raw values
-
             val filtered = applyPaginationFilters(field, ids, walker)
 
             val helper = Helper.build(typeDefinition)
@@ -168,6 +178,7 @@ class DocDataFetcher constructor(
             val interfaceDataFetcher = InterfaceDataFetcher(dao, docType!!, registry)
 
             val expanded = ArrayList<Map<String, Any>>()
+
             for (theId in filtered) {
                 val ex = interfaceDataFetcher.get(mapOf("id" to theId))
                 if (ex != null) {
@@ -178,10 +189,13 @@ class DocDataFetcher constructor(
                             fetchEmbeddedInterface2(working, child)
                         }
                     }
+
                     expanded.add(working)
                 }
             }
+
             data[field] = expanded
+            applyCountPseudoField(data)
 
         }
 

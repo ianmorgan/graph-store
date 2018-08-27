@@ -64,7 +64,7 @@ To retrieve data for the 'starships', using the ArgsWalker the node is rewritten
 }
 ```
 
-And node() is <code>starship</code> (which is the information needed to call the correct fetcher)
+And node() is <code>starships</code> (which is the information needed to call the correct fetcher)
 
 And a call is made to the Starship DAO for each starship ID. After this, the data looks like 
 
@@ -113,7 +113,7 @@ friends. So the data now looks like.
  }
 ```
 
-To retrieve the friends of friends futher calls are required. Using the ArgsWalker, the args below are built. Note 
+To retrieve the friends of friends further calls are required. Using the ArgsWalker, the args below are built. Note 
 that in this case a root node ("/") has been added as there are parameters to be passed into the query. 
 
 ```json
