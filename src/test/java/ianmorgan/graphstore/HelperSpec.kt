@@ -2,10 +2,7 @@ package ianmorgan.graphstore
 
 import com.natpryce.hamkrest.assertion.assert
 import com.natpryce.hamkrest.equalTo
-import graphql.GraphQL
 import graphql.schema.idl.SchemaParser
-import ianmorgan.graphstore.dal.DocsDao
-import ianmorgan.graphstore.graphql.GraphQLFactory
 import ianmorgan.graphstore.graphql.Helper
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -25,8 +22,6 @@ object HelperSpec : Spek({
 
     val starwarsSchema = FileInputStream("src/schema/starwars_ex.graphqls").bufferedReader().use { it.readText() }
     val registry = SchemaParser().parse(starwarsSchema)
-
-
 
     describe ("GraphQL queries over the embedded docs") {
 
@@ -51,12 +46,13 @@ object HelperSpec : Spek({
             //assert.that(human.isLinked("appearsIn"), equalTo(false))
 
             // test over objects
+            assert.that(human.objectTypeFieldNames(), equalTo(listOf("enemy")))
             assert.that(human.isObject("enemy"), equalTo(true))
             assert.that(human.isInterface("enemy"), equalTo(false))
             assert.that(human.isLinked("enemy"), equalTo(true))
 
-
-
+            // tests over scalars
+            //assert.that(human.scalarTypeFieldNames(), equalTo(listOf("enemy")))
         }
 
         it ("should help describe a Droid ") {

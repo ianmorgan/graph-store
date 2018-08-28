@@ -49,18 +49,19 @@ class DocDataFetcher constructor(
         walker: ArgsWalker
     ) {
         if (data != null) {
-            val helper = Helper.build(typeDefinition)
-
+            val helper = Helper.buildOTDH(registry, typeDefinition)
 
             val listTypes = helper.listTypeFieldNames()
             for (child in walker.children()) {
                 if (listTypes.contains(child.node())) {
 
-                    // try as an embedded doc list
-                    fetchEmbeddedDocList(data, child)
+                    if (helper.isObject(child.node())) {
+                        fetchEmbeddedDocList(data, child)
+                    }
 
-                    // try as an embedded interface list
-                    fetchEmbeddedInterfaceList(data, child)
+                    if (helper.isInterface(child.node())) {
+                        fetchEmbeddedInterfaceList(data, child)
+                    }
                 }
 
                 // todo - what about embedded objects?
@@ -120,11 +121,6 @@ class DocDataFetcher constructor(
         val helper = Helper.build(typeDefinition)
         val docType = helper.typeForField(field)
 
-        // do nothing - this isn't an interface
-        if (!dao.availableInterfaces().contains(docType)) {
-            return
-        }
-
         val ids = data[field] as List<String>?
         if (ids != null) {
             data.put("$" + field + "Raw", ids)  // preserve the raw values
@@ -158,11 +154,6 @@ class DocDataFetcher constructor(
         val field = walker.node()
         val helper = Helper.build(typeDefinition)
         val docType = helper.typeForField(field)
-
-        // do nothing - this isn't a doc
-        if (!dao.availableDocs().contains(docType)) {
-            return
-        }
 
         // TODO - would be neater to pass this in walker nodes args (e.g expect a field
         //        of ids with the list of ids

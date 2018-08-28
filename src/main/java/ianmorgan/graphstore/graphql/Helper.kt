@@ -28,6 +28,17 @@ class TypeDefinitionRegistryHelper constructor(registry: TypeDefinitionRegistry)
         return result
     }
 
+    fun scalarDefinitionNames(): List<String> {
+        val result = ArrayList<String>()
+        for (definition in tdr.getTypes(ScalarTypeDefinition::class.java)) {
+            if (!(definition.name == "Query")) {
+                result.add(definition.name)
+
+            }
+        }
+        return result
+    }
+
     /**
      * Return the ObjectTypeDefinition for this name or throw an exception
      */
@@ -137,7 +148,7 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
     val registry = registry
 
     /**
-     * Finds all fields that hold a list
+     * Finds all fields that hold a list, regardless of whats in tbe list
      */
     fun listTypeFieldNames(): List<String> {
         val result = ArrayList<String>()
@@ -157,6 +168,50 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
         }
         return result
     }
+
+    /**
+     * Finds all fields that return an object
+     */
+    fun objectTypeFieldNames(): List<String> {
+        val result = ArrayList<String>()
+        for (field in otd.fieldDefinitions) {
+            val rawType = field.type
+
+            if (rawType is TypeName) {
+                if (isObject(field.name)) result.add(field.name)
+            }
+
+            if (rawType is NonNullType) {
+                val type = rawType.type
+                if (type is TypeName) {
+                    if (isObject(field.name)) result.add(field.name)
+                }
+            }
+        }
+        return result
+    }
+
+    /**
+//     * Finds all fields that return a scalar
+//     */
+//    fun scalarTypeFieldNames(): List<String> {
+//        val result = ArrayList<String>()
+//        for (field in otd.fieldDefinitions) {
+//            val rawType = field.type
+//
+//            if (rawType is TypeName) {
+//                if (isScalar(field.name)) result.add(field.name)
+//            }
+//
+//            if (rawType is NonNullType) {
+//                val type = rawType.type
+//                if (type is TypeName) {
+//                    if (isScalar(field.name)) result.add(field.name)
+//                }
+//            }
+//        }
+//        return result
+//    }
 
     fun isInterface(fieldName: String): Boolean {
         val registryHelper = Helper.build(registry!!)
@@ -189,6 +244,14 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
 
         val typeName = extractType(definition)
         return registryHelper.objectDefinitionNames().contains(typeName.name)
+    }
+
+    fun isScalar(fieldName: String): Boolean {
+        val registryHelper = Helper.build(registry!!)
+        val definition = fieldDefinition(fieldName)
+
+        val typeName = extractType(definition)
+        return registryHelper.scalarDefinitionNames().contains(typeName.name)
 
     }
 
@@ -215,7 +278,7 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
         return idFieldName() != null
     }
 
-    fun fieldDefinition(fieldName: String): FieldDefinition {
+    private fun fieldDefinition(fieldName: String): FieldDefinition {
         for (field in otd.fieldDefinitions) {
             if (field.name == fieldName) {
                 return field
@@ -243,7 +306,7 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
     /**
      * Given a field name, go figure out its unpacked TypeName
      */
-    fun extractType(definition:  FieldDefinition) : TypeName {
+    private fun extractType(definition:  FieldDefinition) : TypeName {
         val type = definition.type
 
         if (type is TypeName){
@@ -305,6 +368,13 @@ object Helper {
         return build(otd,registry)
     }
 
+
+    fun buildOTDH(registry: TypeDefinitionRegistry, definition: ObjectTypeDefinition): ObjectTypeDefinitionHelper {
+        return ObjectTypeDefinitionHelper(definition,registry)
+
+    }
+
+    @Deprecated(message = "use buildOTDH variant instead")
     fun build(definition: ObjectTypeDefinition, registry: TypeDefinitionRegistry? = null): ObjectTypeDefinitionHelper {
         return ObjectTypeDefinitionHelper(definition,registry)
     }
