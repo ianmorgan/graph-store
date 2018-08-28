@@ -63,7 +63,7 @@ class DocDataFetcher constructor(
                     fetchEmbeddedInterfaceList(data, child)
                 }
 
-                // todo - what about embedded scalars?
+                // todo - what about embedded objects?
             }
 
             applyCountPseudoField(data)

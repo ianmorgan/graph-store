@@ -35,7 +35,9 @@ object GraphQLNestingSpec2 : Spek({
 
 
         it("should return friends of friends") {
-            // testing query, but no nesting
+
+            // test nesting of collections
+
             val query = """
                 {droid(id: "2001"){name,starships{name,model},friends(count:2){name,friendsCount,friends(first: 2){name}}}}
             """.trimIndent()
@@ -47,9 +49,29 @@ object GraphQLNestingSpec2 : Spek({
 
             assert.that(result.errors.isEmpty(), equalTo(true))
             assert.that(
-                  result.getData<Any>().toString(),
-                  equalTo(expected)
-              )
+                result.getData<Any>().toString(),
+                equalTo(expected)
+            )
+        }
+
+        xit("should return Luke's enemy") {
+
+            // test embedded type linked by ID (aggregation in UML speak)
+
+            val query = """
+                {human(id: "1002"){name,enemy{name}}}
+            """.trimIndent()
+
+            val result = graphQL.execute(query)
+            val expected = """
+                {human={name=Han Solo, enemy={name=Darth Vader}}}
+            """.trimIndent()
+
+            assert.that(result.errors.isEmpty(), equalTo(true))
+            assert.that(
+                result.getData<Any>().toString(),
+                equalTo(expected)
+            )
         }
 
     }
