@@ -59,6 +59,8 @@ type Human implements Character {
   appearsIn: [Episode]!
 
   homePlanet: String
+
+  enemy : Human
 }
 
 

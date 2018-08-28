@@ -13,5 +13,6 @@
     "EMPIRE",
     "JEDI"
   ],
-  "homePlanet": "Tatooine"
+  "homePlanet": "Tatooine",
+  "enemy" : "1001"
 }

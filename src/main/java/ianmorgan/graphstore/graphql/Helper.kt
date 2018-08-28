@@ -167,6 +167,10 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
         return null;
     }
 
+    fun hasID() : Boolean {
+        return idFieldName() != null
+    }
+
 
 
     /**
@@ -223,6 +227,11 @@ class DataFetchingFieldSelectionSetHelper constructor(selectionSet : DataFetchin
 object Helper {
     fun build (typeDefintion: TypeDefinitionRegistry) : TypeDefinitionRegistryHelper {
         return TypeDefinitionRegistryHelper(typeDefintion)
+    }
+
+    fun buildOTDH (registry: TypeDefinitionRegistry, typeName : String) : ObjectTypeDefinitionHelper {
+        val otd = TypeDefinitionRegistryHelper(registry).objectDefinition(typeName)
+        return build(otd)
     }
 
     fun build(definition : ObjectTypeDefinition) : ObjectTypeDefinitionHelper {

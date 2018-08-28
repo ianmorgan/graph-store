@@ -3,12 +3,14 @@ package ianmorgan.graphstore.checker;
 import graphql.language.*;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import ianmorgan.graphstore.graphql.Helper;
+import ianmorgan.graphstore.graphql.ObjectTypeDefinitionHelper;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SchemaBuilder {
     private TypeDefinitionRegistry registry;
+    private Helper HELPER = Helper.INSTANCE;
 
     public SchemaBuilder(TypeDefinitionRegistry registry) {
         this.registry = registry;
@@ -17,7 +19,7 @@ public class SchemaBuilder {
     public Map<Object, Object> build(String typeName) {
         Map<Object, Object> working = new HashMap<>();
 
-        ObjectTypeDefinition otd = Helper.INSTANCE.build(registry).objectDefinition(typeName);
+        ObjectTypeDefinition otd = HELPER.build(registry).objectDefinition(typeName);
         for (FieldDefinition field : otd.getFieldDefinitions()) {
 
             Type rawType = field.getType();
@@ -55,8 +57,17 @@ public class SchemaBuilder {
                         working.put(field.getName(), javaType);
                     } else {
 
-                        Map<Object, Object> schema = this.build(tName.getName());
-                        working.put(field.getName(),new MapChecker(schema));
+                        ObjectTypeDefinitionHelper typeHelper = HELPER.buildOTDH(registry,tName.getName());
+
+                        if (typeHelper.hasID()){
+                            // linked type
+                            working.put(field.getName(), String.class);
+                        }
+                        else {
+                            // embedded type
+                            Map<Object, Object> schema = this.build(tName.getName());
+                            working.put(field.getName(), new MapChecker(schema));
+                        }
                     }
                 }
             }

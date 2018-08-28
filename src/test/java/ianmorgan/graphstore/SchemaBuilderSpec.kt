@@ -46,6 +46,7 @@ object SchemaBuilderSpec : Spek({
             appearsIn: [Episode]!
             homePlanet: String
             age: Int
+            enemy : Human
         }
 """.trimIndent()
 
@@ -75,6 +76,7 @@ object SchemaBuilderSpec : Spek({
         }
     """.trimIndent()
 
+
     lateinit var registry : TypeDefinitionRegistry
 
 
@@ -85,7 +87,7 @@ object SchemaBuilderSpec : Spek({
             registry = schemaParser.parse(testSchema)
         }
 
-        xit("should build schema for 'Address' type") {
+        it("should build schema for 'Address' type") {
             val builder = SchemaBuilder(registry)
 
             val schema = builder.build("Address")
@@ -97,7 +99,7 @@ object SchemaBuilderSpec : Spek({
         }
 
 
-        xit("should build schema for 'Human' type") {
+        it("should build schema for 'Human' type") {
             val builder = SchemaBuilder(registry)
 
 //            id: ID!
@@ -112,7 +114,8 @@ object SchemaBuilderSpec : Spek({
                 "friends" to ListChecker(String::class.java),
                 "appearsIn" to OneOf(ListChecker(String::class.java)),
                 "homePlanet" to String::class.java,
-                "age" to Long::class.javaObjectType)
+                "age" to Long::class.javaObjectType,
+                "enemy" to String::class.java)
 
 
             assert.that(schema, equalTo(expected as MutableMap<Any,Any>))
@@ -121,8 +124,8 @@ object SchemaBuilderSpec : Spek({
 
         it("should build schema for 'Beatle' type") {
             val schemaParser = SchemaParser()
-            registry = schemaParser.parse(beatleSchema)
-            val builder = SchemaBuilder(registry)
+            val reg = schemaParser.parse(beatleSchema)
+            val builder = SchemaBuilder(reg)
 
             //            id: ID!
 //            name: String!
@@ -144,6 +147,9 @@ object SchemaBuilderSpec : Spek({
 
             assert.that(schema, equalTo(expected as MutableMap<Any,Any>))
         }
+
+
+
 
     }
 

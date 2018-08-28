@@ -7,14 +7,7 @@ import graphql.schema.idl.TypeDefinitionRegistry
 import ianmorgan.graphstore.dal.DocsDao
 import java.util.HashMap
 import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.contains
-import kotlin.collections.emptyList
-import kotlin.collections.isNotEmpty
-import kotlin.collections.mapOf
 import kotlin.collections.set
-import kotlin.collections.take
 
 /**
  * A DataFetcher for a single doc, linked to its DAO. This fetcher is passed the
@@ -45,19 +38,29 @@ class DocDataFetcher constructor(
         // find by ID
         val data = lookupDocById(id)
 
+        // process embedded collections and pseudo fields
+        processDoc(data, ArgsWalker(env.selectionSet.arguments))
+
+        return data
+    }
+
+    private fun processDoc(
+        data: HashMap<String, Any>?,
+        walker: ArgsWalker
+    ) {
         if (data != null) {
-            val walker = ArgsWalker(env.selectionSet.arguments)
             val helper = Helper.build(typeDefinition)
 
 
             val listTypes = helper.listTypeFieldNames()
             for (child in walker.children()) {
                 if (listTypes.contains(child.node())) {
+
                     // try as an embedded doc list
-                    fetchEmbeddedDoc(data, child)
+                    fetchEmbeddedDocList(data, child)
 
                     // try as an embedded interface list
-                    fetchEmbeddedInterface(data, child)
+                    fetchEmbeddedInterfaceList(data, child)
                 }
 
                 // todo - what about embedded scalars?
@@ -65,37 +68,20 @@ class DocDataFetcher constructor(
 
             applyCountPseudoField(data)
         }
-        return data
     }
 
 
     /**
-     * Entrypoint when called recursively inside a query (i.e. for nested data). For simplicity of
+     * Entry point when called recursively inside a query (i.e. for nested data). For simplicity of
      * wiring these bypass the GraphQLJava api and simply pass on the query args (see ArgsWalker),
      * which has all the information in the original query.
      */
-    fun get(walker: ArgsWalker) : Map<String, Any>? {
+    fun get(walker: ArgsWalker): Map<String, Any>? {
         val id = walker.args()["/"]!!["id"] as String
         val data = lookupDocById(id)
 
+        processDoc(data, walker)
 
-
-        if (data != null) {
-            val helper = Helper.build(typeDefinition)
-            val listTypes = helper.listTypeFieldNames()
-
-            for (child in walker.children()) {
-
-                if (listTypes.contains(child.node())) {
-                    // try as an embedded interface
-                    fetchEmbeddedInterface(data, child)
-                    // try as a doc
-                    fetchEmbeddedDoc(data, child)
-                }
-            }
-
-            applyCountPseudoField(data)
-        }
         return data
 
 
@@ -111,7 +97,6 @@ class DocDataFetcher constructor(
             }
         }
     }
-
 
 
     /**
@@ -130,7 +115,7 @@ class DocDataFetcher constructor(
      *                (see https://ianmorgan.github.io/graph-store/queryProcessingSteps)
      *
      */
-    private fun fetchEmbeddedInterface(data: HashMap<String, Any>, walker: ArgsWalker) {
+    private fun fetchEmbeddedInterfaceList(data: HashMap<String, Any>, walker: ArgsWalker) {
         val field = walker.node()
         val helper = Helper.build(typeDefinition)
         val docType = helper.typeForField(field)
@@ -156,16 +141,9 @@ class DocDataFetcher constructor(
                 val nodeWalker = walker.replaceNodeArgs(mapOf("id" to theId))
 
                 val ex = interfaceDataFetcher.get(nodeWalker)
-
                 if (ex != null) {
                     val working = HashMap(ex)
-
-                    if (walker.children().isNotEmpty()) {
-                        for (child in walker.children()) {
-                            fetchEmbeddedInterface(working, child)
-                        }
-                    }
-
+                    processDoc(working, nodeWalker)
                     expanded.add(working)
                 }
             }
@@ -176,7 +154,7 @@ class DocDataFetcher constructor(
         }
     }
 
-    private fun fetchEmbeddedDoc(data: HashMap<String, Any>, walker: ArgsWalker) {
+    private fun fetchEmbeddedDocList(data: HashMap<String, Any>, walker: ArgsWalker) {
         val field = walker.node()
         val helper = Helper.build(typeDefinition)
         val docType = helper.typeForField(field)
@@ -186,6 +164,8 @@ class DocDataFetcher constructor(
             return
         }
 
+        // TODO - would be neater to pass this in walker nodes args (e.g expect a field
+        //        of ids with the list of ids
         val ids = data[field] as List<String>?
         if (ids != null) {
             data.put("$" + field + "Raw", ids)  // preserve the raw values
@@ -207,11 +187,7 @@ class DocDataFetcher constructor(
                 if (ex != null) {
                     val working = HashMap(ex)
 
-                    if (walker.children().isNotEmpty()) {
-                        for (child in walker.children()) {
-                            fetchEmbeddedInterface(working, child)
-                        }
-                    }
+                    processDoc(working, walker)
 
                     expanded.add(working)
                 }
@@ -219,9 +195,8 @@ class DocDataFetcher constructor(
 
             data[field] = expanded
             applyCountPseudoField(data)
-        }
-        else {
-            data[field] = emptyList<Map<String,Any>>()
+        } else {
+            data[field] = emptyList<Map<String, Any>>()
         }
     }
 
