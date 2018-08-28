@@ -22,7 +22,7 @@ object GraphQLNestingSpec2 : Spek({
     lateinit var docsDao: DocsDao
     lateinit var graphQL: GraphQL
 
-    describe("Queries returing nested data") {
+    describe("Queries returning nested data") {
 
         beforeGroup {
             // setup GraphQL & DAO with some initial data
@@ -54,17 +54,17 @@ object GraphQLNestingSpec2 : Spek({
             )
         }
 
-        xit("should return Luke's enemy") {
+        it("should return Luke's enemy") {
 
             // test embedded type linked by ID (aggregation in UML speak)
 
             val query = """
-                {human(id: "1002"){name,enemy{name}}}
+                {human(id: "1000"){name,enemy{name}}}
             """.trimIndent()
 
             val result = graphQL.execute(query)
             val expected = """
-                {human={name=Han Solo, enemy={name=Darth Vader}}}
+                {human={name=Luke Skywalker, enemy={name=Darth Vader}}}
             """.trimIndent()
 
             assert.that(result.errors.isEmpty(), equalTo(true))

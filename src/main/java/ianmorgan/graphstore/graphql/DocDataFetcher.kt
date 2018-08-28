@@ -52,6 +52,8 @@ class DocDataFetcher constructor(
             val helper = Helper.buildOTDH(registry, typeDefinition)
 
             val listTypes = helper.listTypeFieldNames()
+            val objectTypes = helper.objectTypeFieldNames()
+
             for (child in walker.children()) {
                 if (listTypes.contains(child.node())) {
 
@@ -64,7 +66,14 @@ class DocDataFetcher constructor(
                     }
                 }
 
-                // todo - what about embedded objects?
+                if (objectTypes.contains(child.node())){
+                    if (helper.isLinked(child.node())) {
+                        fetchEmbeddedDoc(data, child)
+                    }
+
+                }
+
+
             }
 
             applyCountPseudoField(data)
@@ -188,6 +197,47 @@ class DocDataFetcher constructor(
             applyCountPseudoField(data)
         } else {
             data[field] = emptyList<Map<String, Any>>()
+        }
+    }
+
+    private fun fetchEmbeddedDoc(data: HashMap<String, Any>, walker: ArgsWalker) {
+        val field = walker.node()
+        val helper = Helper.buildOTDH(registry,typeDefinition)
+        val docType = helper.typeForField(field)
+
+        // TODO - would be neater to pass this in walker nodes args (e.g expect a field
+        //        of ids with the list of ids
+        val id = data[field] as String?
+        if (id != null) {
+            data.put("$" + field + "Raw", id)  // preserve the raw values
+            //val filtered = applyPaginationFilters(ids, walker)
+
+            val registryHelper = Helper.build(registry)
+            val otd = registryHelper.objectDefinition(docType!!)
+
+            val docDataFetcher = DocDataFetcher(dao, otd, registry)
+
+            val expanded = ArrayList<Map<String, Any>>()
+
+
+                val nodeWalker = walker.replaceNodeArgs(mapOf("id" to id))
+
+                val ex = docDataFetcher.get(nodeWalker)
+
+                if (ex != null) {
+                    val working = HashMap(ex)
+
+                    processDoc(working, walker)
+
+                    expanded.add(working)
+                    data[field] = ex
+
+                }
+
+
+        } else {
+            // todo - should be null or emptyMap
+            data.remove(field)
         }
     }
 
