@@ -1,17 +1,12 @@
 package ianmorgan.graphstore.dal
 
-import graphql.language.ListType
-import graphql.language.NonNullType
-import graphql.language.ObjectTypeDefinition
-import graphql.language.TypeName
+
 import graphql.schema.idl.TypeDefinitionRegistry
 import ianmorgan.graphstore.checker.MapChecker
 import ianmorgan.graphstore.checker.SchemaBuilder
 import ianmorgan.graphstore.checker.ValidatorMode
 import ianmorgan.graphstore.graphql.Helper
-import ianmorgan.graphstore.mapper.GraphQLMapper
 import java.util.*
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction2
 
 /**
@@ -28,12 +23,10 @@ class DocDao constructor(
     private val es = eventStoreClient
     private val mapSchema = SchemaBuilder(typeDefinitionRegistry).build(docType)
     private lateinit var aggregateKey: String
-    private lateinit var fields: Map<String, KClass<Any>>
 
 
     init {
         initAggregateKey(typeDefinitionRegistry)
-        initFields(typeDefinitionRegistry)
     }
 
 
@@ -138,14 +131,6 @@ class DocDao constructor(
     }
 
 
-    /**
-     * Expose the fields in the GraphQL schema mapped to their Java types
-     *
-     * TODO - more work will be needed to define the base set of type conversion rules.
-     */
-    fun fields(): Map<String, KClass<Any>> {
-        return fields
-    }
 
 
     private fun initAggregateKey(registry: TypeDefinitionRegistry) {
@@ -157,51 +142,7 @@ class DocDao constructor(
         }
     }
 
-    private fun initFields(registry: TypeDefinitionRegistry) {
-        val typeDefinition = registry.getType(docType, ObjectTypeDefinition::class.java).get()
-        val working = HashMap<String, KClass<Any>>()
 
-
-        working.putAll(fieldsFromType(typeDefinition, registry))
-        fields = working
-    }
-
-    private fun fieldsFromType(
-        typeDefinition: ObjectTypeDefinition,
-        registry: TypeDefinitionRegistry
-    ): Map<String, KClass<Any>> {
-        val working: MutableMap<String, KClass<Any>> = mutableMapOf()
-
-        for (field in typeDefinition.fieldDefinitions) {
-            val rawType = field.type
-            if (rawType is NonNullType) {
-                val type = rawType.type
-                if (type is TypeName) {
-                    working[field.name] = GraphQLMapper.graphQLTypeToJsonType(type.name)
-                }
-                if (type is ListType) {
-                    // this represents a list of enumeration, which we will represent
-                    // a list
-                    working[field.name] = List::class as KClass<Any>
-                }
-            } else {
-                if (rawType is ListType) {
-                    working[field.name] = List::class as KClass<Any>
-                }
-                if (rawType is TypeName) {
-                    if (GraphQLMapper.isScalarType(rawType.name)) {
-                        working[field.name] = GraphQLMapper.graphQLTypeToJsonType(rawType.name)
-                    } else {
-                        // todo - will need to check for interfaces as well ?
-                        val embeddedTypeDefinition = Helper.build(registry).objectDefinition(rawType.name)
-                        val map = fieldsFromType(embeddedTypeDefinition, registry) as Map<String, Any>
-                        working[field.name] = MapHolder(map)::class as KClass<Any>
-                    }
-                }
-            }
-        }
-        return working
-    }
 
 
     private fun buildUpdateEvent(aggregateId: String, data: Map<String, Any?>): Map<String, Any> {

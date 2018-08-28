@@ -84,15 +84,6 @@ object DocDaoSpec : Spek({
             assert.that({ DocDao(registry,"Droid") }, throws<RuntimeException>())
         }
 
-        it("should build the 'fields' collection from the GraphQL schema") {
-            val dao = DocDao(typeDefinitionRegistry,"Droid")
-            assert.that(dao.fields().size, equalTo(5))
-            assert.that(dao.fields().get("id"), equalTo(String::class as KClass<*>))
-            assert.that(dao.fields().get("name"), equalTo(String::class as KClass<*>))
-            assert.that(dao.fields().get("friends"), equalTo(List::class as KClass<*>))
-            assert.that(dao.fields().get("appearsIn"), equalTo(List::class as KClass<*>))
-            assert.that(dao.fields().get("primaryFunction"), equalTo(String::class as KClass<*>))
-        }
 
         it("should store a valid doc") {
             val dao = DocDao(typeDefinitionRegistry,"Droid")
@@ -161,20 +152,6 @@ object DocDaoSpec : Spek({
         it("should use the 'ID' field as the aggregate id") {
             val dao = DocDao(typeDefinitionRegistry  ,"Beatle")
             assert.that(dao.aggregateKey(), equalTo("id"))
-        }
-
-        it("should include the embedded Address") {
-            val dao = DocDao(typeDefinitionRegistry  ,"Beatle")
-
-            assert.that(dao.fields().size, equalTo(4))
-            assert.that(dao.fields().get("id"), equalTo(String::class as KClass<*>))
-            assert.that(dao.fields().get("name"), equalTo(String::class as KClass<*>))
-            assert.that(dao.fields().get("skills"), equalTo(List::class as KClass<*>))
-            assert.that(dao.fields().get("address"), equalTo(MapHolder::class as KClass<*>))
-
-            //val a = dao.fields().get("address") as Map<String,Any>
-            //println(a)
-//            assert.that(dao.fields().get("primaryFunction"), equalTo(String::class as KClass<*>))
         }
 
 
