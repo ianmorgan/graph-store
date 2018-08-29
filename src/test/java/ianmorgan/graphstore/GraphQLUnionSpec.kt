@@ -42,7 +42,7 @@ object GraphQLUnionSpec : Spek({
       primaryFunction
     }
     ... on Human {
-       name
+       name,
        appearsIn
     }
   }
@@ -59,3 +59,22 @@ object GraphQLUnionSpec : Spek({
 
     }
 })
+
+
+//{
+//    search(name_contains: "c") {
+//    ... on Droid {
+//        name,
+//        primaryFunction,
+//        starships{name}
+//    }
+//    ... on Human {
+//            name,
+//            appearsIn
+//    }
+//    ... on Alien {
+//        name,
+//        species{name}
+//    }
+//}
+//}

@@ -6,13 +6,14 @@
 type Query {
 
   droid(id: ID!): Droid
-
   human(id: ID!): Human
+  alien(id: ID!): Alien
+  character(id: ID!): Character
+  starship(id: ID!): Starship
+
+  # Find by name
   humans(name : String!) : [Human]
 
-  character(id: ID!): Character
-
-  starship(id: ID!): Starship
 
   # Find characters by name
   characters(name : String) : [Character]
@@ -28,6 +29,16 @@ enum Episode {
   NEWHOPE
   EMPIRE
   JEDI
+}
+
+# Information about the species. As this doesn't have an ID,
+# data must be embedded with each object
+type Species {
+  name: String!
+  classification: String
+  skinColours: [String]
+  hairColours: [String]
+
 }
 
 
@@ -82,6 +93,19 @@ type Droid implements Character {
 
 }
 
+type Alien implements Character {
+  id: ID!
+  name: String!
+  alias: String
+
+  friends(first: Int, count: Int): [Character]
+  friendsCount: Int
+
+  appearsIn: [Episode]!
+  species: Species
+
+}
+
 type Starship {
     id: ID!
     name: String!
@@ -91,6 +115,6 @@ type Starship {
     costInCredits : String
 }
 
-union SearchResult = Human | Droid
+union SearchResult = Human | Droid | Alien
 
 schema{query: Query}

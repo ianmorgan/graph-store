@@ -1,0 +1,15 @@
+{
+  "docType": "Alien",
+  "id": "3002",
+  "name": "Jabba Desilijic Tiure",
+  "alias": "Jabba the Hutt",
+  "appearsIn": [
+    "NEWHOPE",
+    "JEDI"
+  ],
+  "species": {
+    "name" : "Hutt",
+    "classification": "gastropod",
+    "skinColours": ["green","brown","tan"]
+  }
+}

@@ -26,6 +26,8 @@ class UnionDataFetcher constructor(
 
         val result = ArrayList<Map<String, Any>?>()
 
+        // TODO - this needs to be rewritten to use the DocsDataFetcher so
+        //        that nesting works correctly
         for (doc in daos.availableDocs()) {
             if (unionType.contains(doc)) {
                 val data = (daos.daoForDoc(doc) as DocDao).findByField("name_contains",name)

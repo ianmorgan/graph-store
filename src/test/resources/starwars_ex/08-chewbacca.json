@@ -1,0 +1,19 @@
+{
+  "docType": "Alien",
+  "id": "3000",
+  "name": "Chewbacca",
+  "friends": [
+    "1002"
+  ],
+  "appearsIn": [
+    "NEWHOPE",
+    "EMPIRE",
+    "JEDI"
+  ],
+  "species": {
+    "name" : "Wookiee",
+    "classification": "mammal",
+    "skinColours": ["grey"],
+    "hairColours" : ["black" ,"brown"]
+  }
+}

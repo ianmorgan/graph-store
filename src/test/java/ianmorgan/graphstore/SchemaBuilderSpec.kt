@@ -39,6 +39,12 @@ object SchemaBuilderSpec : Spek({
             appearsIn: [Episode]!
         }
 
+        type Species {
+            name: String!
+            classification: String
+            skinColours: [String]
+        }
+
         type Human implements Character {
             id: ID!
             name: String!

@@ -1,0 +1,18 @@
+{
+  "docType": "Alien",
+  "id": "3001",
+  "name": "Yoda",
+  "friends": [
+    "1000"
+  ],
+  "appearsIn": [
+    "EMPIRE",
+    "JEDI"
+  ],
+  "species": {
+    "name" : "unknown",
+    "classification": "mammal",
+    "skinColours": ["green","yellow"],
+    "hairColours" : ["brown" ,"white"]
+  }
+}
