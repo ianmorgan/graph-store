@@ -1,5 +1,11 @@
-# This is an extension of the base starwars schema that supports external datasets
-
+# https://github.com/ianmorgan/graph-store/blob/master/src/schema/starwars_ex.graphqls
+#
+# This is an extension of the base starwars schema that includes additional data to demonstrate and test
+# all the features in the graphstore app. This includes:
+#   - support for external data sources (Starship)
+#   - nested types resolved by id (starships in Droid) - this is 'aggregation' in UML speak
+#   - nested types fully encapsulated (species in Alien) - this is 'composition' in UML speak
+#
 
 
 # The query type, represents all of the entry points into our object graph
@@ -13,7 +19,6 @@ type Query {
 
   # Find by name
   humans(name : String!) : [Human]
-
 
   # Find characters by name
   characters(name : String) : [Character]
