@@ -18,7 +18,10 @@ class DocDao constructor(
     typeDefinitionRegistry: TypeDefinitionRegistry,
     docType: String,
     eventStoreClient: EventStoreClient = InMemoryEventStore()
-) : ReaderDao {
+) : ReaderDao, FinderDao {
+
+
+
     private val docType = docType
     private val es = eventStoreClient
     private val mapSchema = SchemaBuilder(typeDefinitionRegistry).build(docType)
@@ -70,6 +73,26 @@ class DocDao constructor(
             if (matcher(doc[fieldName], value)) {
                 result.add(doc)
             }
+        }
+        return result
+    }
+
+    override fun findByFields(args: Map<String, Any>): List<FindResult> {
+
+        val result = ArrayList<FindResult>()
+
+        // TODO - production quality would need an indexing strategy
+        for (key in es.aggregateKeys(docType)) {
+            val doc = retrieve(key)!!
+
+            var matched = true
+            for (arg in args.entries){
+                val matcher = pickMatcher(arg.key)
+                val fieldName = rootFieldName(arg.key)
+                matched = matched && matcher(doc[fieldName],arg.value)
+
+            }
+            if (matched) result.add (FindResult(docType,doc["id"] as String))
         }
         return result
     }

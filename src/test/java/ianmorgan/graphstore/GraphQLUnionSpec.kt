@@ -50,8 +50,8 @@ object GraphQLUnionSpec : Spek({
   search(name_contains: "d") {
     ... on Droid {
       name,
-      primaryFunction,
-      starships{name}
+      primaryFunction
+
     }
     ... on Human {
        name,
@@ -65,7 +65,9 @@ object GraphQLUnionSpec : Spek({
 
             assert.that(result.errors.isEmpty(), equalTo(true))
 
-            val expected = "{search=[{name=Darth Vader, appearsIn=[NEWHOPE, EMPIRE, JEDI], friends=[{name=Wilhuff Tarkin}]}, {name=R2-D2, primaryFunction=Astromech, starships=[{name=X-wing}]}]}"
+            //val expected = "{search=[{name=Darth Vader, appearsIn=[NEWHOPE, EMPIRE, JEDI], friends=[{name=Wilhuff Tarkin}]}, {name=R2-D2, primaryFunction=Astromech, starships=[{name=X-wing}]}]}"
+            val expected = "{search=[{name=Darth Vader, appearsIn=[NEWHOPE, EMPIRE, JEDI], friends=[{name=Wilhuff Tarkin}]}, {name=R2-D2, primaryFunction=Astromech}]}"
+
             assert.that(result.getData<Any>().toString(), equalTo(expected))
         }
 

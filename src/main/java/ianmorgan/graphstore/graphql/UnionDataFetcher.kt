@@ -11,6 +11,7 @@ import graphql.schema.GraphQLFieldsContainer
 import graphql.schema.idl.TypeDefinitionRegistry
 import ianmorgan.graphstore.dal.DocDao
 import ianmorgan.graphstore.dal.DocsDao
+import ianmorgan.graphstore.dal.FindResult
 
 /**
  * A DataFetcher that delegates to each type in the union
@@ -25,26 +26,16 @@ class UnionDataFetcher constructor(
     val unionName = unionName
     override fun get(env: DataFetchingEnvironment): List<Map<String, Any>?> {
 
-
-        // todo - need to dynamically pull out searchable fields
-        val name = env.getArgument<String>("name_contains")
-
         val helper = Helper.build(registry)
-        val findResult = findMatchingDocs(helper.objectsInUnion(unionName), name)
-
         val rawArgs = buildArgWalkers(env)
+
+        val findResults =  findMatchingDocs(rawArgs.keys,env.arguments)
+
         val result = ArrayList<Map<String, Any>>()
-        for (row in findResult) {
-            val docType = row["#docType"] as String
-            val id = row["id"] as String
-
-            // find might find results that aren't of a type expected in the union query
-            if (rawArgs.containsKey(docType)) {
-                val fetcher = DocDataFetcher(daos, helper.objectDefinition(docType), registry)
-                val walker = rawArgs[docType]!!.replaceNodeArgs(mapOf("id" to id))
-                result.add(fetcher.get(walker)!!)
-            }
-
+        for (row in findResults) {
+            val fetcher = DocDataFetcher(daos, helper.objectDefinition(row.docType), registry)
+            val walker = rawArgs[row.docType]!!.replaceNodeArgs(mapOf("id" to row.id))
+            result.add(fetcher.get(walker)!!)
         }
 
         return result;
@@ -71,14 +62,13 @@ class UnionDataFetcher constructor(
         val argsLookup = HashMap<String, ArgsWalker>()
         val selectionSet = env.fields[0].selectionSet
 
-        // Need to emulate the logic in DataFetchingFieldSelectionSetImpl
+        // Need to emulate the logic in DataFetchingFieldSelectionSetImpl,
         // which doesn't understand how to process Union queries. Basically
-        // we treat each fragment of the query as though it were a standalone
-        // query on the individual types
+        // we treat each fragment of the union query as though it were a standalone
+        // query on the individual type.
         for (selection in selectionSet.selections) {
             if (selection is InlineFragment) {
                 val name = (selection.typeCondition as TypeName).name
-
                 val type = env.graphQLSchema.typeMap[name]
 
                 if (type is GraphQLFieldsContainer) {
@@ -87,9 +77,7 @@ class UnionDataFetcher constructor(
                         type,
                         env.fields
                     )
-                    val args = df.arguments
-
-                    argsLookup.put(name, ArgsWalker(args))
+                    argsLookup.put(name, ArgsWalker(df.arguments))
                 }
             }
         }
@@ -97,19 +85,15 @@ class UnionDataFetcher constructor(
     }
 
     private fun findMatchingDocs(
-        unionType: List<String>,
-        name: String
-    ): ArrayList<Map<String, Any>> {
-        val results = ArrayList<Map<String, Any>>()
+        unionTypes: Set<String>,
+        args : Map<String,Any>
+    ): ArrayList<FindResult> {
+        val results = ArrayList<FindResult>()
         for (doc in daos.availableDocs()) {
-            if (unionType.contains(doc)) {
-                val data = (daos.daoForDoc(doc) as DocDao).findByField("name_contains", name)
+            if (unionTypes.contains(doc)) {
+                val data = (daos.daoForDoc(doc) as DocDao).findByFields(args)
                 if (data != null) {
-                    for (item in data) {
-                        val working = mutableMapOf<String, Any>("id" to item["id"]!!)
-                        working["#docType"] = doc
-                        results.add(working)
-                    }
+                    results.addAll(data)
                 }
             }
         }
