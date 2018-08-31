@@ -11,9 +11,10 @@ import java.io.FileInputStream
  *
  * Wiring of dependencies is now a bit convoluted - this is a candidate for some redesign.
  */
-class DocsDao constructor(graphQLSchema: String,
-                          eventStoreClient: EventStoreClient = InMemoryEventStore(),
-                          externalDaos : Map<String,ReaderDao> = HashMap()
+class DocsDao constructor(
+    graphQLSchema: String,
+    eventStoreClient: EventStoreClient = InMemoryEventStore(),
+    externalDaos: Map<String, ReaderDao> = HashMap()
 ) {
     private val externalDaos = externalDaos
     private val availableDocs = HashSet(externalDaos.keys)
@@ -36,7 +37,7 @@ class DocsDao constructor(graphQLSchema: String,
     }
 
 
-    fun externalDaos(): Map<String,ReaderDao> {
+    fun externalDaos(): Map<String, ReaderDao> {
         return externalDaos
     }
 
@@ -51,16 +52,16 @@ class DocsDao constructor(graphQLSchema: String,
         return interfaceDaoLookup.keys
     }
 
-    fun daoForInterface(interfaceName : String) : InterfaceDao {
+    fun daoForInterface(interfaceName: String): InterfaceDao {
         return interfaceDaoLookup[interfaceName]!!
     }
 
-    fun schema () : String {
+    fun schema(): String {
         return schema
     }
 
     private fun initFromSchema(schema: String) {
-        val typeDefinitionRegistry  = SchemaParser().parse(schema)
+        val typeDefinitionRegistry = SchemaParser().parse(schema)
         val helper = Helper.build(typeDefinitionRegistry)
 
         // wireup a DocDao for each type
@@ -69,18 +70,16 @@ class DocsDao constructor(graphQLSchema: String,
             if (!externalDaos.containsKey(docType)) {
                 val objectTypeHelper = Helper.build(typeDefinitionRegistry, docType)
                 if (objectTypeHelper.idFieldName() != null) {
-                    docDaoLookup[docType] = DocDao(
-                        typeDefinitionRegistry, docType,
-                        eventStoreClient = eventStoreClient
-                    )
+                    docDaoLookup[docType] = DocDao(typeDefinitionRegistry, docType, eventStoreClient)
                     availableDocs.add(docType)
                 }
             }
         }
 
         // wireup an InterfaceDao for each interface
-        for (interfaceName in helper.interfaceDefinitionNames()){
-            interfaceDaoLookup.put(interfaceName,
+        for (interfaceName in helper.interfaceDefinitionNames()) {
+            interfaceDaoLookup.put(
+                interfaceName,
                 InterfaceDao(interfaceName, typeDefinitionRegistry, docDaoLookup)
             )
         }

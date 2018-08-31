@@ -7,6 +7,7 @@ import ianmorgan.graphstore.checker.SchemaBuilder
 import ianmorgan.graphstore.checker.ValidatorMode
 import ianmorgan.graphstore.graphql.Helper
 import java.util.*
+import kotlin.collections.HashSet
 import kotlin.reflect.KFunction2
 
 /**
@@ -111,15 +112,27 @@ class DocDao constructor(
     }
 
     private fun equalsMatcher(actual: Any?, expected: Any): Boolean {
+        if (actual is String && expected is String){
+            return actual.equals(expected,true)
+        }
         return actual == expected
     }
 
     private fun containsMatcher(actual: Any?, expected: Any): Boolean {
         if (actual is String) {
             return actual.toLowerCase().contains((expected as String).toLowerCase())
-        } else {
-            return actual.toString().toLowerCase().contains((expected as String).toLowerCase())
         }
+        if (actual is Collection<*> && expected is Collection<*>) {
+            val set1 = HashSet<Any>(actual)
+            val set2 = HashSet<Any>(expected)
+            return set1.containsAll(set2)
+        }
+        if (actual is Collection<*>) {
+            val set1 = HashSet<Any>(actual)
+            return set1.contains(expected)
+        }
+        return actual.toString().toLowerCase().contains((expected as String).toLowerCase())
+
     }
 
     private fun rootFieldName(fieldNameExpression: String): String {
