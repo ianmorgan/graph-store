@@ -7,6 +7,7 @@ import ianmorgan.graphstore.graphql.Helper
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.api.dsl.xdescribe
 import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
 import java.io.FileInputStream
@@ -23,15 +24,7 @@ object HelperSpec : Spek({
     val starwarsSchema = FileInputStream("src/schema/starwars_ex.graphqls").bufferedReader().use { it.readText() }
     val registry = SchemaParser().parse(starwarsSchema)
 
-    describe ("GraphQL queries over the embedded docs") {
-
-//        beforeGroup {
-//            val registry = SchemaParser().parse(starwarsSchema)
-//            val human = Helper.buildOTDH(registry,"Human")
-//
-//
-//
-//        }
+    xdescribe ("Helper for ObjectTypeDefinition") {
 
         it ("should help describe a Human ") {
             val human = Helper.buildOTDH(registry,"Human")
@@ -65,6 +58,25 @@ object HelperSpec : Spek({
             assert.that(droid.isObject("friends"), equalTo(false))
             assert.that(droid.isObject("appearsIn"), equalTo(false))
             assert.that(droid.isObject("starships"), equalTo(true))
+        }
+
+    }
+
+    describe("Helper for UnionTypeDefinition") {
+        it ("should create a helper for 'SearchResult' Union") {
+            val helper = Helper.buildUTDH(registry,"SearchResult")
+
+            assert.that(helper.unionTypes(), equalTo(listOf("Human" ,"Droid" ,"Alien")))
+
+        }
+
+        it ("should convert to an ArgsWalker") {
+            val helper = Helper.buildUTDH(registry,"SearchResult")
+
+            val args = helper.typeAsArgsWalker("Human")
+
+            assert.that(helper.unionTypes(), equalTo(listOf("Human" ,"Droid" ,"Alien")))
+
         }
 
     }

@@ -44,6 +44,22 @@ class DocDataFetcher constructor(
         return data
     }
 
+    /**
+     * Entry point when called recursively inside a query (i.e. for nested data). For simplicity of
+     * wiring these bypass the GraphQLJava api and simply pass on the query args (see ArgsWalker),
+     * which has all the information in the original query.
+     */
+    fun get(walker: ArgsWalker): Map<String, Any>? {
+        val id = walker.args()["/"]!!["id"] as String
+        val data = lookupDocById(id)
+
+        processDoc(data, walker)
+
+        return data
+    }
+
+
+
     private fun processDoc(
         data: HashMap<String, Any>?,
         walker: ArgsWalker
@@ -81,21 +97,7 @@ class DocDataFetcher constructor(
     }
 
 
-    /**
-     * Entry point when called recursively inside a query (i.e. for nested data). For simplicity of
-     * wiring these bypass the GraphQLJava api and simply pass on the query args (see ArgsWalker),
-     * which has all the information in the original query.
-     */
-    fun get(walker: ArgsWalker): Map<String, Any>? {
-        val id = walker.args()["/"]!!["id"] as String
-        val data = lookupDocById(id)
 
-        processDoc(data, walker)
-
-        return data
-
-
-    }
 
     private fun applyCountPseudoField(data: HashMap<String, Any>) {
         // note that the order in which steps are run is important here
@@ -128,7 +130,6 @@ class DocDataFetcher constructor(
     private fun fetchEmbeddedInterfaceList(data: HashMap<String, Any>, walker: ArgsWalker) {
         val field = walker.node()
         val helper = Helper.build(typeDefinition)
-        val docType = helper.typeForField(field)
 
         val ids = data[field] as List<String>?
         if (ids != null) {

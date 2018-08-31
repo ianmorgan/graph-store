@@ -341,6 +341,27 @@ class ObjectTypeDefinitionHelper constructor(typeDefinition: ObjectTypeDefinitio
 
 }
 
+class UnionTypeDefinitionHelper constructor(typeDefinition: UnionTypeDefinition, registry: TypeDefinitionRegistry) {
+    val utd = typeDefinition
+    val registry = registry
+
+    fun unionTypes() : List<String> {
+        val result = ArrayList<String>()
+        for (type in utd.memberTypes){
+            if (type is TypeName){
+                result.add(type.name)
+            }
+
+        }
+        return result
+    }
+
+    fun typeAsArgsWalker(typeName: String): ArgsWalker {
+        return ArgsWalker(emptyMap())
+    }
+
+}
+
 
 class DataFetchingFieldSelectionSetHelper constructor(selectionSet: DataFetchingFieldSelectionSet) {
     val selectionSet = selectionSet
@@ -365,13 +386,21 @@ object Helper {
 
     fun buildOTDH(registry: TypeDefinitionRegistry, typeName: String): ObjectTypeDefinitionHelper {
         val otd = TypeDefinitionRegistryHelper(registry).objectDefinition(typeName)
-        return build(otd,registry)
+        return buildOTDH(registry,otd)
     }
 
 
     fun buildOTDH(registry: TypeDefinitionRegistry, definition: ObjectTypeDefinition): ObjectTypeDefinitionHelper {
         return ObjectTypeDefinitionHelper(definition,registry)
+    }
 
+    fun buildUTDH(registry: TypeDefinitionRegistry, unionName: String): UnionTypeDefinitionHelper {
+        val definition = TypeDefinitionRegistryHelper(registry).unionDefinition(unionName)
+        return UnionTypeDefinitionHelper(definition,registry)
+    }
+
+    fun buildUTDH(registry: TypeDefinitionRegistry, definition: UnionTypeDefinition): UnionTypeDefinitionHelper {
+        return UnionTypeDefinitionHelper(definition,registry)
     }
 
     @Deprecated(message = "use buildOTDH variant instead")
