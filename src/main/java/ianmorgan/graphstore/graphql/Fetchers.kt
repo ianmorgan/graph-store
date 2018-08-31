@@ -85,9 +85,10 @@ object Fetcher {
 
     fun docListFetcher(
         docsDao: DocsDao,
-        typeDefinition: ObjectTypeDefinition
+        typeDefinition: ObjectTypeDefinition,
+        registry: TypeDefinitionRegistry
     ): DataFetcher<List<Map<String, Any>?>> {
-        return DocListDataFetcher(docsDao, typeDefinition)
+        return DocListDataFetcher(docsDao, typeDefinition, registry)
     }
 
     fun nullDocFetcher(): DataFetcher<Map<String, Any>?> {

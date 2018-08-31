@@ -18,7 +18,7 @@ type Query {
   starship(id: ID!): Starship
 
   # Find by name
-  humans(name : String!) : [Human]
+  humans(name : String, name_contains: String) : [Human]
 
   # Find characters by name
   characters(name : String) : [Character]

@@ -95,7 +95,7 @@ object GraphQLFactory {
                                 // wire up a regular doc fetcher
                                 builder.dataFetcher(
                                     name,
-                                    Fetcher.docListFetcher(docsDao, helper.objectDefinition(typeName))
+                                    Fetcher.docListFetcher(docsDao, helper.objectDefinition(typeName),typeDefinitionRegistry)
                                 )
 
                             } else if (helper.interfaceDefinitionNames().contains(typeName)) {
