@@ -83,7 +83,7 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
 
         //  wireup external DAOS
         val externalDaoRegistry = ExternalDaoRegistry(eventStoreClient)
-        registerStarshipDao(externalDaoRegistry)
+        AppHelper.registerStarshipDao(externalDaoRegistry)
         externalDaoRegistry.rebuildDaos()
         val externalDaos = externalDaoRegistry.allDaos()
 
@@ -110,8 +110,14 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
 
     }
 
-    private fun registerStarshipDao (registry: ExternalDaoRegistry)  {
-        val mapper = """
+
+
+    /**
+     * Mainly so that common wiring code can be exposed to test cases
+     */
+    object AppHelper {
+        fun registerStarshipDao (registry: ExternalDaoRegistry)  {
+            val mapper = """
                 import ianmorgan.graphstore.mapper.MapperHelper;
 
                 def helper = new MapperHelper(raw)
@@ -122,12 +128,11 @@ class JavalinApp(private val port: Int, private val cmd: CommandLine) {
                 helper.copyIfExists('cost_in_credits','costInCredits')
                 return helper.output() """.trimIndent()
 
-        val config = mapOf("baseUrl" to "https://swapi.co/api/starships/", "resultMapperScript" to mapper)
+            val config = mapOf("baseUrl" to "https://swapi.co/api/starships/", "resultMapperScript" to mapper)
 
-
-        registry.registerDao("Starship")
-        registry.configureDao("Starship",config)
+            registry.registerDao("Starship")
+            registry.configureDao("Starship",config)
+        }
     }
-
 
 }
